@@ -5,6 +5,10 @@ on:
     tags:
       - 'v*.*.*'  # v1.0.0, v1.0.1 등의 태그가 푸시되면 실행
 
+# ? 권한 추가 (403 에러 해결)
+permissions:
+  contents: write
+
 jobs:
   build-and-release:
     runs-on: windows-latest
