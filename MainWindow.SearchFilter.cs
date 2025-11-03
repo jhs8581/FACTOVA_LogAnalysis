@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections.ObjectModel;
@@ -18,7 +18,7 @@ namespace FACTOVA_LogAnalysis
         {
             try
             {
-                // DATA ºñÁî´Ï½º ÇÊÅÍ ÄŞº¸¹Ú½º
+                // DATA ë¹„ì¦ˆë‹ˆìŠ¤ í•„í„° ì½¤ë³´ë°•ìŠ¤
                 var dataBusinessComboBox = FindName("DataBusinessFilterComboBox") as System.Windows.Controls.ComboBox;
                 if (dataBusinessComboBox != null)
                 {
@@ -32,7 +32,7 @@ namespace FACTOVA_LogAnalysis
                     dataBusinessComboBoxTab.ItemsSource = _dataBusinessFilterItems;
                 }
 
-                // EVENT MsgId ÇÊÅÍ ÄŞº¸¹Ú½º
+                // EVENT MsgId í•„í„° ì½¤ë³´ë°•ìŠ¤
                 var eventMsgIdComboBox = FindName("EventMsgIdFilterComboBox") as System.Windows.Controls.ComboBox;
                 if (eventMsgIdComboBox != null)
                 {
@@ -46,7 +46,7 @@ namespace FACTOVA_LogAnalysis
                     eventMsgIdComboBoxTab.ItemsSource = _eventMsgIdFilterItems;
                 }
 
-                // EXCEPTION ºñÁî´Ï½º ÇÊÅÍ ÄŞº¸¹Ú½º
+                // EXCEPTION ë¹„ì¦ˆë‹ˆìŠ¤ í•„í„° ì½¤ë³´ë°•ìŠ¤
                 var exceptionBusinessComboBox = FindName("ExceptionBusinessFilterComboBox") as System.Windows.Controls.ComboBox;
                 if (exceptionBusinessComboBox != null)
                 {
@@ -60,41 +60,41 @@ namespace FACTOVA_LogAnalysis
                     exceptionBusinessComboBoxTab.ItemsSource = _exceptionBusinessFilterItems;
                 }
 
-                _workLogService.AddLog("? ¸ÖÆ¼¼±ÅÃ Äİº¸¹Ú½º ÃÊ±âÈ­ ¿Ï·á", WorkLogType.Success);
+                _workLogService.AddLog("? ë©€í‹°ì„ íƒ ì½œë³´ë°•ìŠ¤ ì´ˆê¸°í™” ì™„ë£Œ", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ¸ÖÆ¼¼±ÅÃ Äİº¸¹Ú½º ÃÊ±âÈ­ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ë©€í‹°ì„ íƒ ì½œë³´ë°•ìŠ¤ ì´ˆê¸°í™” ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         private void OpenFindDialog(System.Windows.Controls.TextBox textBox)
         {
-            // SearchFilterManager·Î À§ÀÓ
+            // SearchFilterManagerë¡œ ìœ„ì„
             _searchFilterManager.OpenFindDialog(this, textBox, textBox.SelectedText);
         }
 
         public void FindDialogClosed()
         {
-            // SearchFilterManager·Î À§ÀÓ
+            // SearchFilterManagerë¡œ ìœ„ì„
             _searchFilterManager.CloseFindDialog();
         }
 
         public void FindAndHighlightAll(string searchText, bool caseSensitive, object target)
         {
-            // SearchFilterManager·Î À§ÀÓ
+            // SearchFilterManagerë¡œ ìœ„ì„
             _searchFilterManager.SearchAndHighlight(searchText, caseSensitive, target);
         }
 
         public void HighlightNext()
         {
-            // SearchFilterManager·Î À§ÀÓ
+            // SearchFilterManagerë¡œ ìœ„ì„
             _searchFilterManager.FindNext();
         }
 
         public void HighlightPrevious()
         {
-            // SearchFilterManager·Î À§ÀÓ
+            // SearchFilterManagerë¡œ ìœ„ì„
             _searchFilterManager.FindPrevious();
         }
 
@@ -104,7 +104,7 @@ namespace FACTOVA_LogAnalysis
 
             try
             {
-                // DataGridManager¿¡¼­ ÄÃ·º¼Ç Á¤º¸ °¡Á®¿À±â
+                // DataGridManagerì—ì„œ ì»¬ë ‰ì…˜ ì •ë³´ ê°€ì ¸ì˜¤ê¸°
                 var dataGrid = FindName("dataLogDataGrid") as DataGrid;
                 var eventGrid = FindName("eventLogDataGrid") as DataGrid;
                 var debugGrid = FindName("debugLogDataGrid") as DataGrid;
@@ -121,7 +121,7 @@ namespace FACTOVA_LogAnalysis
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? DataGrid Á¤º¸ ¼öÁı ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? DataGrid ì •ë³´ ìˆ˜ì§‘ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
 
             return result;
@@ -135,14 +135,14 @@ namespace FACTOVA_LogAnalysis
                 {
                     string keyword = textBox.Text?.Trim() ?? "";
 
-                    // SearchFilterManager¸¦ ÅëÇÑ ±Û·Î¹ú Å°¿öµå ÇÊÅÍ Àû¿ë
+                    // SearchFilterManagerë¥¼ í†µí•œ ê¸€ë¡œë²Œ í‚¤ì›Œë“œ í•„í„° ì ìš©
                     var dataGrids = GetAllDataGridsWithCollections();
                     _searchFilterManager.ApplyGlobalKeywordFilter(keyword, dataGrids);
                 }
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ±Û·Î¹ú Å°¿öµå ÇÊÅÍ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ê¸€ë¡œë²Œ í‚¤ì›Œë“œ í•„í„° ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -150,12 +150,12 @@ namespace FACTOVA_LogAnalysis
         {
             try
             {
-                // ±âÁ¸ ¸ÖÆ¼¼±ÅÃ ÇÊÅÍµé ÃÊ±âÈ­
+                // ê¸°ì¡´ ë©€í‹°ì„ íƒ í•„í„°ë“¤ ì´ˆê¸°í™”
                 foreach (var item in _dataBusinessFilterItems) item.IsSelected = false;
                 foreach (var item in _eventMsgIdFilterItems) item.IsSelected = false;
                 foreach (var item in _exceptionBusinessFilterItems) item.IsSelected = false;
 
-                // »õ·Î¿î Content ÇÊÅÍµé ÃÊ±âÈ­
+                // ìƒˆë¡œìš´ Content í•„í„°ë“¤ ì´ˆê¸°í™”
                 var contentFilters = new[] {
                     "DataContentFilterTextBox", "EventContentFilterTextBox", 
                     "DebugContentFilterTextBox", "DebugContentFilterTextBox_Tab", 
@@ -168,20 +168,20 @@ namespace FACTOVA_LogAnalysis
                     if (textBox != null) textBox.Text = "";
                 }
 
-                // ÄŞº¸¹Ú½º ÅØ½ºÆ® ¾÷µ¥ÀÌÆ®
+                // ì½¤ë³´ë°•ìŠ¤ í…ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸
                 UpdateComboBoxTexts();
 
-                // °¢ DataGridÀÇ ¸ğµç ÇÊÅÍ Àû¿ë (ºó Á¶°ÇÀ¸·Î = ÀüÃ¼ Ç¥½Ã)
+                // ê° DataGridì˜ ëª¨ë“  í•„í„° ì ìš© (ë¹ˆ ì¡°ê±´ìœ¼ë¡œ = ì „ì²´ í‘œì‹œ)
                 ApplyIndividualFilters("DATA");
                 ApplyIndividualFilters("EVENT");
                 ApplyIndividualFilters("DEBUG");
                 ApplyIndividualFilters("EXCEPTION");
 
-                _workLogService.AddLog("?? ¸ğµç °³º° ÇÊÅÍ ÃÊ±âÈ­ ¿Ï·á", WorkLogType.Success);
+                _workLogService.AddLog("?? ëª¨ë“  ê°œë³„ í•„í„° ì´ˆê¸°í™” ì™„ë£Œ", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ÀüÃ¼ ÇÊÅÍ ÃÊ±âÈ­ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ì „ì²´ í•„í„° ì´ˆê¸°í™” ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -189,7 +189,7 @@ namespace FACTOVA_LogAnalysis
         {
             try
             {
-                // DATA ºñÁî´Ï½º¸í ÇÊÅÍ ¾÷µ¥ÀÌÆ®
+                // DATA ë¹„ì¦ˆë‹ˆìŠ¤ëª… í•„í„° ì—…ë°ì´íŠ¸
                 var dataBusinessNames = _dataGridManager.GetBusinessNamesForLogType("DATA");
                 _dataBusinessFilterItems.Clear();
 
@@ -198,9 +198,9 @@ namespace FACTOVA_LogAnalysis
                     _dataBusinessFilterItems.Add(new FilterItem(name));
                 }
 
-                _workLogService.AddLog($"DATA ºñÁî´Ï½º¸í ÇÊÅÍ: {dataBusinessNames.Count}°³ Ç×¸ñ ·Îµå", WorkLogType.Info);
+                _workLogService.AddLog($"DATA ë¹„ì¦ˆë‹ˆìŠ¤ëª… í•„í„°: {dataBusinessNames.Count}ê°œ í•­ëª© ë¡œë“œ", WorkLogType.Info);
 
-                // EVENT MsgId ÇÊÅÍ ¾÷µ¥ÀÌÆ®
+                // EVENT MsgId í•„í„° ì—…ë°ì´íŠ¸
                 var eventMsgIds = _dataGridManager.GetMsgIdsForLogType("EVENT");
                 _eventMsgIdFilterItems.Clear();
 
@@ -209,9 +209,9 @@ namespace FACTOVA_LogAnalysis
                     _eventMsgIdFilterItems.Add(new FilterItem(msgId));
                 }
 
-                _workLogService.AddLog($"EVENT MsgId ÇÊÅÍ: {eventMsgIds.Count}°³ Ç×¸ñ ·Îµå", WorkLogType.Info);
+                _workLogService.AddLog($"EVENT MsgId í•„í„°: {eventMsgIds.Count}ê°œ í•­ëª© ë¡œë“œ", WorkLogType.Info);
 
-                // EXCEPTION ºñÁî´Ï½º¸í ÇÊÅÍ ¾÷µ¥ÀÌÆ®
+                // EXCEPTION ë¹„ì¦ˆë‹ˆìŠ¤ëª… í•„í„° ì—…ë°ì´íŠ¸
                 var exceptionBusinessNames = _dataGridManager.GetBusinessNamesForLogType("EXCEPTION");
                 _exceptionBusinessFilterItems.Clear();
 
@@ -220,14 +220,14 @@ namespace FACTOVA_LogAnalysis
                     _exceptionBusinessFilterItems.Add(new FilterItem(name));
                 }
 
-                _workLogService.AddLog($"EXCEPTION ºñÁî´Ï½º¸í ÇÊÅÍ: {exceptionBusinessNames.Count}°³ Ç×¸ñ ·Îµå", WorkLogType.Info);
+                _workLogService.AddLog($"EXCEPTION ë¹„ì¦ˆë‹ˆìŠ¤ëª… í•„í„°: {exceptionBusinessNames.Count}ê°œ í•­ëª© ë¡œë“œ", WorkLogType.Info);
 
-                // ÄŞº¸¹Ú½º ÅØ½ºÆ® ¾÷µ¥ÀÌÆ®
+                // ì½¤ë³´ë°•ìŠ¤ í…ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸
                 UpdateComboBoxTexts();
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ÇÊÅÍ¸µ Ç×¸ñ ¾÷µ¥ÀÌÆ® ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? í•„í„°ë§ í•­ëª© ì—…ë°ì´íŠ¸ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -239,7 +239,7 @@ namespace FACTOVA_LogAnalysis
                 var dataBusinessComboBox = FindName("DataBusinessFilterComboBox") as System.Windows.Controls.ComboBox;
                 var dataBusinessComboBoxTab = FindName("DataBusinessFilterComboBox_Tab") as System.Windows.Controls.ComboBox;
                 var selectedDataItems = _dataBusinessFilterItems.Where(x => x.IsSelected).Select(x => x.Value).ToList();
-                var dataText = selectedDataItems.Count == 0 ? "¼±ÅÃÇÏ¼¼¿ä" : string.Join(", ", selectedDataItems);
+                var dataText = selectedDataItems.Count == 0 ? "ì„ íƒí•˜ì„¸ìš”" : string.Join(", ", selectedDataItems);
                 if (dataBusinessComboBox != null) dataBusinessComboBox.Text = dataText;
                 if (dataBusinessComboBoxTab != null) dataBusinessComboBoxTab.Text = dataText;
 
@@ -247,7 +247,7 @@ namespace FACTOVA_LogAnalysis
                 var eventMsgIdComboBox = FindName("EventMsgIdFilterComboBox") as System.Windows.Controls.ComboBox;
                 var eventMsgIdComboBoxTab = FindName("EventMsgIdFilterComboBox_Tab") as System.Windows.Controls.ComboBox;
                 var selectedEventItems = _eventMsgIdFilterItems.Where(x => x.IsSelected).Select(x => x.Value).ToList();
-                var eventText = selectedEventItems.Count == 0 ? "¼±ÅÃÇÏ¼¼¿ä" : string.Join(", ", selectedEventItems);
+                var eventText = selectedEventItems.Count == 0 ? "ì„ íƒí•˜ì„¸ìš”" : string.Join(", ", selectedEventItems);
                 if (eventMsgIdComboBox != null) eventMsgIdComboBox.Text = eventText;
                 if (eventMsgIdComboBoxTab != null) eventMsgIdComboBoxTab.Text = eventText;
 
@@ -255,20 +255,20 @@ namespace FACTOVA_LogAnalysis
                 var exceptionBusinessComboBox = FindName("ExceptionBusinessFilterComboBox") as System.Windows.Controls.ComboBox;
                 var exceptionBusinessComboBoxTab = FindName("ExceptionBusinessFilterComboBox_Tab") as System.Windows.Controls.ComboBox;
                 var selectedExceptionItems = _exceptionBusinessFilterItems.Where(x => x.IsSelected).Select(x => x.Value).ToList();
-                var exceptionText = selectedExceptionItems.Count == 0 ? "¼±ÅÃÇÏ¼¼¿ä" : string.Join(", ", selectedExceptionItems);
+                var exceptionText = selectedExceptionItems.Count == 0 ? "ì„ íƒí•˜ì„¸ìš”" : string.Join(", ", selectedExceptionItems);
                 if (exceptionBusinessComboBox != null) exceptionBusinessComboBox.Text = exceptionText;
                 if (exceptionBusinessComboBoxTab != null) exceptionBusinessComboBoxTab.Text = exceptionText;
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ÄŞº¸¹Ú½º ÅØ½ºÆ® ¾÷µ¥ÀÌÆ® ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ì½¤ë³´ë°•ìŠ¤ í…ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         private void ApplyMultiSelectFilter(string logType)
         {
-            // ÀÌ ¸Ş¼­µå´Â ÀÌÁ¦ ApplyIndividualFilters·Î ´ëÃ¼µË´Ï´Ù
-            // È£È¯¼ºÀ» À§ÇØ »õ·Î¿î ¸Ş¼­µå·Î Æ÷¿öµù
+            // ì´ ë©”ì„œë“œëŠ” ì´ì œ ApplyIndividualFiltersë¡œ ëŒ€ì²´ë©ë‹ˆë‹¤
+            // í˜¸í™˜ì„±ì„ ìœ„í•´ ìƒˆë¡œìš´ ë©”ì„œë“œë¡œ í¬ì›Œë”©
             ApplyIndividualFilters(logType);
         }
 
@@ -385,19 +385,19 @@ namespace FACTOVA_LogAnalysis
 
         private void ClearDataFilterButton_Click(object sender, RoutedEventArgs e)
         {
-            // ÀÌ ¸Ş¼­µå´Â ÀÌÁ¦ ClearDataBusinessFilterButton_ClickÀ¸·Î ´ëÃ¼µË´Ï´Ù
+            // ì´ ë©”ì„œë“œëŠ” ì´ì œ ClearDataBusinessFilterButton_Clickìœ¼ë¡œ ëŒ€ì²´ë©ë‹ˆë‹¤
             ClearDataBusinessFilterButton_Click(sender, e);
         }
 
         private void ClearExceptionFilterButton_Click(object sender, RoutedEventArgs e)
         {
-            // ÀÌ ¸Ş¼­µå´Â ÀÌÁ¦ ClearExceptionBusinessFilterButton_ClickÀ¸·Î ´ëÃ¼µË´Ï´Ù
+            // ì´ ë©”ì„œë“œëŠ” ì´ì œ ClearExceptionBusinessFilterButton_Clickìœ¼ë¡œ ëŒ€ì²´ë©ë‹ˆë‹¤
             ClearExceptionBusinessFilterButton_Click(sender, e);
         }
 
         private void ClearEventFilterButton_Click(object sender, RoutedEventArgs e)
         {
-            // ÀÌ ¸Ş¼­µå´Â ÀÌÁ¦ ClearEventMsgIdFilterButton_ClickÀ¸·Î ´ëÃ¼µË´Ï´Ù
+            // ì´ ë©”ì„œë“œëŠ” ì´ì œ ClearEventMsgIdFilterButton_Clickìœ¼ë¡œ ëŒ€ì²´ë©ë‹ˆë‹¤
             ClearEventMsgIdFilterButton_Click(sender, e);
         }
 
@@ -414,7 +414,7 @@ namespace FACTOVA_LogAnalysis
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? DATA Content ÇÊÅÍ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? DATA Content í•„í„° ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -425,11 +425,11 @@ namespace FACTOVA_LogAnalysis
                 var textBox = FindName("DataContentFilterTextBox") as System.Windows.Controls.TextBox;
                 if (textBox != null) textBox.Text = "";
                 ApplyIndividualFilters("DATA");
-                _workLogService.AddLog("DATA Content ÇÊÅÍ ÃÊ±âÈ­", WorkLogType.Success);
+                _workLogService.AddLog("DATA Content í•„í„° ì´ˆê¸°í™”", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? DATA Content ÇÊÅÍ ÃÊ±âÈ­ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? DATA Content í•„í„° ì´ˆê¸°í™” ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -443,11 +443,11 @@ namespace FACTOVA_LogAnalysis
                 }
                 UpdateComboBoxTexts();
                 ApplyIndividualFilters("DATA");
-                _workLogService.AddLog("DATA Business ÇÊÅÍ ÃÊ±âÈ­", WorkLogType.Success);
+                _workLogService.AddLog("DATA Business í•„í„° ì´ˆê¸°í™”", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? DATA Business ÇÊÅÍ ÃÊ±âÈ­ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? DATA Business í•„í„° ì´ˆê¸°í™” ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -460,7 +460,7 @@ namespace FACTOVA_LogAnalysis
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? EVENT Content ÇÊÅÍ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? EVENT Content í•„í„° ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -471,11 +471,11 @@ namespace FACTOVA_LogAnalysis
                 var textBox = FindName("EventContentFilterTextBox") as System.Windows.Controls.TextBox;
                 if (textBox != null) textBox.Text = "";
                 ApplyIndividualFilters("EVENT");
-                _workLogService.AddLog("EVENT Content ÇÊÅÍ ÃÊ±âÈ­", WorkLogType.Success);
+                _workLogService.AddLog("EVENT Content í•„í„° ì´ˆê¸°í™”", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? EVENT Content ÇÊÅÍ ÃÊ±âÈ­ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? EVENT Content í•„í„° ì´ˆê¸°í™” ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -489,11 +489,11 @@ namespace FACTOVA_LogAnalysis
                 }
                 UpdateComboBoxTexts();
                 ApplyIndividualFilters("EVENT");
-                _workLogService.AddLog("EVENT MsgId ÇÊÅÍ ÃÊ±âÈ­", WorkLogType.Success);
+                _workLogService.AddLog("EVENT MsgId í•„í„° ì´ˆê¸°í™”", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? EVENT MsgId ÇÊÅÍ ÃÊ±âÈ­ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? EVENT MsgId í•„í„° ì´ˆê¸°í™” ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -506,7 +506,7 @@ namespace FACTOVA_LogAnalysis
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? DEBUG Content ÇÊÅÍ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? DEBUG Content í•„í„° ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -519,11 +519,11 @@ namespace FACTOVA_LogAnalysis
                 if (textBox != null) textBox.Text = "";
                 if (textBoxTab != null) textBoxTab.Text = "";
                 ApplyIndividualFilters("DEBUG");
-                _workLogService.AddLog("DEBUG Content ÇÊÅÍ ÃÊ±âÈ­", WorkLogType.Success);
+                _workLogService.AddLog("DEBUG Content í•„í„° ì´ˆê¸°í™”", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? DEBUG ÇÊÅÍ ÃÊ±âÈ­ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? DEBUG í•„í„° ì´ˆê¸°í™” ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -536,7 +536,7 @@ namespace FACTOVA_LogAnalysis
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? EXCEPTION Content ÇÊÅÍ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? EXCEPTION Content í•„í„° ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -547,11 +547,11 @@ namespace FACTOVA_LogAnalysis
                 var textBox = FindName("ExceptionContentFilterTextBox") as System.Windows.Controls.TextBox;
                 if (textBox != null) textBox.Text = "";
                 ApplyIndividualFilters("EXCEPTION");
-                _workLogService.AddLog("EXCEPTION Content ÇÊÅÍ ÃÊ±âÈ­", WorkLogType.Success);
+                _workLogService.AddLog("EXCEPTION Content í•„í„° ì´ˆê¸°í™”", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? EXCEPTION Content ÇÊÅÍ ÃÊ±âÈ­ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? EXCEPTION Content í•„í„° ì´ˆê¸°í™” ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -565,11 +565,11 @@ namespace FACTOVA_LogAnalysis
                 }
                 UpdateComboBoxTexts();
                 ApplyIndividualFilters("EXCEPTION");
-                _workLogService.AddLog("EXCEPTION Business ÇÊÅÍ ÃÊ±âÈ­", WorkLogType.Success);
+                _workLogService.AddLog("EXCEPTION Business í•„í„° ì´ˆê¸°í™”", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? EXCEPTION Business ÇÊÅÍ ÃÊ±âÈ­ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? EXCEPTION Business í•„í„° ì´ˆê¸°í™” ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -578,7 +578,7 @@ namespace FACTOVA_LogAnalysis
         #region Combined Filter Logic (AND Conditions)
 
         /// <summary>
-        /// Æ¯Á¤ ·Î±× Å¸ÀÔ¿¡ ´ëÇØ ¸ğµç °³º° ÇÊÅÍµéÀ» AND Á¶°ÇÀ¸·Î Àû¿ë
+        /// íŠ¹ì • ë¡œê·¸ íƒ€ì…ì— ëŒ€í•´ ëª¨ë“  ê°œë³„ í•„í„°ë“¤ì„ AND ì¡°ê±´ìœ¼ë¡œ ì ìš©
         /// </summary>
         private void ApplyIndividualFilters(string logType)
         {
@@ -587,7 +587,7 @@ namespace FACTOVA_LogAnalysis
                 DataGrid? targetGrid = null;
                 ObservableCollection<LogLineItem>? sourceCollection = null;
 
-                // DataGrid¿Í ¼Ò½º ÄÃ·º¼Ç °¡Á®¿À±â
+                // DataGridì™€ ì†ŒìŠ¤ ì»¬ë ‰ì…˜ ê°€ì ¸ì˜¤ê¸°
                 switch (logType)
                 {
                     case "DATA":
@@ -614,15 +614,15 @@ namespace FACTOVA_LogAnalysis
                 var view = System.Windows.Data.CollectionViewSource.GetDefaultView(targetGrid.ItemsSource);
                 if (view == null) return;
 
-                // ÇÊÅÍ Á¶°Çµé ¼öÁı
+                // í•„í„° ì¡°ê±´ë“¤ ìˆ˜ì§‘
                 var filterConditions = GetFilterConditions(logType);
 
-                // AND Á¶°ÇÀ¸·Î ÇÊÅÍ Àû¿ë
+                // AND ì¡°ê±´ìœ¼ë¡œ í•„í„° ì ìš©
                 view.Filter = item =>
                 {
                     if (item is not LogLineItem logItem) return false;
 
-                    // ¸ğµç Á¶°ÇÀÌ true¿©¾ß ÇÔ (AND Á¶°Ç)
+                    // ëª¨ë“  ì¡°ê±´ì´ trueì—¬ì•¼ í•¨ (AND ì¡°ê±´)
                     foreach (var condition in filterConditions)
                     {
                         if (!condition(logItem))
@@ -633,19 +633,19 @@ namespace FACTOVA_LogAnalysis
 
                 view.Refresh();
 
-                // ÇÊÅÍ °á°ú »óÅÂ ·Î±×
+                // í•„í„° ê²°ê³¼ ìƒíƒœ ë¡œê·¸
                 var filteredCount = view.Cast<object>().Count();
                 var totalCount = sourceCollection.Count;
-                _workLogService.AddLog($"{logType} ÇÊÅÍ Àû¿ë ¿Ï·á: {filteredCount}/{totalCount} Ç×¸ñ", WorkLogType.Info);
+                _workLogService.AddLog($"{logType} í•„í„° ì ìš© ì™„ë£Œ: {filteredCount}/{totalCount} í•­ëª©", WorkLogType.Info);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? {logType} ÇÊÅÍ Àû¿ë ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? {logType} í•„í„° ì ìš© ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// Æ¯Á¤ ·Î±× Å¸ÀÔ¿¡ ´ëÇÑ ¸ğµç ÇÊÅÍ Á¶°ÇµéÀ» ¹İÈ¯
+        /// íŠ¹ì • ë¡œê·¸ íƒ€ì…ì— ëŒ€í•œ ëª¨ë“  í•„í„° ì¡°ê±´ë“¤ì„ ë°˜í™˜
         /// </summary>
         private List<Func<LogLineItem, bool>> GetFilterConditions(string logType)
         {
@@ -654,14 +654,14 @@ namespace FACTOVA_LogAnalysis
             switch (logType)
             {
                 case "DATA":
-                    // Business Name ÇÊÅÍ
+                    // Business Name í•„í„°
                     var selectedBusinessNames = _dataBusinessFilterItems.Where(x => x.IsSelected).Select(x => x.Value).ToList();
                     if (selectedBusinessNames.Count > 0)
                     {
                         conditions.Add(item => selectedBusinessNames.Contains(item.BusinessName ?? ""));
                     }
 
-                    // Content ÇÊÅÍ
+                    // Content í•„í„°
                     var dataContentFilter = (FindName("DataContentFilterTextBox") as System.Windows.Controls.TextBox)?.Text?.Trim();
                     if (!string.IsNullOrEmpty(dataContentFilter))
                     {
@@ -670,14 +670,14 @@ namespace FACTOVA_LogAnalysis
                     break;
 
                 case "EVENT":
-                    // MsgId ÇÊÅÍ
+                    // MsgId í•„í„°
                     var selectedMsgIds = _eventMsgIdFilterItems.Where(x => x.IsSelected).Select(x => x.Value).ToList();
                     if (selectedMsgIds.Count > 0)
                     {
                         conditions.Add(item => selectedMsgIds.Contains(item.MsgId ?? ""));
                     }
 
-                    // Content ÇÊÅÍ
+                    // Content í•„í„°
                     var eventContentFilter = (FindName("EventContentFilterTextBox") as System.Windows.Controls.TextBox)?.Text?.Trim();
                     if (!string.IsNullOrEmpty(eventContentFilter))
                     {
@@ -686,9 +686,9 @@ namespace FACTOVA_LogAnalysis
                     break;
 
                 case "DEBUG":
-                    // Content ÇÊÅÍ
+                    // Content í•„í„°
                     var debugContentFilter = (FindName("DebugContentFilterTextBox") as System.Windows.Controls.TextBox)?.Text?.Trim();
-                    // Tab ¸ğµå¿¡¼­µµ È®ÀÎ
+                    // Tab ëª¨ë“œì—ì„œë„ í™•ì¸
                     if (string.IsNullOrEmpty(debugContentFilter))
                     {
                         debugContentFilter = (FindName("DebugContentFilterTextBox_Tab") as System.Windows.Controls.TextBox)?.Text?.Trim();
@@ -700,14 +700,14 @@ namespace FACTOVA_LogAnalysis
                     break;
 
                 case "EXCEPTION":
-                    // Business Name ÇÊÅÍ
+                    // Business Name í•„í„°
                     var selectedExceptionBusinessNames = _exceptionBusinessFilterItems.Where(x => x.IsSelected).Select(x => x.Value).ToList();
                     if (selectedExceptionBusinessNames.Count > 0)
                     {
                         conditions.Add(item => selectedExceptionBusinessNames.Contains(item.BusinessName ?? ""));
                     }
 
-                    // Content ÇÊÅÍ
+                    // Content í•„í„°
                     var exceptionContentFilter = (FindName("ExceptionContentFilterTextBox") as System.Windows.Controls.TextBox)?.Text?.Trim();
                     if (!string.IsNullOrEmpty(exceptionContentFilter))
                     {

@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
@@ -23,7 +23,7 @@ namespace FACTOVA_LogAnalysis
                 {
                     _logFolderPath = savedPath;
                     _logFileManager.LogFolderPath = savedPath;
-                    _eventHandlerManager.LogFolderPath = savedPath; // EventHandlerManagerø°µµ º≥¡§
+                    _eventHandlerManager.LogFolderPath = savedPath; // EventHandlerManagerÏóêÎèÑ ÏÑ§Ï†ï
                     LogFolderPathTextBox.Text = savedPath;
                     _workLogService.AddLog($"Restored saved log path: {savedPath}", WorkLogType.Success);
                 }
@@ -45,7 +45,7 @@ namespace FACTOVA_LogAnalysis
             string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             _logFolderPath = Path.Combine(userProfile, "Documents", "FactovaMES", "SFC", "Logs");
             _logFileManager.LogFolderPath = _logFolderPath;
-            _eventHandlerManager.LogFolderPath = _logFolderPath; // EventHandlerManagerø°µµ º≥¡§
+            _eventHandlerManager.LogFolderPath = _logFolderPath; // EventHandlerManagerÏóêÎèÑ ÏÑ§Ï†ï
             LogFolderPathTextBox.Text = _logFolderPath;
             _workLogService.AddLog($"Default log path set: {_logFolderPath}", WorkLogType.Info);
         }
@@ -61,7 +61,7 @@ namespace FACTOVA_LogAnalysis
                 {
                     _logFolderPath = dialog.SelectedPath;
                     _logFileManager.LogFolderPath = _logFolderPath;
-                    _eventHandlerManager.LogFolderPath = _logFolderPath; // EventHandlerManagerø°µµ º≥¡§
+                    _eventHandlerManager.LogFolderPath = _logFolderPath; // EventHandlerManagerÏóêÎèÑ ÏÑ§Ï†ï
                     LogFolderPathTextBox.Text = _logFolderPath;
 
                     _workLogService.AddLog($"Log folder changed: {_logFolderPath}", WorkLogType.Success);
@@ -154,7 +154,7 @@ namespace FACTOVA_LogAnalysis
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ≥Ø¬• ƒﬁ∫∏ ±∏º∫ ø¿∑˘: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ÎÇ†Ïßú ÏΩ§Î≥¥ Íµ¨ÏÑ± Ïò§Î•ò: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -274,7 +274,7 @@ namespace FACTOVA_LogAnalysis
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ∆ƒ¿œ∏Ìø°º≠ ≥Ø¬• √ﬂ√‚ Ω«∆–: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ÌååÏùºÎ™ÖÏóêÏÑú ÎÇ†Ïßú Ï∂îÏ∂ú Ïã§Ìå®: {ex.Message}", WorkLogType.Error);
             }
 
             return results;

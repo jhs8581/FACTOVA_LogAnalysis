@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,7 +24,7 @@ namespace FACTOVA_LogAnalysis
             try
             {
                 _redBusinessListManager.LoadFromFile();
-                _workLogService.AddLog("?? »¡°£»ö ºñÁî´Ï½º ¸ñ·Ï ·Îµå ¿Ï·á", WorkLogType.Success);
+                _workLogService.AddLog("?? ë¹¨ê°„ìƒ‰ ë¹„ì¦ˆë‹ˆìŠ¤ ëª©ë¡ ë¡œë“œ ì™„ë£Œ", WorkLogType.Success);
             }
             catch (Exception ex)
             {
@@ -109,7 +109,7 @@ namespace FACTOVA_LogAnalysis
         {
             try
             {
-                _workLogService.AddLog("»¡°£»ö ºñÁî´Ï½º Ç×¸ñÀÌ ¼öÁ¤µÊ", WorkLogType.Info);
+                _workLogService.AddLog("ë¹¨ê°„ìƒ‰ ë¹„ì¦ˆë‹ˆìŠ¤ í•­ëª©ì´ ìˆ˜ì •ë¨", WorkLogType.Info);
             }
             catch (Exception ex)
             {
@@ -123,13 +123,13 @@ namespace FACTOVA_LogAnalysis
         {
             try
             {
-                // ÁøÇà ½Ã°£ Ç¥½Ã ½ÃÀÛ
+                // ì§„í–‰ ì‹œê°„ í‘œì‹œ ì‹œì‘
                 StartLoadProgress();
                 
-                // UI ºñÈ°¼ºÈ­
+                // UI ë¹„í™œì„±í™”
                 SetControlsEnabled(false);
                 
-                _workLogService.AddLog("?? UI Àá±İ - ·Îµù ½ÃÀÛ", WorkLogType.Info);
+                _workLogService.AddLog("?? UI ì ê¸ˆ - ë¡œë”© ì‹œì‘", WorkLogType.Info);
 
                 DateTime selectedDate = GetSelectedDate();
                 string searchText = searchTextBox.Text;
@@ -138,54 +138,54 @@ namespace FACTOVA_LogAnalysis
 
                 if (fromTime > toTime)
                 {
-                    _workLogService.AddLog("½ÃÀÛ ½Ã°£ÀÌ Á¾·á ½Ã°£º¸´Ù ´Ê½À´Ï´Ù. ½Ã°£ ¹üÀ§¸¦ È®ÀÎÇØÁÖ¼¼¿ä.", WorkLogType.Warning);
+                    _workLogService.AddLog("ì‹œì‘ ì‹œê°„ì´ ì¢…ë£Œ ì‹œê°„ë³´ë‹¤ ëŠ¦ìŠµë‹ˆë‹¤. ì‹œê°„ ë²”ìœ„ë¥¼ í™•ì¸í•´ì£¼ì„¸ìš”.", WorkLogType.Warning);
                     SetControlsEnabled(true);
-                    StopLoadProgress(); // ¿À·ù ½Ã¿¡µµ ÁßÁö
+                    StopLoadProgress(); // ì˜¤ë¥˜ ì‹œì—ë„ ì¤‘ì§€
                     return;
                 }
 
                 bool loadText = LoadTextCheckBox?.IsChecked == true;
                 bool loadDataGrid = LoadDataGridCheckBox?.IsChecked == true;
-                // LoadExecTimeCheckBox´Â ÇöÀç XAML¿¡ ¾øÀ¸¹Ç·Î ±âº»°ª false »ç¿ë
+                // LoadExecTimeCheckBoxëŠ” í˜„ì¬ XAMLì— ì—†ìœ¼ë¯€ë¡œ ê¸°ë³¸ê°’ false ì‚¬ìš©
                 bool loadExecTime = false;
 
                 if (!loadText && !loadDataGrid && !loadExecTime)
                 {
-                    _workLogService.AddLog("·ÎµåÇÒ ¿É¼ÇÀ» ÇÏ³ª ÀÌ»ó ¼±ÅÃÇØÁÖ¼¼¿ä", WorkLogType.Warning);
+                    _workLogService.AddLog("ë¡œë“œí•  ì˜µì…˜ì„ í•˜ë‚˜ ì´ìƒ ì„ íƒí•´ì£¼ì„¸ìš”", WorkLogType.Warning);
                     SetControlsEnabled(true);
-                    StopLoadProgress(); // ¿À·ù ½Ã¿¡µµ ÁßÁö
+                    StopLoadProgress(); // ì˜¤ë¥˜ ì‹œì—ë„ ì¤‘ì§€
                     return;
                 }
 
-                _workLogService.AddLog($"·Îµå ½ÃÀÛ: Text={loadText}, DataGrid={loadDataGrid}, exec.Time={loadExecTime}, ½Ã°£¹üÀ§={fromTime:hh\\:mm}~{toTime:hh\\:mm}", WorkLogType.Info);
+                _workLogService.AddLog($"ë¡œë“œ ì‹œì‘: Text={loadText}, DataGrid={loadDataGrid}, exec.Time={loadExecTime}, ì‹œê°„ë²”ìœ„={fromTime:hh\\:mm}~{toTime:hh\\:mm}", WorkLogType.Info);
 
-                // DataGrid ·Îµù (¿ÏÀüÈ÷ ¹é±×¶ó¿îµå¿¡¼­ ½ÇÇà)
+                // DataGrid ë¡œë”© (ì™„ì „íˆ ë°±ê·¸ë¼ìš´ë“œì—ì„œ ì‹¤í–‰)
                 if (loadDataGrid)
                 {
-                    _workLogService.AddLog("DataGrid ?¥á? ?¥å? ??...", WorkLogType.Info);
+                    _workLogService.AddLog("DataGrid ?Î±? ?Îµ? ??...", WorkLogType.Info);
                     
-                    // ?????? ???????? ??????? ?¥å?
+                    // ?????? ???????? ??????? ?Îµ?
                     Dictionary<string, List<LogLineItem>>? allData = null;
                     
                     await Task.Run(async () =>
                     {
-                        // ?????? ???????? ???? ?¬Ò?
+                        // ?????? ???????? ???? ?Ğ±?
                         allData = await _logLoadingService.LoadAllDataGridData(selectedDate, searchText, searchMode, fromTime, toTime);
                     });
                     
-                    // UI ??????? ?????? ???¥å?
+                    // UI ??????? ?????? ???Îµ?
                     await Dispatcher.InvokeAsync(() =>
                     {
                         if (allData != null)
                         {
-                            // DataGridManager?? ?????? ???¥å? ???
+                            // DataGridManager?? ?????? ???Îµ? ???
                             BindDataToDataGrids(allData);
                             
-                            // ÅëÇÕ ·Î±× µ¥ÀÌÅÍµµ ·Îµù
+                            // í†µí•© ë¡œê·¸ ë°ì´í„°ë„ ë¡œë”©
                             _ = LoadUnifiedLogData(selectedDate, searchText, searchMode, fromTime, toTime);
                         }
                         
-                        _workLogService.AddLog("? DataGrid ?¥å? ???", WorkLogType.Success);
+                        _workLogService.AddLog("? DataGrid ?Îµ? ???", WorkLogType.Success);
                         
                         if (!loadText)
                         {
@@ -194,31 +194,31 @@ namespace FACTOVA_LogAnalysis
                     });
                 }
 
-                // UI È°¼ºÈ­
+                // UI í™œì„±í™”
                 SetControlsEnabled(true);
-                _workLogService.AddLog("?? UI Àá±İ ÇØÁ¦", WorkLogType.Success);
+                _workLogService.AddLog("?? UI ì ê¸ˆ í•´ì œ", WorkLogType.Success);
                 
-                // ÁøÇà ½Ã°£ Ç¥½Ã ÁßÁö
+                // ì§„í–‰ ì‹œê°„ í‘œì‹œ ì¤‘ì§€
                 StopLoadProgress();
 
-                // ³ª¸ÓÁö´Â ¹é±×¶ó¿îµå¿¡¼­
+                // ë‚˜ë¨¸ì§€ëŠ” ë°±ê·¸ë¼ìš´ë“œì—ì„œ
                 if (loadText)
                 {
-                    _workLogService.AddLog("ÅØ½ºÆ® ·Î±× ·Îµå Áß... (¹é±×¶ó¿îµå)", WorkLogType.Info);
+                    _workLogService.AddLog("í…ìŠ¤íŠ¸ ë¡œê·¸ ë¡œë“œ ì¤‘... (ë°±ê·¸ë¼ìš´ë“œ)", WorkLogType.Info);
                     _ = Task.Run(async () =>
                     {
                         await Dispatcher.InvokeAsync(async () =>
                         {
                             await LoadIndividualLogFilesUsingService(selectedDate, searchText, searchMode, fromTime, toTime);
                             LogTabControl.SelectedIndex = 0;
-                            _workLogService.AddLog("? ÅØ½ºÆ® ·Î±× ·Îµå ¿Ï·á", WorkLogType.Success);
+                            _workLogService.AddLog("? í…ìŠ¤íŠ¸ ë¡œê·¸ ë¡œë“œ ì™„ë£Œ", WorkLogType.Success);
                         });
                     });
                 }
 
                 if (loadExecTime)
                 {
-                    _workLogService.AddLog("exec.Time ºĞ¼® ·Îµå Áß... (¹é±×¶ó¿îµå)", WorkLogType.Info);
+                    _workLogService.AddLog("exec.Time ë¶„ì„ ë¡œë“œ ì¤‘... (ë°±ê·¸ë¼ìš´ë“œ)", WorkLogType.Info);
                     _ = Task.Run(async () =>
                     {
                         await Dispatcher.InvokeAsync(async () =>
@@ -226,48 +226,48 @@ namespace FACTOVA_LogAnalysis
                             await LoadExecTimeAnalysis(selectedDate, searchText, searchMode, fromTime, toTime);
                             if (!loadText && !loadDataGrid)
                                 LogTabControl.SelectedIndex = 2;
-                            _workLogService.AddLog("? exec.Time ºĞ¼® ·Îµå ¿Ï·á", WorkLogType.Success);
+                            _workLogService.AddLog("? exec.Time ë¶„ì„ ë¡œë“œ ì™„ë£Œ", WorkLogType.Success);
                         });
                     });
                 }
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"?? ·Îµå Áß ¿À·ù ¹ß»ı: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"?? ë¡œë“œ ì¤‘ ì˜¤ë¥˜ ë°œìƒ: {ex.Message}", WorkLogType.Error);
                 SetControlsEnabled(true);
-                StopLoadProgress(); // ¿¹¿Ü ¹ß»ı ½Ã¿¡µµ ÁßÁö
+                StopLoadProgress(); // ì˜ˆì™¸ ë°œìƒ ì‹œì—ë„ ì¤‘ì§€
             }
         }
 
         /// <summary>
-        /// ¸ğµç ÁÖ¿ä ÄÁÆ®·ÑÀÇ È°¼ºÈ­/ºñÈ°¼ºÈ­ »óÅÂ ¼³Á¤
+        /// ëª¨ë“  ì£¼ìš” ì»¨íŠ¸ë¡¤ì˜ í™œì„±í™”/ë¹„í™œì„±í™” ìƒíƒœ ì„¤ì •
         /// </summary>
-        /// <param name="enabled">true=È°¼ºÈ­, false=ºñÈ°¼ºÈ­</param>
+        /// <param name="enabled">true=í™œì„±í™”, false=ë¹„í™œì„±í™”</param>
         private void SetControlsEnabled(bool enabled)
         {
             try
             {
-                // Ribbon Expander ÀüÃ¼ ºñÈ°¼ºÈ­/È°¼ºÈ­
+                // Ribbon Expander ì „ì²´ ë¹„í™œì„±í™”/í™œì„±í™”
                 var ribbonExpander = FindName("RibbonExpander") as WpfExpander;
                 if (ribbonExpander != null)
                     ribbonExpander.IsEnabled = enabled;
 
-                // Load ¹öÆ°
+                // Load ë²„íŠ¼
                 var submitButton = FindName("SubmitButton") as WpfButton;
                 if (submitButton != null)
                     submitButton.IsEnabled = enabled;
 
-                // ³¯Â¥ ¼±ÅÃ ÄŞº¸¹Ú½º
+                // ë‚ ì§œ ì„ íƒ ì½¤ë³´ë°•ìŠ¤
                 var dateComboBox = FindName("dateComboBox") as WpfComboBox;
                 if (dateComboBox != null)
                     dateComboBox.IsEnabled = enabled;
 
-                // ½Ã°£ ÇÁ¸®¼Â ÄŞº¸¹Ú½º
+                // ì‹œê°„ í”„ë¦¬ì…‹ ì½¤ë³´ë°•ìŠ¤
                 var timePresetComboBox = FindName("timePresetComboBox") as WpfComboBox;
                 if (timePresetComboBox != null)
                     timePresetComboBox.IsEnabled = enabled;
 
-                // ½Ã°£ ÀÔ·Â ÅØ½ºÆ®¹Ú½º
+                // ì‹œê°„ ì…ë ¥ í…ìŠ¤íŠ¸ë°•ìŠ¤
                 var fromTimeTextBox = FindName("fromTimeTextBox") as WpfTextBox;
                 if (fromTimeTextBox != null)
                     fromTimeTextBox.IsEnabled = enabled;
@@ -276,17 +276,17 @@ namespace FACTOVA_LogAnalysis
                 if (toTimeTextBox != null)
                     toTimeTextBox.IsEnabled = enabled;
 
-                // °Ë»ö ÅØ½ºÆ®¹Ú½º
+                // ê²€ìƒ‰ í…ìŠ¤íŠ¸ë°•ìŠ¤
                 var searchTextBox = FindName("searchTextBox") as WpfTextBox;
                 if (searchTextBox != null)
                     searchTextBox.IsEnabled = enabled;
 
-                // °Ë»ö ¸ğµå ÄŞº¸¹Ú½º
+                // ê²€ìƒ‰ ëª¨ë“œ ì½¤ë³´ë°•ìŠ¤
                 var searchModeComboBox = FindName("searchModeComboBox") as WpfComboBox;
                 if (searchModeComboBox != null)
                     searchModeComboBox.IsEnabled = enabled;
 
-                // Load Options Ã¼Å©¹Ú½ºµé
+                // Load Options ì²´í¬ë°•ìŠ¤ë“¤
                 var loadTextCheckBox = FindName("LoadTextCheckBox") as WpfCheckBox;
                 if (loadTextCheckBox != null)
                     loadTextCheckBox.IsEnabled = enabled;
@@ -295,7 +295,7 @@ namespace FACTOVA_LogAnalysis
                 if (loadDataGridCheckBox != null)
                     loadDataGridCheckBox.IsEnabled = enabled;
 
-                // exec.Time °ü·Ã ¹öÆ°µé
+                // exec.Time ê´€ë ¨ ë²„íŠ¼ë“¤
                 var applyExecTimeFilterButton = FindName("ApplyExecTimeFilterButton") as WpfButton;
                 if (applyExecTimeFilterButton != null)
                     applyExecTimeFilterButton.IsEnabled = enabled;
@@ -304,7 +304,7 @@ namespace FACTOVA_LogAnalysis
                 if (clearExecTimeFilterButton != null)
                     clearExecTimeFilterButton.IsEnabled = enabled;
 
-                // Æú´õ °ü·Ã ¹öÆ°µé
+                // í´ë” ê´€ë ¨ ë²„íŠ¼ë“¤
                 var openFolderButton = FindName("OpenFolderButton") as WpfButton;
                 if (openFolderButton != null)
                     openFolderButton.IsEnabled = enabled;
@@ -325,7 +325,7 @@ namespace FACTOVA_LogAnalysis
                 if (openInVSCodeButton != null)
                     openInVSCodeButton.IsEnabled = enabled;
 
-                // DataGrid ÅÇÀÇ ¹öÆ°µé
+                // DataGrid íƒ­ì˜ ë²„íŠ¼ë“¤
                 var toggleViewModeButton = FindName("ToggleViewModeButton") as WpfButton;
                 if (toggleViewModeButton != null)
                     toggleViewModeButton.IsEnabled = enabled;
@@ -346,7 +346,7 @@ namespace FACTOVA_LogAnalysis
                 if (exportDataGridButton != null)
                     exportDataGridButton.IsEnabled = enabled;
 
-                // Text ÅÇÀÇ ¹öÆ°µé
+                // Text íƒ­ì˜ ë²„íŠ¼ë“¤
                 var toggleTextViewModeButton = FindName("ToggleTextViewModeButton") as WpfButton;
                 if (toggleTextViewModeButton != null)
                     toggleTextViewModeButton.IsEnabled = enabled;
@@ -363,7 +363,7 @@ namespace FACTOVA_LogAnalysis
                 if (applyFontSizeButton != null)
                     applyFontSizeButton.IsEnabled = enabled;
 
-                // DataGrid Font °ü·Ã ¹öÆ°µé
+                // DataGrid Font ê´€ë ¨ ë²„íŠ¼ë“¤
                 var dataGridFontSizeDecreaseButton = FindName("DataGridFontSizeDecreaseButton") as WpfButton;
                 if (dataGridFontSizeDecreaseButton != null)
                     dataGridFontSizeDecreaseButton.IsEnabled = enabled;
@@ -380,7 +380,7 @@ namespace FACTOVA_LogAnalysis
                 if (applyAllFontSizesButton != null)
                     applyAllFontSizesButton.IsEnabled = enabled;
 
-                // ÇÊÅÍ °ü·Ã ÄÁÆ®·Ñµé
+                // í•„í„° ê´€ë ¨ ì»¨íŠ¸ë¡¤ë“¤
                 var dataBusinessFilterComboBox = FindName("DataBusinessFilterComboBox") as WpfComboBox;
                 if (dataBusinessFilterComboBox != null)
                     dataBusinessFilterComboBox.IsEnabled = enabled;
@@ -393,15 +393,15 @@ namespace FACTOVA_LogAnalysis
                 if (exceptionBusinessFilterComboBox != null)
                     exceptionBusinessFilterComboBox.IsEnabled = enabled;
 
-                // ¸¶¿ì½º Ä¿¼­ º¯°æ
+                // ë§ˆìš°ìŠ¤ ì»¤ì„œ ë³€ê²½
                 this.Cursor = enabled ? System.Windows.Input.Cursors.Arrow : System.Windows.Input.Cursors.Wait;
                 
-                // UI ¾÷µ¥ÀÌÆ® °­Á¦ Àû¿ë
+                // UI ì—…ë°ì´íŠ¸ ê°•ì œ ì ìš©
                 this.UpdateLayout();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"SetControlsEnabled ¿À·ù: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"SetControlsEnabled ì˜¤ë¥˜: {ex.Message}");
             }
         }
 
@@ -436,7 +436,7 @@ namespace FACTOVA_LogAnalysis
             }
             else
             {
-                _workLogService.AddLog("? TextBox ÄÁÆ®·ÑÀ» Ã£À» ¼ö ¾øÀ½", WorkLogType.Error);
+                _workLogService.AddLog("? TextBox ì»¨íŠ¸ë¡¤ì„ ì°¾ì„ ìˆ˜ ì—†ìŒ", WorkLogType.Error);
             }
         }
 
@@ -464,12 +464,12 @@ namespace FACTOVA_LogAnalysis
                     {
                         execTimeStatusText.Text = "Analysis Loaded";
                     }
-                    _workLogService.AddLog("? exec.Time ºĞ¼® ·Îµå ¿Ï·á", WorkLogType.Success);
+                    _workLogService.AddLog("? exec.Time ë¶„ì„ ë¡œë“œ ì™„ë£Œ", WorkLogType.Success);
                 });
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? exec.Time ºĞ¼® ·Îµå ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? exec.Time ë¶„ì„ ë¡œë“œ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -486,7 +486,7 @@ namespace FACTOVA_LogAnalysis
         }
 
         /// <summary>
-        /// µµ¿ò¸» ¹öÆ° Å¬¸¯ ÀÌº¥Æ®
+        /// ë„ì›€ë§ ë²„íŠ¼ í´ë¦­ ì´ë²¤íŠ¸
         /// </summary>
         private void ShowHelp_Click(object sender, RoutedEventArgs e)
         {
@@ -498,11 +498,11 @@ namespace FACTOVA_LogAnalysis
                 };
                 helpDialog.ShowDialog();
                 
-                _workLogService.AddLog("?? µµ¿ò¸» ´ëÈ­»óÀÚ Ç¥½Ã", WorkLogType.Info);
+                _workLogService.AddLog("?? ë„ì›€ë§ ëŒ€í™”ìƒì í‘œì‹œ", WorkLogType.Info);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"?? µµ¿ò¸» Ç¥½Ã ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"?? ë„ì›€ë§ í‘œì‹œ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -512,7 +512,7 @@ namespace FACTOVA_LogAnalysis
             {
                 if (!double.TryParse(FontSizeTextBox.Text, out double size))
                 {
-                    _workLogService.AddLog("À¯È¿ÇÑ ÆùÆ® Å©±â °ªÀ» ÀÔ·ÂÇÏ¼¼¿ä", WorkLogType.Warning);
+                    _workLogService.AddLog("ìœ íš¨í•œ í°íŠ¸ í¬ê¸° ê°’ì„ ì…ë ¥í•˜ì„¸ìš”", WorkLogType.Warning);
                     return;
                 }
 
@@ -525,7 +525,7 @@ namespace FACTOVA_LogAnalysis
                 }
                 else
                 {
-                    _workLogService.AddLog("ÇöÀç TextBox°¡ È°¼ºÈ­µÇÁö ¾Ê¾Ò½À´Ï´Ù. ¿øÇÏ´Â ÅØ½ºÆ® ¹Ú½º¸¦ Å¬¸¯ÇÏ¼¼¿ä.", WorkLogType.Warning);
+                    _workLogService.AddLog("í˜„ì¬ TextBoxê°€ í™œì„±í™”ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤. ì›í•˜ëŠ” í…ìŠ¤íŠ¸ ë°•ìŠ¤ë¥¼ í´ë¦­í•˜ì„¸ìš”.", WorkLogType.Warning);
                 }
             }
             catch (Exception ex)
@@ -540,7 +540,7 @@ namespace FACTOVA_LogAnalysis
             {
                 if (!double.TryParse(FontSizeTextBox.Text, out double size))
                 {
-                    _workLogService.AddLog("À¯È¿ÇÑ ÆùÆ® Å©±â °ªÀ» ÀÔ·ÂÇÏ¼¼¿ä", WorkLogType.Warning);
+                    _workLogService.AddLog("ìœ íš¨í•œ í°íŠ¸ í¬ê¸° ê°’ì„ ì…ë ¥í•˜ì„¸ìš”", WorkLogType.Warning);
                     return;
                 }
 
@@ -553,7 +553,7 @@ namespace FACTOVA_LogAnalysis
                 }
                 else
                 {
-                    _workLogService.AddLog("ÇöÀç TextBox°¡ È°¼ºÈ­µÇÁö ¾Ê¾Ò½À´Ï´Ù. ¿øÇÏ´Â ÅØ½ºÆ® ¹Ú½º¸¦ Å¬¸¯ÇÏ¼¼¿ä.", WorkLogType.Warning);
+                    _workLogService.AddLog("í˜„ì¬ TextBoxê°€ í™œì„±í™”ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤. ì›í•˜ëŠ” í…ìŠ¤íŠ¸ ë°•ìŠ¤ë¥¼ í´ë¦­í•˜ì„¸ìš”.", WorkLogType.Warning);
                 }
             }
             catch (Exception ex)
@@ -621,7 +621,7 @@ namespace FACTOVA_LogAnalysis
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? Content Åä±Û ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? Content í† ê¸€ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -632,25 +632,25 @@ namespace FACTOVA_LogAnalysis
                 var button = FindName("ToggleAllContentButton") as System.Windows.Controls.Button;
                 if (button != null)
                 {
-                    button.Content = _isAllContentExpanded ? "ÄÜÅÙÃ÷ ´İ±â" : "ÄÜÅÙÃ÷ ¿­±â";
+                    button.Content = _isAllContentExpanded ? "ì½˜í…ì¸  ë‹«ê¸°" : "ì½˜í…ì¸  ì—´ê¸°";
                 }
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ToggleAllContent ¹öÆ° ÅØ½ºÆ® ¾÷µ¥ÀÌÆ® ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ToggleAllContent ë²„íŠ¼ í…ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// dateComboBox¿¡¼­ ¼±ÅÃµÈ ³¯Â¥¸¦ ¹İÈ¯ÇÕ´Ï´Ù.
+        /// dateComboBoxì—ì„œ ì„ íƒëœ ë‚ ì§œë¥¼ ë°˜í™˜í•©ë‹ˆë‹¤.
         /// </summary>
-        /// <returns>¼±ÅÃµÈ ³¯Â¥(DateTime). ¼±ÅÃÀÌ ¾øÀ¸¸é ¿À´Ã ³¯Â¥ ¹İÈ¯.</returns>
+        /// <returns>ì„ íƒëœ ë‚ ì§œ(DateTime). ì„ íƒì´ ì—†ìœ¼ë©´ ì˜¤ëŠ˜ ë‚ ì§œ ë°˜í™˜.</returns>
         private DateTime GetSelectedDate()
         {
             var dateComboBox = FindName("dateComboBox") as System.Windows.Controls.ComboBox;
             if (dateComboBox != null && dateComboBox.SelectedItem != null)
             {
-                // DatePicker, DateTime, string µî ´Ù¾çÇÑ °æ¿ì¸¦ Ã³¸®
+                // DatePicker, DateTime, string ë“± ë‹¤ì–‘í•œ ê²½ìš°ë¥¼ ì²˜ë¦¬
                 if (dateComboBox.SelectedItem is DateTime dt)
                     return dt;
                 if (dateComboBox.SelectedItem is System.Windows.Controls.ComboBoxItem cbi)
@@ -665,23 +665,23 @@ namespace FACTOVA_LogAnalysis
         }
 
         /// <summary>
-        /// Load Options Ã¼Å©¹Ú½º¿¡ µû¶ó ÅÇ Visibility ¾÷µ¥ÀÌÆ®
+        /// Load Options ì²´í¬ë°•ìŠ¤ì— ë”°ë¼ íƒ­ Visibility ì—…ë°ì´íŠ¸
         /// </summary>
         private void UpdateTabVisibility()
         {
             try
             {
-                // LogTabControlÀÌ nullÀÌ¸é ¹«½Ã
+                // LogTabControlì´ nullì´ë©´ ë¬´ì‹œ
                 if (LogTabControl == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("UpdateTabVisibility: LogTabControlÀÌ nullÀÔ´Ï´Ù.");
+                    System.Diagnostics.Debug.WriteLine("UpdateTabVisibility: LogTabControlì´ nullì…ë‹ˆë‹¤.");
                     return;
                 }
 
-                // Ã¼Å©¹Ú½ºµéÀÌ nullÀÌ¸é ¹«½Ã
+                // ì²´í¬ë°•ìŠ¤ë“¤ì´ nullì´ë©´ ë¬´ì‹œ
                 if (LoadTextCheckBox == null || LoadDataGridCheckBox == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("UpdateTabVisibility: Ã¼Å©¹Ú½º°¡ nullÀÔ´Ï´Ù.");
+                    System.Diagnostics.Debug.WriteLine("UpdateTabVisibility: ì²´í¬ë°•ìŠ¤ê°€ nullì…ë‹ˆë‹¤.");
                     return;
                 }
 
@@ -701,23 +701,23 @@ namespace FACTOVA_LogAnalysis
                     dataGridTab.Visibility = loadDataGrid ? Visibility.Visible : Visibility.Collapsed;
                 }
 
-                // ÇöÀç ¼±ÅÃµÈ ÅÇÀÌ ¼û°ÜÁ³´ÂÁö È®ÀÎ
+                // í˜„ì¬ ì„ íƒëœ íƒ­ì´ ìˆ¨ê²¨ì¡ŒëŠ”ì§€ í™•ì¸
                 bool needToChangeTab = false;
                 if (LogTabControl.SelectedItem is TabItem selectedTab)
                 {
                     if (selectedTab.Visibility == Visibility.Collapsed)
                     {
                         needToChangeTab = true;
-                        System.Diagnostics.Debug.WriteLine($"ÇöÀç ¼±ÅÃµÈ ÅÇ '{selectedTab.Header}'ÀÌ ¼û°ÜÁ³½À´Ï´Ù. ´Ù¸¥ ÅÇÀ¸·Î ÀüÈ¯ÇÕ´Ï´Ù.");
+                        System.Diagnostics.Debug.WriteLine($"í˜„ì¬ ì„ íƒëœ íƒ­ '{selectedTab.Header}'ì´ ìˆ¨ê²¨ì¡ŒìŠµë‹ˆë‹¤. ë‹¤ë¥¸ íƒ­ìœ¼ë¡œ ì „í™˜í•©ë‹ˆë‹¤.");
                     }
                 }
                 else if (LogTabControl.SelectedItem == null)
                 {
                     needToChangeTab = true;
-                    System.Diagnostics.Debug.WriteLine("¼±ÅÃµÈ ÅÇÀÌ ¾ø½À´Ï´Ù. º¸ÀÌ´Â ÅÇÀ¸·Î ÀüÈ¯ÇÕ´Ï´Ù.");
+                    System.Diagnostics.Debug.WriteLine("ì„ íƒëœ íƒ­ì´ ì—†ìŠµë‹ˆë‹¤. ë³´ì´ëŠ” íƒ­ìœ¼ë¡œ ì „í™˜í•©ë‹ˆë‹¤.");
                 }
 
-                // º¸ÀÌ´Â Ã¹ ¹øÂ° ÅÇÀ¸·Î ÀÌµ¿
+                // ë³´ì´ëŠ” ì²« ë²ˆì§¸ íƒ­ìœ¼ë¡œ ì´ë™
                 if (needToChangeTab)
                 {
                     TabItem? firstVisibleTab = null;
@@ -733,71 +733,71 @@ namespace FACTOVA_LogAnalysis
                     if (firstVisibleTab != null)
                     {
                         LogTabControl.SelectedItem = firstVisibleTab;
-                        System.Diagnostics.Debug.WriteLine($"ÅÇ ÀüÈ¯: '{firstVisibleTab.Header}'·Î ÀÌµ¿");
-                        _workLogService?.AddLog($"ÅÇ ÀüÈ¯: '{firstVisibleTab.Header}'·Î ÀÌµ¿", WorkLogType.Info);
+                        System.Diagnostics.Debug.WriteLine($"íƒ­ ì „í™˜: '{firstVisibleTab.Header}'ë¡œ ì´ë™");
+                        _workLogService?.AddLog($"íƒ­ ì „í™˜: '{firstVisibleTab.Header}'ë¡œ ì´ë™", WorkLogType.Info);
                     }
                     else
                     {
-                        System.Diagnostics.Debug.WriteLine("?? º¸ÀÌ´Â ÅÇÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù!");
+                        System.Diagnostics.Debug.WriteLine("?? ë³´ì´ëŠ” íƒ­ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
                     }
                 }
 
-                _workLogService?.AddLog($"ÅÇ Visibility ¾÷µ¥ÀÌÆ®: Text={loadText}, DataGrid={loadDataGrid}", WorkLogType.Info);
+                _workLogService?.AddLog($"íƒ­ Visibility ì—…ë°ì´íŠ¸: Text={loadText}, DataGrid={loadDataGrid}", WorkLogType.Info);
             }
             catch (Exception ex)
             {
-                _workLogService?.AddLog($"?? ÅÇ Visibility ¾÷µ¥ÀÌÆ® ¿À·ù: {ex.Message}", WorkLogType.Error);
-                System.Diagnostics.Debug.WriteLine($"UpdateTabVisibility ¿À·ù: {ex.Message}\n{ex.StackTrace}");
+                _workLogService?.AddLog($"?? íƒ­ Visibility ì—…ë°ì´íŠ¸ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
+                System.Diagnostics.Debug.WriteLine($"UpdateTabVisibility ì˜¤ë¥˜: {ex.Message}\n{ex.StackTrace}");
             }
         }
 
         /// <summary>
-        /// LoadTextCheckBox Ã¼Å© »óÅÂ º¯°æ ÀÌº¥Æ® ÇÚµé·¯
+        /// LoadTextCheckBox ì²´í¬ ìƒíƒœ ë³€ê²½ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬
         /// </summary>
         private void LoadTextCheckBox_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            // LogTabControlÀÌ ÃÊ±âÈ­µÇÁö ¾Ê¾ÒÀ¸¸é ¹«½Ã
+            // LogTabControlì´ ì´ˆê¸°í™”ë˜ì§€ ì•Šì•˜ìœ¼ë©´ ë¬´ì‹œ
             if (LogTabControl == null) return;
             UpdateTabVisibility();
         }
 
         /// <summary>
-        /// LoadDataGridCheckBox Ã¼Å© »óÅÂ º¯°æ ÀÌº¥Æ® ÇÚµé·¯
+        /// LoadDataGridCheckBox ì²´í¬ ìƒíƒœ ë³€ê²½ ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬
         /// </summary>
         private void LoadDataGridCheckBox_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            // LogTabControlÀÌ ÃÊ±âÈ­µÇÁö ¾Ê¾ÒÀ¸¸é ¹«½Ã
+            // LogTabControlì´ ì´ˆê¸°í™”ë˜ì§€ ì•Šì•˜ìœ¼ë©´ ë¬´ì‹œ
             if (LogTabControl == null) return;
             UpdateTabVisibility();
         }
 
         /// <summary>
-        /// ·Îµå ÁøÇà ½Ã°£ Å¸ÀÌ¸Ó ÃÊ±âÈ­ (System.Threading.Timer »ç¿ë - UI ½º·¹µå¿Í ¿ÏÀü ºĞ¸®)
+        /// ë¡œë“œ ì§„í–‰ ì‹œê°„ íƒ€ì´ë¨¸ ì´ˆê¸°í™” (System.Threading.Timer ì‚¬ìš© - UI ìŠ¤ë ˆë“œì™€ ì™„ì „ ë¶„ë¦¬)
         /// </summary>
         private void InitializeLoadProgressTimer()
         {
             try
             {
-                // System.Threading.Timer »ç¿ë: ¹é±×¶ó¿îµå ½º·¹µå¿¡¼­ ½ÇÇàµÇ¾î UI¿Í ¿ÏÀü µ¶¸³
-                // ÃÊ±â¿¡´Â ÁßÁö »óÅÂ·Î »ı¼º (Timeout.Infinite)
+                // System.Threading.Timer ì‚¬ìš©: ë°±ê·¸ë¼ìš´ë“œ ìŠ¤ë ˆë“œì—ì„œ ì‹¤í–‰ë˜ì–´ UIì™€ ì™„ì „ ë…ë¦½
+                // ì´ˆê¸°ì—ëŠ” ì¤‘ì§€ ìƒíƒœë¡œ ìƒì„± (Timeout.Infinite)
                 _loadProgressTimer = new System.Threading.Timer(
-                    LoadProgressTimer_Tick,  // Äİ¹é ¸Ş¼­µå
-                    null,                    // state °´Ã¼
-                    Timeout.Infinite,        // dueTime: Áï½Ã ½ÃÀÛÇÏÁö ¾ÊÀ½
-                    Timeout.Infinite         // period: ÁÖ±â ½ÇÇàÇÏÁö ¾ÊÀ½
+                    LoadProgressTimer_Tick,  // ì½œë°± ë©”ì„œë“œ
+                    null,                    // state ê°ì²´
+                    Timeout.Infinite,        // dueTime: ì¦‰ì‹œ ì‹œì‘í•˜ì§€ ì•ŠìŒ
+                    Timeout.Infinite         // period: ì£¼ê¸° ì‹¤í–‰í•˜ì§€ ì•ŠìŒ
                 );
                 
-                _workLogService.AddLog("?? ·Îµå ÁøÇà Å¸ÀÌ¸Ó ÃÊ±âÈ­ ¿Ï·á (¹é±×¶ó¿îµå ½º·¹µå)", WorkLogType.Success);
+                _workLogService.AddLog("?? ë¡œë“œ ì§„í–‰ íƒ€ì´ë¨¸ ì´ˆê¸°í™” ì™„ë£Œ (ë°±ê·¸ë¼ìš´ë“œ ìŠ¤ë ˆë“œ)", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ·Îµå ÁøÇà Å¸ÀÌ¸Ó ÃÊ±âÈ­ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ë¡œë“œ ì§„í–‰ íƒ€ì´ë¨¸ ì´ˆê¸°í™” ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ·Îµå ÁøÇà ½Ã°£ Å¸ÀÌ¸Ó Æ½ ÀÌº¥Æ® (¹é±×¶ó¿îµå ½º·¹µå¿¡¼­ ½ÇÇà)
-        /// ?? ÁÖÀÇ: UI ¾÷µ¥ÀÌÆ®´Â ¹İµå½Ã Dispatcher.BeginInvoke¸¦ ÅëÇØ¼­¸¸!
+        /// ë¡œë“œ ì§„í–‰ ì‹œê°„ íƒ€ì´ë¨¸ í‹± ì´ë²¤íŠ¸ (ë°±ê·¸ë¼ìš´ë“œ ìŠ¤ë ˆë“œì—ì„œ ì‹¤í–‰)
+        /// ?? ì£¼ì˜: UI ì—…ë°ì´íŠ¸ëŠ” ë°˜ë“œì‹œ Dispatcher.BeginInvokeë¥¼ í†µí•´ì„œë§Œ!
         /// </summary>
         private void LoadProgressTimer_Tick(object? state)
         {
@@ -807,7 +807,7 @@ namespace FACTOVA_LogAnalysis
 
                 var elapsed = DateTime.Now - _loadStartTime;
                 
-                // ¹é±×¶ó¿îµå ½º·¹µå¿¡¼­ UI ¾÷µ¥ÀÌÆ® ¡æ Dispatcher ÇÊ¼ö
+                // ë°±ê·¸ë¼ìš´ë“œ ìŠ¤ë ˆë“œì—ì„œ UI ì—…ë°ì´íŠ¸ â†’ Dispatcher í•„ìˆ˜
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
                     try
@@ -820,18 +820,18 @@ namespace FACTOVA_LogAnalysis
                     }
                     catch
                     {
-                        // UI ¾÷µ¥ÀÌÆ® ½ÇÆĞ´Â ¹«½Ã
+                        // UI ì—…ë°ì´íŠ¸ ì‹¤íŒ¨ëŠ” ë¬´ì‹œ
                     }
                 }));
             }
             catch
             {
-                // Å¸ÀÌ¸Ó´Â Àı´ë Á×À¸¸é ¾ÈµÇ¹Ç·Î ¸ğµç ¿¹¿Ü´Â ¹«½Ã
+                // íƒ€ì´ë¨¸ëŠ” ì ˆëŒ€ ì£½ìœ¼ë©´ ì•ˆë˜ë¯€ë¡œ ëª¨ë“  ì˜ˆì™¸ëŠ” ë¬´ì‹œ
             }
         }
 
         /// <summary>
-        /// ·Îµå ÁøÇà ½Ã°£ Ç¥½Ã ½ÃÀÛ (System.Threading.Timer »ç¿ë)
+        /// ë¡œë“œ ì§„í–‰ ì‹œê°„ í‘œì‹œ ì‹œì‘ (System.Threading.Timer ì‚¬ìš©)
         /// </summary>
         private void StartLoadProgress()
         {
@@ -840,7 +840,7 @@ namespace FACTOVA_LogAnalysis
                 _isLoading = true;
                 _loadStartTime = DateTime.Now;
                 
-                // UI ¾÷µ¥ÀÌÆ®
+                // UI ì—…ë°ì´íŠ¸
                 var loadProgressTextBlock = FindName("LoadProgressTextBlock") as TextBlock;
                 if (loadProgressTextBlock != null)
                 {
@@ -850,19 +850,19 @@ namespace FACTOVA_LogAnalysis
                     loadProgressTextBlock.FontWeight = FontWeights.Bold;
                 }
 
-                // Å¸ÀÌ¸Ó ½ÃÀÛ: Áï½Ã ½ÃÀÛ(0ms), 50ms¸¶´Ù ¹İº¹ (´õ ÀÚÁÖ ¾÷µ¥ÀÌÆ®)
+                // íƒ€ì´ë¨¸ ì‹œì‘: ì¦‰ì‹œ ì‹œì‘(0ms), 50msë§ˆë‹¤ ë°˜ë³µ (ë” ìì£¼ ì—…ë°ì´íŠ¸)
                 _loadProgressTimer?.Change(0, 50);
                 
-                _workLogService.AddLog("¢º? ·Îµå ÁøÇà Å¸ÀÌ¸Ó ½ÃÀÛ (¹é±×¶ó¿îµå ½º·¹µå, 50ms °£°İ)", WorkLogType.Info);
+                _workLogService.AddLog("â–¶? ë¡œë“œ ì§„í–‰ íƒ€ì´ë¨¸ ì‹œì‘ (ë°±ê·¸ë¼ìš´ë“œ ìŠ¤ë ˆë“œ, 50ms ê°„ê²©)", WorkLogType.Info);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ·Îµå ÁøÇà Ç¥½Ã ½ÃÀÛ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ë¡œë“œ ì§„í–‰ í‘œì‹œ ì‹œì‘ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ·Îµå ÁøÇà ½Ã°£ Ç¥½Ã ÁßÁö (System.Threading.Timer »ç¿ë)
+        /// ë¡œë“œ ì§„í–‰ ì‹œê°„ í‘œì‹œ ì¤‘ì§€ (System.Threading.Timer ì‚¬ìš©)
         /// </summary>
         private void StopLoadProgress()
         {
@@ -870,16 +870,16 @@ namespace FACTOVA_LogAnalysis
             {
                 _isLoading = false;
                 
-                // Å¸ÀÌ¸Ó ÁßÁö: Timeout.Infinite ¼³Á¤
+                // íƒ€ì´ë¨¸ ì¤‘ì§€: Timeout.Infinite ì„¤ì •
                 _loadProgressTimer?.Change(Timeout.Infinite, Timeout.Infinite);
 
                 var elapsed = DateTime.Now - _loadStartTime;
                 var loadProgressTextBlock = FindName("LoadProgressTextBlock") as TextBlock;
                 if (loadProgressTextBlock != null)
                 {
-                    loadProgressTextBlock.Text = $"? ¿Ï·á ({elapsed:mm\\:ss\\.f})";
+                    loadProgressTextBlock.Text = $"? ì™„ë£Œ ({elapsed:mm\\:ss\\.f})";
                     
-                    // 3ÃÊ ÈÄ ¼û±â±â (¹é±×¶ó¿îµå¿¡¼­ ½ÇÇà)
+                    // 3ì´ˆ í›„ ìˆ¨ê¸°ê¸° (ë°±ê·¸ë¼ìš´ë“œì—ì„œ ì‹¤í–‰)
                     Task.Delay(3000).ContinueWith(_ =>
                     {
                         Dispatcher.BeginInvoke(new Action(() =>
@@ -896,16 +896,16 @@ namespace FACTOVA_LogAnalysis
                     });
                 }
 
-                _workLogService.AddLog($"?? ·Îµù ¿Ï·á (¼Ò¿ä ½Ã°£: {elapsed:mm\\:ss\\.f})", WorkLogType.Success);
+                _workLogService.AddLog($"?? ë¡œë”© ì™„ë£Œ (ì†Œìš” ì‹œê°„: {elapsed:mm\\:ss\\.f})", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ·Îµå ÁøÇà Ç¥½Ã ÁßÁö ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ë¡œë“œ ì§„í–‰ í‘œì‹œ ì¤‘ì§€ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ¹é±×¶ó¿îµå¿¡¼­ ·ÎµåÇÑ µ¥ÀÌÅÍ¸¦ DataGrid¿¡ ¹ÙÀÎµù (UI ½º·¹µå¿¡¼­¸¸ È£Ãâ)
+        /// ë°±ê·¸ë¼ìš´ë“œì—ì„œ ë¡œë“œí•œ ë°ì´í„°ë¥¼ DataGridì— ë°”ì¸ë”© (UI ìŠ¤ë ˆë“œì—ì„œë§Œ í˜¸ì¶œ)
         /// </summary>
         private void BindDataToDataGrids(Dictionary<string, List<LogLineItem>> allData)
         {
@@ -916,7 +916,7 @@ namespace FACTOVA_LogAnalysis
                     var logType = kvp.Key;
                     var items = kvp.Value;
                     
-                    // DataGridManager¸¦ ÅëÇØ ¹ÙÀÎµù
+                    // DataGridManagerë¥¼ í†µí•´ ë°”ì¸ë”©
                     if (logType == "DATA")
                     {
                         _dataGridManager.DataLogLines.Clear();
@@ -954,15 +954,15 @@ namespace FACTOVA_LogAnalysis
                         }
                     }
                     
-                    _workLogService.AddLog($"?? {logType}: {items.Count}°³ ¹ÙÀÎµù ¿Ï·á", WorkLogType.Info);
+                    _workLogService.AddLog($"?? {logType}: {items.Count}ê°œ ë°”ì¸ë”© ì™„ë£Œ", WorkLogType.Info);
                 }
                 
-                // ÄŞº¸¹Ú½º ÇÊÅÍ ¾÷µ¥ÀÌÆ®
+                // ì½¤ë³´ë°•ìŠ¤ í•„í„° ì—…ë°ì´íŠ¸
                 _dataGridManager.UpdateComboBoxFilters();
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? µ¥ÀÌÅÍ ¹ÙÀÎµù ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ë°ì´í„° ë°”ì¸ë”© ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
     }

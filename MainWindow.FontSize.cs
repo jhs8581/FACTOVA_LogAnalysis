@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,7 +17,7 @@ namespace FACTOVA_LogAnalysis
             {
                 if (!double.TryParse(FontSizeTextBox.Text, out double size))
                 {
-                    _workLogService.AddLog("À¯È¿ÇÑ ÆùÆ® Å©±â °ªÀ» ÀÔ·ÂÇÏ¼¼¿ä", WorkLogType.Warning);
+                    _workLogService.AddLog("ìœ íš¨í•œ í°íŠ¸ í¬ê¸° ê°’ì„ ì…ë ¥í•˜ì„¸ìš”", WorkLogType.Warning);
                     return;
                 }
 
@@ -45,11 +45,11 @@ namespace FACTOVA_LogAnalysis
                     System.Diagnostics.Debug.WriteLine($"Failed to save TextFontSize: {ex.Message}");
                 }
 
-                _workLogService.AddLog($"ÅØ½ºÆ® ÅÇ ÆùÆ® Å©±â Àû¿ë: {size}", WorkLogType.Success);
+                _workLogService.AddLog($"í…ìŠ¤íŠ¸ íƒ­ í°íŠ¸ í¬ê¸° ì ìš©: {size}", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"ÅØ½ºÆ® ÆùÆ® Àû¿ë ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"í…ìŠ¤íŠ¸ í°íŠ¸ ì ìš© ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -59,7 +59,7 @@ namespace FACTOVA_LogAnalysis
             {
                 if (!double.TryParse(DataGridFontSizeTextBox.Text, out double size))
                 {
-                    _workLogService.AddLog("À¯È¿ÇÑ DataGrid ÆùÆ® Å©±â °ªÀ» ÀÔ·ÂÇÏ¼¼¿ä", WorkLogType.Warning);
+                    _workLogService.AddLog("ìœ íš¨í•œ DataGrid í°íŠ¸ í¬ê¸° ê°’ì„ ì…ë ¥í•˜ì„¸ìš”", WorkLogType.Warning);
                     return;
                 }
                 size = Math.Max(6, size - 1);
@@ -73,12 +73,12 @@ namespace FACTOVA_LogAnalysis
                 }
                 else
                 {
-                    _workLogService.AddLog("Àû¿ëÇÒ DataGrid°¡ ¼±ÅÃµÇÁö ¾Ê¾Ò½À´Ï´Ù. ÆùÆ®¸¦ Àû¿ëÇÏ·Á¸é ±×¸®µå¸¦ Å¬¸¯ÇÏ¼¼¿ä.", WorkLogType.Warning);
+                    _workLogService.AddLog("ì ìš©í•  DataGridê°€ ì„ íƒë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤. í°íŠ¸ë¥¼ ì ìš©í•˜ë ¤ë©´ ê·¸ë¦¬ë“œë¥¼ í´ë¦­í•˜ì„¸ìš”.", WorkLogType.Warning);
                 }
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"DataGrid ÆùÆ® °¨¼Ò ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"DataGrid í°íŠ¸ ê°ì†Œ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -88,7 +88,7 @@ namespace FACTOVA_LogAnalysis
             {
                 if (!double.TryParse(DataGridFontSizeTextBox.Text, out double size))
                 {
-                    _workLogService.AddLog("À¯È¿ÇÑ DataGrid ÆùÆ® Å©±â °ªÀ» ÀÔ·ÂÇÏ¼¼¿ä", WorkLogType.Warning);
+                    _workLogService.AddLog("ìœ íš¨í•œ DataGrid í°íŠ¸ í¬ê¸° ê°’ì„ ì…ë ¥í•˜ì„¸ìš”", WorkLogType.Warning);
                     return;
                 }
                 size = Math.Min(72, size + 1);
@@ -102,12 +102,12 @@ namespace FACTOVA_LogAnalysis
                 }
                 else
                 {
-                    _workLogService.AddLog("Àû¿ëÇÒ DataGrid°¡ ¼±ÅÃµÇÁö ¾Ê¾Ò½À´Ï´Ù. ÆùÆ®¸¦ Àû¿ëÇÏ·Á¸é ±×¸®µå¸¦ Å¬¸¯ÇÏ¼¼¿ä.", WorkLogType.Warning);
+                    _workLogService.AddLog("ì ìš©í•  DataGridê°€ ì„ íƒë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤. í°íŠ¸ë¥¼ ì ìš©í•˜ë ¤ë©´ ê·¸ë¦¬ë“œë¥¼ í´ë¦­í•˜ì„¸ìš”.", WorkLogType.Warning);
                 }
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"DataGrid ÆùÆ® Áõ°¡ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"DataGrid í°íŠ¸ ì¦ê°€ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -122,7 +122,7 @@ namespace FACTOVA_LogAnalysis
             {
                 if (!double.TryParse(DataGridFontSizeTextBox.Text, out double size))
                 {
-                    _workLogService.AddLog("À¯È¿ÇÑ DataGrid ÆùÆ® Å©±â °ªÀ» ÀÔ·ÂÇÏ¼¼¿ä", WorkLogType.Warning);
+                    _workLogService.AddLog("ìœ íš¨í•œ DataGrid í°íŠ¸ í¬ê¸° ê°’ì„ ì…ë ¥í•˜ì„¸ìš”", WorkLogType.Warning);
                     return;
                 }
 
@@ -130,7 +130,7 @@ namespace FACTOVA_LogAnalysis
                 var target = GetLastSelectedDataGrid();
                 if (target == null)
                 {
-                    _workLogService.AddLog("Àû¿ëÇÒ DataGrid°¡ ¼±ÅÃµÇÁö ¾Ê¾Ò½À´Ï´Ù. ¸ÕÀú ¿øÇÏ´Â DataGrid¸¦ Å¬¸¯ÇÏ¼¼¿ä.", WorkLogType.Warning);
+                    _workLogService.AddLog("ì ìš©í•  DataGridê°€ ì„ íƒë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤. ë¨¼ì € ì›í•˜ëŠ” DataGridë¥¼ í´ë¦­í•˜ì„¸ìš”.", WorkLogType.Warning);
                     return;
                 }
 
@@ -147,11 +147,11 @@ namespace FACTOVA_LogAnalysis
                     System.Diagnostics.Debug.WriteLine($"Failed to save DataGridFontSize: {ex.Message}");
                 }
 
-                _workLogService.AddLog($"DataGrid ÆùÆ® Å©±â Àû¿ë ¿Ï·á: {target.Name} -> {size}", WorkLogType.Success);
+                _workLogService.AddLog($"DataGrid í°íŠ¸ í¬ê¸° ì ìš© ì™„ë£Œ: {target.Name} -> {size}", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"DataGrid ÆùÆ® Àû¿ë ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"DataGrid í°íŠ¸ ì ìš© ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -190,7 +190,7 @@ namespace FACTOVA_LogAnalysis
                         var dg = FindDataGridByName(name);
                         if (dg == null)
                         {
-                            _workLogService.AddLog($"DataGridÀ» Ã£À» ¼ö ¾øÀ½(ÀÏ°ı): {name}", WorkLogType.Warning);
+                            _workLogService.AddLog($"DataGridì„ ì°¾ì„ ìˆ˜ ì—†ìŒ(ì¼ê´„): {name}", WorkLogType.Warning);
                             continue;
                         }
 
@@ -215,7 +215,7 @@ namespace FACTOVA_LogAnalysis
                         dg.Items.Refresh();
                         dg.UpdateLayout();
 
-                        _workLogService.AddLog($"DataGrid¿¡ ÆùÆ® ÀÏ°ı Àû¿ë ¿Ï·á: {name} -> {dgSize}", WorkLogType.Info);
+                        _workLogService.AddLog($"DataGridì— í°íŠ¸ ì¼ê´„ ì ìš© ì™„ë£Œ: {name} -> {dgSize}", WorkLogType.Info);
                     }
 
                     // Save data grid size
@@ -232,11 +232,11 @@ namespace FACTOVA_LogAnalysis
                     System.Diagnostics.Debug.WriteLine($"Failed to save font sizes: {ex.Message}");
                 }
 
-                _workLogService.AddLog("¸ğµç ÆùÆ® »çÀÌÁî ÀÏ°ı Àû¿ë ¿Ï·á", WorkLogType.Success);
+                _workLogService.AddLog("ëª¨ë“  í°íŠ¸ ì‚¬ì´ì¦ˆ ì¼ê´„ ì ìš© ì™„ë£Œ", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"ÀÏ°ı Àû¿ë ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"ì¼ê´„ ì ìš© ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 

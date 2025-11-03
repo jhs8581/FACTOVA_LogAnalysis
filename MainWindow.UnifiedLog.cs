@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -14,74 +14,74 @@ using WpfTextBlock = System.Windows.Controls.TextBlock;
 namespace FACTOVA_LogAnalysis
 {
     /// <summary>
-    /// ÅëÇÕ ·Î±× ÅÇ °ü·Ã ±â´É (Unified Log Tab)
-    /// 4°³ÀÇ ·Î±× ÆÄÀÏ(DATA, EVENT, DEBUG, EXCEPTION)À» ½Ã°£¼øÀ¸·Î ÅëÇÕÇÏ¿© Ç¥½Ã
+    /// í†µí•© ë¡œê·¸ íƒ­ ê´€ë ¨ ê¸°ëŠ¥ (Unified Log Tab)
+    /// 4ê°œì˜ ë¡œê·¸ íŒŒì¼(DATA, EVENT, DEBUG, EXCEPTION)ì„ ì‹œê°„ìˆœìœ¼ë¡œ í†µí•©í•˜ì—¬ í‘œì‹œ
     /// </summary>
     public partial class MainWindow : Window
     {
-        // ÅëÇÕ ·Î±× µ¥ÀÌÅÍ
+        // í†µí•© ë¡œê·¸ ë°ì´í„°
         private ObservableCollection<LogLineItem> _unifiedLogLines = new ObservableCollection<LogLineItem>();
         private ObservableCollection<LogLineItem> _unfilteredUnifiedLogLines = new ObservableCollection<LogLineItem>();
         
-        // ÅëÇÕ Business/MsgId ÇÊÅÍ ¾ÆÀÌÅÛ
+        // í†µí•© Business/MsgId í•„í„° ì•„ì´í…œ
         private ObservableCollection<FilterItem> _unifiedBusinessMsgIdFilterItems = new ObservableCollection<FilterItem>();
         
-        // ÄÜÅÙÃ÷ ÄÃ·³ Åä±Û »óÅÂ
+        // ì½˜í…ì¸  ì»¬ëŸ¼ í† ê¸€ ìƒíƒœ
         private bool _isUnifiedContentExpanded = true;
         private DataGridLength _unifiedOriginalContentWidth = new DataGridLength(1, DataGridLengthUnitType.Star);
 
         /// <summary>
-        /// ÅëÇÕ ·Î±× µ¥ÀÌÅÍ¸¦ ·ÎµåÇÏ°í ½Ã°£¼øÀ¸·Î Á¤·Ä
+        /// í†µí•© ë¡œê·¸ ë°ì´í„°ë¥¼ ë¡œë“œí•˜ê³  ì‹œê°„ìˆœìœ¼ë¡œ ì •ë ¬
         /// </summary>
         public async Task LoadUnifiedLogData(DateTime selectedDate, string searchText, string searchMode, TimeSpan fromTime = default, TimeSpan toTime = default)
         {
             try
             {
-                _workLogService.AddLog("=== ÅëÇÕ ·Î±× »ı¼º Áß (±âÁ¸ µ¥ÀÌÅÍ È°¿ë) ===", WorkLogType.Info);
+                _workLogService.AddLog("=== í†µí•© ë¡œê·¸ ìƒì„± ì¤‘ (ê¸°ì¡´ ë°ì´í„° í™œìš©) ===", WorkLogType.Info);
                 
-                // ? 1. ÀÌ¹Ì ·ÎµåµÈ DataGrid µ¥ÀÌÅÍ ÇÕÄ¡±â (ÆÄÀÏÀ» ´Ù½Ã ÀĞÁö ¾ÊÀ½!)
+                // ? 1. ì´ë¯¸ ë¡œë“œëœ DataGrid ë°ì´í„° í•©ì¹˜ê¸° (íŒŒì¼ì„ ë‹¤ì‹œ ì½ì§€ ì•ŠìŒ!)
                 var combinedList = new List<LogLineItem>();
                 
                 if (_dataGridManager.DataLogLines != null)
                 {
-                    _workLogService.AddLog($"DATA: {_dataGridManager.DataLogLines.Count}°³", WorkLogType.Info);
+                    _workLogService.AddLog($"DATA: {_dataGridManager.DataLogLines.Count}ê°œ", WorkLogType.Info);
                     combinedList.AddRange(_dataGridManager.DataLogLines);
                 }
                 
                 if (_dataGridManager.EventLogLines != null)
                 {
-                    _workLogService.AddLog($"EVENT: {_dataGridManager.EventLogLines.Count}°³", WorkLogType.Info);
+                    _workLogService.AddLog($"EVENT: {_dataGridManager.EventLogLines.Count}ê°œ", WorkLogType.Info);
                     combinedList.AddRange(_dataGridManager.EventLogLines);
                 }
                 
                 if (_dataGridManager.DebugLogLines != null)
                 {
-                    _workLogService.AddLog($"DEBUG: {_dataGridManager.DebugLogLines.Count}°³", WorkLogType.Info);
+                    _workLogService.AddLog($"DEBUG: {_dataGridManager.DebugLogLines.Count}ê°œ", WorkLogType.Info);
                     combinedList.AddRange(_dataGridManager.DebugLogLines);
                 }
                 
                 if (_dataGridManager.ExceptionLogLines != null)
                 {
-                    _workLogService.AddLog($"EXCEPTION: {_dataGridManager.ExceptionLogLines.Count}°³", WorkLogType.Info);
+                    _workLogService.AddLog($"EXCEPTION: {_dataGridManager.ExceptionLogLines.Count}ê°œ", WorkLogType.Info);
                     combinedList.AddRange(_dataGridManager.ExceptionLogLines);
                 }
                 
-                _workLogService.AddLog($"ÃÑ {combinedList.Count}°³ ·Î±× ÇÕÄ§", WorkLogType.Info);
+                _workLogService.AddLog($"ì´ {combinedList.Count}ê°œ ë¡œê·¸ í•©ì¹¨", WorkLogType.Info);
                 
-                // ? 2. ½Ã°£¼ø Á¤·Ä (¹Ğ¸®ÃÊ±îÁö Á¤È®ÇÏ°Ô)
+                // ? 2. ì‹œê°„ìˆœ ì •ë ¬ (ë°€ë¦¬ì´ˆê¹Œì§€ ì •í™•í•˜ê²Œ)
                 var sortedList = combinedList
                     .OrderBy(item => ParseTimestamp(item.Timestamp))
                     .ToList();
                 
-                // ?? Á¤·Ä ÈÄ »ùÇÃ 5°³ Ãâ·Â (¹Ğ¸®ÃÊ È®ÀÎ¿ë)
-                _workLogService.AddLog("=== Á¤·Ä ÈÄ »ùÇÃ (Ã³À½ 5°³) ===", WorkLogType.Info);
+                // ?? ì •ë ¬ í›„ ìƒ˜í”Œ 5ê°œ ì¶œë ¥ (ë°€ë¦¬ì´ˆ í™•ì¸ìš©)
+                _workLogService.AddLog("=== ì •ë ¬ í›„ ìƒ˜í”Œ (ì²˜ìŒ 5ê°œ) ===", WorkLogType.Info);
                 for (int i = 0; i < Math.Min(5, sortedList.Count); i++)
                 {
                     var item = sortedList[i];
-                    _workLogService.AddLog($"[»ùÇÃ {i + 1}] LogType={item.LogLevel}, Timestamp={item.Timestamp}, Business={item.BusinessName}", WorkLogType.Info);
+                    _workLogService.AddLog($"[ìƒ˜í”Œ {i + 1}] LogType={item.LogLevel}, Timestamp={item.Timestamp}, Business={item.BusinessName}", WorkLogType.Info);
                 }
                 
-                // ? 3. ÅëÇÕ ·Î±× ÄÃ·º¼Ç¿¡ Ãß°¡
+                // ? 3. í†µí•© ë¡œê·¸ ì»¬ë ‰ì…˜ì— ì¶”ê°€
                 await Dispatcher.InvokeAsync(() =>
                 {
                     _unfilteredUnifiedLogLines.Clear();
@@ -93,34 +93,34 @@ namespace FACTOVA_LogAnalysis
                         _unifiedLogLines.Add(item);
                     }
                     
-                    // ? Red Business ÇÏÀÌ¶óÀÌÆ® Àû¿ë
+                    // ? Red Business í•˜ì´ë¼ì´íŠ¸ ì ìš©
                     ApplyRedBrushToUnifiedLog(sortedList);
                     
-                    // ? 4. DataGrid¿¡ ¹ÙÀÎµù
+                    // ? 4. DataGridì— ë°”ì¸ë”©
                     var grid = FindName("unifiedLogDataGrid") as DataGrid;
                     if (grid != null)
                     {
                         grid.ItemsSource = _unifiedLogLines;
                         
-                        // ? DataGrid CellStyle Àû¿ë - TextColor ¹ÙÀÎµù
+                        // ? DataGrid CellStyle ì ìš© - TextColor ë°”ì¸ë”©
                         ApplyTextColorStyleToUnifiedGrid(grid);
                     }
                     
-                    // ? 5. ÇÊÅÍ ÃÊ±âÈ­
+                    // ? 5. í•„í„° ì´ˆê¸°í™”
                     UpdateUnifiedBusinessMsgIdFilters();
                     
-                    _workLogService.AddLog($"? ÅëÇÕ ·Î±× »ı¼º ¿Ï·á: {_unifiedLogLines.Count}°³ Çà", WorkLogType.Success);
+                    _workLogService.AddLog($"? í†µí•© ë¡œê·¸ ìƒì„± ì™„ë£Œ: {_unifiedLogLines.Count}ê°œ í–‰", WorkLogType.Success);
                 });
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ÅëÇÕ ·Î±× ·Îµå ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? í†µí•© ë¡œê·¸ ë¡œë“œ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
                 _workLogService.AddLog($"StackTrace: {ex.StackTrace}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ÅëÇÕ ·Î±×¿¡ RedBrush Àû¿ë
+        /// í†µí•© ë¡œê·¸ì— RedBrush ì ìš©
         /// </summary>
         private void ApplyRedBrushToUnifiedLog(List<LogLineItem> items)
         {
@@ -133,7 +133,7 @@ namespace FACTOVA_LogAnalysis
                     if (string.IsNullOrWhiteSpace(item.BusinessName))
                         continue;
 
-                    // RedBusinessListManager¸¦ ÅëÇØ ¸ÅÄª È®ÀÎ
+                    // RedBusinessListManagerë¥¼ í†µí•´ ë§¤ì¹­ í™•ì¸
                     var matchedItem = _redBusinessListManager.Items
                         .FirstOrDefault(rb => rb.IsEnabled && 
                                              !string.IsNullOrWhiteSpace(rb.BusinessName) &&
@@ -143,34 +143,34 @@ namespace FACTOVA_LogAnalysis
                     {
                         item.IsRedBusiness = true;
                         
-                        // ? TextColor (Foreground)¸¦ ¼³Á¤
+                        // ? TextColor (Foreground)ë¥¼ ì„¤ì •
                         var color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(matchedItem.Color);
                         item.TextColor = new System.Windows.Media.SolidColorBrush(color);
                         
                         highlightCount++;
                         
-                        System.Diagnostics.Debug.WriteLine($"? ÅëÇÕ·Î±× »ö»ó Àû¿ë: {item.BusinessName} ¡æ {matchedItem.Color}");
+                        System.Diagnostics.Debug.WriteLine($"? í†µí•©ë¡œê·¸ ìƒ‰ìƒ ì ìš©: {item.BusinessName} â†’ {matchedItem.Color}");
                     }
                 }
 
                 if (highlightCount > 0)
                 {
-                    _workLogService.AddLog($"? ÅëÇÕ ·Î±×¿¡ {highlightCount}°³ Çà ÇÏÀÌ¶óÀÌÆ® Àû¿ë", WorkLogType.Info);
+                    _workLogService.AddLog($"? í†µí•© ë¡œê·¸ì— {highlightCount}ê°œ í–‰ í•˜ì´ë¼ì´íŠ¸ ì ìš©", WorkLogType.Info);
                 }
                 else
                 {
-                    _workLogService.AddLog("?? ÅëÇÕ ·Î±×¿¡ ¸ÅÄªµÇ´Â RedBusiness°¡ ¾ø½À´Ï´Ù", WorkLogType.Warning);
+                    _workLogService.AddLog("?? í†µí•© ë¡œê·¸ì— ë§¤ì¹­ë˜ëŠ” RedBusinessê°€ ì—†ìŠµë‹ˆë‹¤", WorkLogType.Warning);
                 }
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? RedBrush Àû¿ë ¿À·ù: {ex.Message}", WorkLogType.Error);
-                System.Diagnostics.Debug.WriteLine($"ApplyRedBrushToUnifiedLog ¿À·ù: {ex.StackTrace}");
+                _workLogService.AddLog($"? RedBrush ì ìš© ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
+                System.Diagnostics.Debug.WriteLine($"ApplyRedBrushToUnifiedLog ì˜¤ë¥˜: {ex.StackTrace}");
             }
         }
 
         /// <summary>
-        /// Business/MsgId ÇÊÅÍ ¾ÆÀÌÅÛ ¾÷µ¥ÀÌÆ®
+        /// Business/MsgId í•„í„° ì•„ì´í…œ ì—…ë°ì´íŠ¸
         /// </summary>
         private void UpdateUnifiedBusinessMsgIdFilters()
         {
@@ -198,22 +198,22 @@ namespace FACTOVA_LogAnalysis
                     combo.ItemsSource = _unifiedBusinessMsgIdFilterItems;
                 }
                 
-                _workLogService.AddLog($"ÅëÇÕ Business/MsgId ÇÊÅÍ: {businessMsgIds.Count}°³ Ç×¸ñ", WorkLogType.Info);
+                _workLogService.AddLog($"í†µí•© Business/MsgId í•„í„°: {businessMsgIds.Count}ê°œ í•­ëª©", WorkLogType.Info);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? Business/MsgId ÇÊÅÍ ¾÷µ¥ÀÌÆ® ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? Business/MsgId í•„í„° ì—…ë°ì´íŠ¸ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// Å¸ÀÓ½ºÅÆÇÁ ¹®ÀÚ¿­À» DateTimeÀ¸·Î ÆÄ½Ì (¹Ğ¸®ÃÊ Æ÷ÇÔ)
+        /// íƒ€ì„ìŠ¤íƒ¬í”„ ë¬¸ìì—´ì„ DateTimeìœ¼ë¡œ íŒŒì‹± (ë°€ë¦¬ì´ˆ í¬í•¨)
         /// </summary>
         private DateTime ParseTimestamp(string timestamp)
         {
             try
             {
-                // yyyy-MM-dd HH:mm:ss.fff Çü½Ä ÆÄ½Ì
+                // yyyy-MM-dd HH:mm:ss.fff í˜•ì‹ íŒŒì‹±
                 if (DateTime.TryParseExact(timestamp, "yyyy-MM-dd HH:mm:ss.fff",
                     System.Globalization.CultureInfo.InvariantCulture,
                     System.Globalization.DateTimeStyles.None, out DateTime result))
@@ -221,7 +221,7 @@ namespace FACTOVA_LogAnalysis
                     return result;
                 }
 
-                // yyyy-MM-dd HH:mm:ss Çü½Ä ÆÄ½Ì
+                // yyyy-MM-dd HH:mm:ss í˜•ì‹ íŒŒì‹±
                 if (DateTime.TryParseExact(timestamp, "yyyy-MM-dd HH:mm:ss",
                     System.Globalization.CultureInfo.InvariantCulture,
                     System.Globalization.DateTimeStyles.None, out DateTime result2))
@@ -229,7 +229,7 @@ namespace FACTOVA_LogAnalysis
                     return result2;
                 }
                 
-                // HH:mm:ss.fff Çü½Ä ÆÄ½Ì
+                // HH:mm:ss.fff í˜•ì‹ íŒŒì‹±
                 if (DateTime.TryParseExact(timestamp, "HH:mm:ss.fff",
                     System.Globalization.CultureInfo.InvariantCulture,
                     System.Globalization.DateTimeStyles.None, out DateTime result3))
@@ -237,7 +237,7 @@ namespace FACTOVA_LogAnalysis
                     return result3;
                 }
 
-                // HH:mm:ss Çü½Ä ÆÄ½Ì
+                // HH:mm:ss í˜•ì‹ íŒŒì‹±
                 if (DateTime.TryParseExact(timestamp, "HH:mm:ss",
                     System.Globalization.CultureInfo.InvariantCulture,
                     System.Globalization.DateTimeStyles.None, out DateTime result4))
@@ -245,13 +245,13 @@ namespace FACTOVA_LogAnalysis
                     return result4;
                 }
 
-                // ÀÏ¹İ ÆÄ½Ì ½Ãµµ
+                // ì¼ë°˜ íŒŒì‹± ì‹œë„
                 if (DateTime.TryParse(timestamp, out DateTime result5))
                 {
                     return result5;
                 }
 
-                // ÆÄ½Ì ½ÇÆĞ ½Ã ÃÖ¼Ò°ª ¹İÈ¯
+                // íŒŒì‹± ì‹¤íŒ¨ ì‹œ ìµœì†Œê°’ ë°˜í™˜
                 return DateTime.MinValue;
             }
             catch
@@ -261,7 +261,7 @@ namespace FACTOVA_LogAnalysis
         }
 
         /// <summary>
-        /// ÅëÇÕ ·Î±× LogType ÇÊÅÍ º¯°æ ÀÌº¥Æ®
+        /// í†µí•© ë¡œê·¸ LogType í•„í„° ë³€ê²½ ì´ë²¤íŠ¸
         /// </summary>
         private void UnifiedLogTypeFilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -271,12 +271,12 @@ namespace FACTOVA_LogAnalysis
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? LogType ÇÊÅÍ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? LogType í•„í„° ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// Business/MsgId Ã¼Å©¹Ú½º Ã¼Å© ÀÌº¥Æ®
+        /// Business/MsgId ì²´í¬ë°•ìŠ¤ ì²´í¬ ì´ë²¤íŠ¸
         /// </summary>
         private void UnifiedBusinessMsgIdCheckBox_Checked(object sender, RoutedEventArgs e)
         {
@@ -284,7 +284,7 @@ namespace FACTOVA_LogAnalysis
         }
 
         /// <summary>
-        /// Business/MsgId Ã¼Å©¹Ú½º ÇØÁ¦ ÀÌº¥Æ®
+        /// Business/MsgId ì²´í¬ë°•ìŠ¤ í•´ì œ ì´ë²¤íŠ¸
         /// </summary>
         private void UnifiedBusinessMsgIdCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
@@ -292,7 +292,7 @@ namespace FACTOVA_LogAnalysis
         }
 
         /// <summary>
-        /// Business/MsgId ÇÊÅÍ ÃÊ±âÈ­
+        /// Business/MsgId í•„í„° ì´ˆê¸°í™”
         /// </summary>
         private void ClearUnifiedBusinessMsgIdFilterButton_Click(object sender, RoutedEventArgs e)
         {
@@ -303,16 +303,16 @@ namespace FACTOVA_LogAnalysis
                     item.IsSelected = false;
                 }
                 ApplyUnifiedLogFilters();
-                _workLogService.AddLog("ÅëÇÕ Business/MsgId ÇÊÅÍ ÃÊ±âÈ­", WorkLogType.Info);
+                _workLogService.AddLog("í†µí•© Business/MsgId í•„í„° ì´ˆê¸°í™”", WorkLogType.Info);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? Business/MsgId ÇÊÅÍ ÃÊ±âÈ­ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? Business/MsgId í•„í„° ì´ˆê¸°í™” ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ÅëÇÕ ·Î±× Content ÇÊÅÍ º¯°æ ÀÌº¥Æ®
+        /// í†µí•© ë¡œê·¸ Content í•„í„° ë³€ê²½ ì´ë²¤íŠ¸
         /// </summary>
         private void UnifiedContentFilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -322,12 +322,12 @@ namespace FACTOVA_LogAnalysis
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? Content ÇÊÅÍ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? Content í•„í„° ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// Content ÇÊÅÍ ÃÊ±âÈ­
+        /// Content í•„í„° ì´ˆê¸°í™”
         /// </summary>
         private void ClearUnifiedContentFilterButton_Click(object sender, RoutedEventArgs e)
         {
@@ -338,16 +338,16 @@ namespace FACTOVA_LogAnalysis
                 {
                     contentTextBox.Text = "";
                 }
-                _workLogService.AddLog("ÅëÇÕ Content ÇÊÅÍ ÃÊ±âÈ­", WorkLogType.Info);
+                _workLogService.AddLog("í†µí•© Content í•„í„° ì´ˆê¸°í™”", WorkLogType.Info);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? Content ÇÊÅÍ ÃÊ±âÈ­ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? Content í•„í„° ì´ˆê¸°í™” ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ÅëÇÕ ·Î±× ÇÊÅÍ Àû¿ë
+        /// í†µí•© ë¡œê·¸ í•„í„° ì ìš©
         /// </summary>
         private void ApplyUnifiedLogFilters()
         {
@@ -361,7 +361,7 @@ namespace FACTOVA_LogAnalysis
                 string selectedLogType = (logTypeCombo?.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "ALL";
                 string contentFilter = contentTextBox?.Text?.Trim() ?? "";
                 
-                // ¼±ÅÃµÈ Business/MsgId ÇÊÅÍ
+                // ì„ íƒëœ Business/MsgId í•„í„°
                 var selectedBusinessMsgIds = _unifiedBusinessMsgIdFilterItems
                     .Where(x => x.IsSelected)
                     .Select(x => x.Value)
@@ -371,11 +371,11 @@ namespace FACTOVA_LogAnalysis
 
                 foreach (var item in _unfilteredUnifiedLogLines)
                 {
-                    // LogType ÇÊÅÍ
+                    // LogType í•„í„°
                     if (selectedLogType != "ALL" && item.LogLevel != selectedLogType)
                         continue;
 
-                    // Business/MsgId ÇÊÅÍ (¸ÖÆ¼¼¿·ºÆ®)
+                    // Business/MsgId í•„í„° (ë©€í‹°ì…€ë ‰íŠ¸)
                     if (selectedBusinessMsgIds.Any())
                     {
                         bool matchBusiness = !string.IsNullOrWhiteSpace(item.BusinessName) && 
@@ -387,7 +387,7 @@ namespace FACTOVA_LogAnalysis
                             continue;
                     }
 
-                    // Content ÇÊÅÍ
+                    // Content í•„í„°
                     if (!string.IsNullOrEmpty(contentFilter))
                     {
                         if (item.Content?.Contains(contentFilter, StringComparison.OrdinalIgnoreCase) != true)
@@ -397,23 +397,23 @@ namespace FACTOVA_LogAnalysis
                     _unifiedLogLines.Add(item);
                 }
 
-                // »óÅÂ ¾÷µ¥ÀÌÆ®
+                // ìƒíƒœ ì—…ë°ì´íŠ¸
                 var statusText = FindName("UnifiedLogStatusText") as WpfTextBlock;
                 if (statusText != null)
                 {
-                    statusText.Text = $"ÅëÇÕ ·Î±×: {_unifiedLogLines.Count}°³ Çà (ÇÊÅÍ¸µµÊ)";
+                    statusText.Text = $"í†µí•© ë¡œê·¸: {_unifiedLogLines.Count}ê°œ í–‰ (í•„í„°ë§ë¨)";
                 }
 
-                _workLogService.AddLog($"ÅëÇÕ ·Î±× ÇÊÅÍ Àû¿ë: {_unifiedLogLines.Count}°³ Çà Ç¥½Ã", WorkLogType.Info);
+                _workLogService.AddLog($"í†µí•© ë¡œê·¸ í•„í„° ì ìš©: {_unifiedLogLines.Count}ê°œ í–‰ í‘œì‹œ", WorkLogType.Info);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ÅëÇÕ ·Î±× ÇÊÅÍ Àû¿ë ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? í†µí•© ë¡œê·¸ í•„í„° ì ìš© ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ÅëÇÕ ·Î±× ÇÊÅÍ ÀüÃ¼ ÃÊ±âÈ­
+        /// í†µí•© ë¡œê·¸ í•„í„° ì „ì²´ ì´ˆê¸°í™”
         /// </summary>
         private void ClearUnifiedFiltersButton_Click(object sender, RoutedEventArgs e)
         {
@@ -423,27 +423,27 @@ namespace FACTOVA_LogAnalysis
                 var contentTextBox = FindName("UnifiedContentFilterTextBox") as WpfTextBox;
 
                 if (logTypeCombo != null)
-                    logTypeCombo.SelectedIndex = 0; // "ÀüÃ¼"
+                    logTypeCombo.SelectedIndex = 0; // "ì „ì²´"
 
                 if (contentTextBox != null)
                     contentTextBox.Text = "";
                 
-                // Business/MsgId ÇÊÅÍ ÃÊ±âÈ­
+                // Business/MsgId í•„í„° ì´ˆê¸°í™”
                 foreach (var item in _unifiedBusinessMsgIdFilterItems)
                 {
                     item.IsSelected = false;
                 }
 
-                _workLogService.AddLog("? ÅëÇÕ ·Î±× ÀüÃ¼ ÇÊÅÍ ÃÊ±âÈ­ ¿Ï·á", WorkLogType.Success);
+                _workLogService.AddLog("? í†µí•© ë¡œê·¸ ì „ì²´ í•„í„° ì´ˆê¸°í™” ì™„ë£Œ", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ÅëÇÕ ·Î±× ÇÊÅÍ ÃÊ±âÈ­ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? í†µí•© ë¡œê·¸ í•„í„° ì´ˆê¸°í™” ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ÅëÇÕ ·Î±× ÆùÆ® Å©±â °¨¼Ò
+        /// í†µí•© ë¡œê·¸ í°íŠ¸ í¬ê¸° ê°ì†Œ
         /// </summary>
         private void UnifiedLogFontSizeDecrease_Click(object sender, RoutedEventArgs e)
         {
@@ -453,31 +453,31 @@ namespace FACTOVA_LogAnalysis
                 if (grid == null) return;
 
                 double currentSize = grid.FontSize;
-                double newSize = Math.Max(8, currentSize - 1); // ÃÖ¼Ò 8
+                double newSize = Math.Max(8, currentSize - 1); // ìµœì†Œ 8
 
                 ApplyFontToDataGridInstance(grid, newSize);
                 
-                // ? TextBox ¾÷µ¥ÀÌÆ®
+                // ? TextBox ì—…ë°ì´íŠ¸
                 var fontSizeTextBox = FindName("UnifiedLogFontSizeTextBox") as System.Windows.Controls.TextBox;
                 if (fontSizeTextBox != null)
                 {
                     fontSizeTextBox.Text = newSize.ToString();
                 }
                 
-                // AppSettings¿¡ ÀúÀå
+                // AppSettingsì— ì €ì¥
                 _appSettings.UnifiedLogFontSize = newSize;
                 _appSettings.Save();
 
-                _workLogService.AddLog($"? ÅëÇÕ ·Î±× ÆùÆ® Å©±â º¯°æ: {currentSize} ¡æ {newSize}", WorkLogType.Success);
+                _workLogService.AddLog($"? í†µí•© ë¡œê·¸ í°íŠ¸ í¬ê¸° ë³€ê²½: {currentSize} â†’ {newSize}", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ÅëÇÕ ·Î±× ÆùÆ® Å©±â °¨¼Ò ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? í†µí•© ë¡œê·¸ í°íŠ¸ í¬ê¸° ê°ì†Œ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ÅëÇÕ ·Î±× ÆùÆ® Å©±â Áõ°¡
+        /// í†µí•© ë¡œê·¸ í°íŠ¸ í¬ê¸° ì¦ê°€
         /// </summary>
         private void UnifiedLogFontSizeIncrease_Click(object sender, RoutedEventArgs e)
         {
@@ -487,31 +487,31 @@ namespace FACTOVA_LogAnalysis
                 if (grid == null) return;
 
                 double currentSize = grid.FontSize;
-                double newSize = Math.Min(32, currentSize + 1); // ÃÖ´ë 32
+                double newSize = Math.Min(32, currentSize + 1); // ìµœëŒ€ 32
 
                 ApplyFontToDataGridInstance(grid, newSize);
                 
-                // ? TextBox ¾÷µ¥ÀÌÆ®
+                // ? TextBox ì—…ë°ì´íŠ¸
                 var fontSizeTextBox = FindName("UnifiedLogFontSizeTextBox") as System.Windows.Controls.TextBox;
                 if (fontSizeTextBox != null)
                 {
                     fontSizeTextBox.Text = newSize.ToString();
                 }
                 
-                // AppSettings¿¡ ÀúÀå
+                // AppSettingsì— ì €ì¥
                 _appSettings.UnifiedLogFontSize = newSize;
                 _appSettings.Save();
 
-                _workLogService.AddLog($"? ÅëÇÕ ·Î±× ÆùÆ® Å©±â º¯°æ: {currentSize} ¡æ {newSize}", WorkLogType.Success);
+                _workLogService.AddLog($"? í†µí•© ë¡œê·¸ í°íŠ¸ í¬ê¸° ë³€ê²½: {currentSize} â†’ {newSize}", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ÅëÇÕ ·Î±× ÆùÆ® Å©±â Áõ°¡ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? í†µí•© ë¡œê·¸ í°íŠ¸ í¬ê¸° ì¦ê°€ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ÅëÇÕ ·Î±× ÄÜÅÙÃ÷ ÄÃ·³ Åä±Û (¿ÏÀüÈ÷ ¼û±è)
+        /// í†µí•© ë¡œê·¸ ì½˜í…ì¸  ì»¬ëŸ¼ í† ê¸€ (ì™„ì „íˆ ìˆ¨ê¹€)
         /// </summary>
         private void ToggleUnifiedContentButton_Click(object sender, RoutedEventArgs e)
         {
@@ -527,31 +527,31 @@ namespace FACTOVA_LogAnalysis
 
                 if (_isUnifiedContentExpanded)
                 {
-                    // ÄÜÅÙÃ÷ ´İ±â - ¿ÏÀüÈ÷ ¼û±è
+                    // ì½˜í…ì¸  ë‹«ê¸° - ì™„ì „íˆ ìˆ¨ê¹€
                     _unifiedOriginalContentWidth = contentColumn.Width;
                     contentColumn.Visibility = System.Windows.Visibility.Collapsed;
-                    if (button != null) button.Content = "ÄÜÅÙÃ÷ ¿­±â";
+                    if (button != null) button.Content = "ì½˜í…ì¸  ì—´ê¸°";
                     _isUnifiedContentExpanded = false;
-                    _workLogService.AddLog("ÅëÇÕ ·Î±× ÄÜÅÙÃ÷ ÄÃ·³ ´İ±â", WorkLogType.Info);
+                    _workLogService.AddLog("í†µí•© ë¡œê·¸ ì½˜í…ì¸  ì»¬ëŸ¼ ë‹«ê¸°", WorkLogType.Info);
                 }
                 else
                 {
-                    // ÄÜÅÙÃ÷ ¿­±â
+                    // ì½˜í…ì¸  ì—´ê¸°
                     contentColumn.Visibility = System.Windows.Visibility.Visible;
                     contentColumn.Width = _unifiedOriginalContentWidth;
-                    if (button != null) button.Content = "ÄÜÅÙÃ÷ ´İ±â";
+                    if (button != null) button.Content = "ì½˜í…ì¸  ë‹«ê¸°";
                     _isUnifiedContentExpanded = true;
-                    _workLogService.AddLog("ÅëÇÕ ·Î±× ÄÜÅÙÃ÷ ÄÃ·³ ¿­±â", WorkLogType.Info);
+                    _workLogService.AddLog("í†µí•© ë¡œê·¸ ì½˜í…ì¸  ì»¬ëŸ¼ ì—´ê¸°", WorkLogType.Info);
                 }
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ÄÜÅÙÃ÷ Åä±Û ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ì½˜í…ì¸  í† ê¸€ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ÅëÇÕ ·Î±× ¿¢¼¿ ´Ù¿î·Îµå
+        /// í†µí•© ë¡œê·¸ ì—‘ì…€ ë‹¤ìš´ë¡œë“œ
         /// </summary>
         private void ExportUnifiedLogButton_Click(object sender, RoutedEventArgs e)
         {
@@ -560,7 +560,7 @@ namespace FACTOVA_LogAnalysis
                 var grid = FindName("unifiedLogDataGrid") as WpfDataGrid;
                 if (grid == null)
                 {
-                    _workLogService.AddLog("ÅëÇÕ ·Î±× DataGrid¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.", WorkLogType.Warning);
+                    _workLogService.AddLog("í†µí•© ë¡œê·¸ DataGridë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.", WorkLogType.Warning);
                     return;
                 }
 
@@ -577,16 +577,16 @@ namespace FACTOVA_LogAnalysis
                 if (sfd.ShowDialog() != true) return;
 
                 ExportDataGridToXlsx(grid, sfd.FileName);
-                _workLogService.AddLog($"? ÅëÇÕ ·Î±×¸¦ XLSX·Î ÀúÀåÇß½À´Ï´Ù: {sfd.FileName}", WorkLogType.Success);
+                _workLogService.AddLog($"? í†µí•© ë¡œê·¸ë¥¼ XLSXë¡œ ì €ì¥í–ˆìŠµë‹ˆë‹¤: {sfd.FileName}", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ÅëÇÕ ·Î±× Export ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? í†µí•© ë¡œê·¸ Export ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ÅëÇÕ ·Î±× DataGridÀÇ ÇàÀÌ ·ÎµåµÉ ¶§ RedBrush Àû¿ë
+        /// í†µí•© ë¡œê·¸ DataGridì˜ í–‰ì´ ë¡œë“œë  ë•Œ RedBrush ì ìš©
         /// </summary>
         private void UnifiedLogDataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
         {
@@ -594,32 +594,32 @@ namespace FACTOVA_LogAnalysis
             {
                 if (e.Row.Item is LogLineItem logItem && logItem.IsRedBusiness)
                 {
-                    // IsRedBusiness°¡ trueÀÌ¸é ÇØ´ç »ö»óÀ¸·Î ¹è°æ ¼³Á¤
+                    // IsRedBusinessê°€ trueì´ë©´ í•´ë‹¹ ìƒ‰ìƒìœ¼ë¡œ ë°°ê²½ ì„¤ì •
                     e.Row.Background = logItem.TextColor;
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UnifiedLogDataGrid_LoadingRow ¿À·ù: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UnifiedLogDataGrid_LoadingRow ì˜¤ë¥˜: {ex.Message}");
             }
         }
 
         /// <summary>
-        /// ÅëÇÕ ·Î±× DataGrid¿¡ TextColor ¹ÙÀÎµù ½ºÅ¸ÀÏ Àû¿ë
+        /// í†µí•© ë¡œê·¸ DataGridì— TextColor ë°”ì¸ë”© ìŠ¤íƒ€ì¼ ì ìš©
         /// </summary>
         private void ApplyTextColorStyleToUnifiedGrid(DataGrid grid)
         {
             try
             {
-                // ? CellStyle¿¡ Background (¹è°æ»ö) ¹ÙÀÎµù
+                // ? CellStyleì— Background (ë°°ê²½ìƒ‰) ë°”ì¸ë”©
                 var cellStyle = new System.Windows.Style(typeof(DataGridCell));
                 
-                // ? TextColor°¡ nullÀÌ ¾Æ´Ò ¶§¸¸ Background Àû¿ë
+                // ? TextColorê°€ nullì´ ì•„ë‹ ë•Œë§Œ Background ì ìš©
                 var trigger = new System.Windows.DataTrigger();
                 trigger.Binding = new System.Windows.Data.Binding("IsRedBusiness");
                 trigger.Value = true;
                 
-                // IsRedBusiness°¡ trueÀÏ ¶§¸¸ ¹è°æ»ö Àû¿ë
+                // IsRedBusinessê°€ trueì¼ ë•Œë§Œ ë°°ê²½ìƒ‰ ì ìš©
                 trigger.Setters.Add(new System.Windows.Setter(
                     DataGridCell.BackgroundProperty,
                     new System.Windows.Data.Binding("TextColor")
@@ -628,13 +628,13 @@ namespace FACTOVA_LogAnalysis
                 cellStyle.Triggers.Add(trigger);
                 grid.CellStyle = cellStyle;
                 
-                _workLogService.AddLog("? ÅëÇÕ ·Î±× DataGrid¿¡ Background »ö»ó ½ºÅ¸ÀÏ Àû¿ë ¿Ï·á (Á¶°ÇºÎ)", WorkLogType.Success);
-                System.Diagnostics.Debug.WriteLine("? ApplyTextColorStyleToUnifiedGrid - Background ¸ğµå (IsRedBusiness Á¶°Ç)");
+                _workLogService.AddLog("? í†µí•© ë¡œê·¸ DataGridì— Background ìƒ‰ìƒ ìŠ¤íƒ€ì¼ ì ìš© ì™„ë£Œ (ì¡°ê±´ë¶€)", WorkLogType.Success);
+                System.Diagnostics.Debug.WriteLine("? ApplyTextColorStyleToUnifiedGrid - Background ëª¨ë“œ (IsRedBusiness ì¡°ê±´)");
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? TextColor ½ºÅ¸ÀÏ Àû¿ë ¿À·ù: {ex.Message}", WorkLogType.Error);
-                System.Diagnostics.Debug.WriteLine($"ApplyTextColorStyleToUnifiedGrid ¿À·ù: {ex.StackTrace}");
+                _workLogService.AddLog($"? TextColor ìŠ¤íƒ€ì¼ ì ìš© ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
+                System.Diagnostics.Debug.WriteLine($"ApplyTextColorStyleToUnifiedGrid ì˜¤ë¥˜: {ex.StackTrace}");
             }
         }
     }

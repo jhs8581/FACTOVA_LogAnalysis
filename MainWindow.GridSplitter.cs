@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Windows;
 using System.Windows.Controls;
 using FACTOVA_LogAnalysis.Services;
@@ -13,7 +13,7 @@ namespace FACTOVA_LogAnalysis
         {
             try
             {
-                // Text Tab GridSplitter À§Ä¡ º¹¿ø
+                // Text Tab GridSplitter ìœ„ì¹˜ ë³µì›
                 if (_appSettings.LeftColumnWidth > 0 && _appSettings.RightColumnWidth > 0)
                 {
                     var leftColumnDef = FindName("LeftColumnDefinition") as ColumnDefinition;
@@ -38,7 +38,7 @@ namespace FACTOVA_LogAnalysis
                     }
                 }
 
-                // DataGrid Tab GridSplitter À§Ä¡ º¹¿ø
+                // DataGrid Tab GridSplitter ìœ„ì¹˜ ë³µì›
                 if (_appSettings.DataLeftColumnWidth > 0 && _appSettings.DataRightColumnWidth > 0)
                 {
                     var dataLeftColumnDef = FindName("DataLeftColumnDefinition") as ColumnDefinition;
@@ -63,11 +63,11 @@ namespace FACTOVA_LogAnalysis
                     }
                 }
 
-                _workLogService.AddLog("? GridSplitter À§Ä¡ º¹¿ø ¿Ï·á", WorkLogType.Success);
+                _workLogService.AddLog("? GridSplitter ìœ„ì¹˜ ë³µì› ì™„ë£Œ", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? GridSplitter À§Ä¡ º¹¿ø ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? GridSplitter ìœ„ì¹˜ ë³µì› ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -75,20 +75,20 @@ namespace FACTOVA_LogAnalysis
         {
             try
             {
-                // SizeChanged ÀÌº¥Æ®´Â WindowÀÇ SizeChanged¿¡¼­ Ã³¸®
+                // SizeChanged ì´ë²¤íŠ¸ëŠ” Windowì˜ SizeChangedì—ì„œ ì²˜ë¦¬
                 this.SizeChanged += MainWindow_SizeChanged;
 
-                _workLogService.AddLog("? GridSplitter ÀÌº¥Æ® ¼³Á¤ ¿Ï·á", WorkLogType.Success);
+                _workLogService.AddLog("? GridSplitter ì´ë²¤íŠ¸ ì„¤ì • ì™„ë£Œ", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? GridSplitter ÀÌº¥Æ® ¼³Á¤ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? GridSplitter ì´ë²¤íŠ¸ ì„¤ì • ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            // ÃÊ±âÈ­ ÁßÀÌ°Å³ª ÃÖ¼ÒÈ­ »óÅÂ¿¡¼­´Â ÀúÀåÇÏÁö ¾ÊÀ½
+            // ì´ˆê¸°í™” ì¤‘ì´ê±°ë‚˜ ìµœì†Œí™” ìƒíƒœì—ì„œëŠ” ì €ì¥í•˜ì§€ ì•ŠìŒ
             if (_isInitializing || this.WindowState == WindowState.Minimized)
                 return;
 
@@ -98,7 +98,7 @@ namespace FACTOVA_LogAnalysis
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? GridSplitter À§Ä¡ ÀúÀå ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? GridSplitter ìœ„ì¹˜ ì €ì¥ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -106,7 +106,7 @@ namespace FACTOVA_LogAnalysis
         {
             try
             {
-                // Text Tab GridSplitter À§Ä¡ ÀúÀå
+                // Text Tab GridSplitter ìœ„ì¹˜ ì €ì¥
                 var leftColumnDef = FindName("LeftColumnDefinition") as ColumnDefinition;
                 var rightColumnDef = FindName("RightColumnDefinition") as ColumnDefinition;
                 var topRowDef = FindName("TopRowDefinition") as RowDefinition;
@@ -124,7 +124,7 @@ namespace FACTOVA_LogAnalysis
                     _appSettings.BottomRowHeight = bottomRowDef.Height.Value;
                 }
 
-                // DataGrid Tab GridSplitter À§Ä¡ ÀúÀå
+                // DataGrid Tab GridSplitter ìœ„ì¹˜ ì €ì¥
                 var dataLeftColumnDef = FindName("DataLeftColumnDefinition") as ColumnDefinition;
                 var dataRightColumnDef = FindName("DataRightColumnDefinition") as ColumnDefinition;
                 var dataTopRowDef = FindName("DataTopRowDefinition") as RowDefinition;
@@ -144,11 +144,11 @@ namespace FACTOVA_LogAnalysis
 
                 _appSettings.Save();
 
-                System.Diagnostics.Debug.WriteLine("GridSplitter À§Ä¡ ÀúÀåµÊ");
+                System.Diagnostics.Debug.WriteLine("GridSplitter ìœ„ì¹˜ ì €ì¥ë¨");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"GridSplitter À§Ä¡ ÀúÀå ¿À·ù: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"GridSplitter ìœ„ì¹˜ ì €ì¥ ì˜¤ë¥˜: {ex.Message}");
             }
         }
 

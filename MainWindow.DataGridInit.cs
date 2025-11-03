@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,7 +16,7 @@ namespace FACTOVA_LogAnalysis
         {
             try
             {
-                // DataGrid ÂüÁ¶ È®ÀÎ ¹× DataGridManager¿¡ Àü´Ş
+                // DataGrid ì°¸ì¡° í™•ì¸ ë° DataGridManagerì— ì „ë‹¬
                 var dataGrid = FindName("dataLogDataGrid") as DataGrid;
                 var eventGrid = FindName("eventLogDataGrid") as DataGrid;
                 var debugGrid = FindName("debugLogDataGrid") as DataGrid;
@@ -90,25 +90,25 @@ namespace FACTOVA_LogAnalysis
                     }
                     catch (Exception ex)
                     {
-                        _workLogService.AddLog($"? 4-tab DataGrid ¹ÙÀÎµù ¿À·ù: {ex.Message}", WorkLogType.Error);
+                        _workLogService.AddLog($"? 4-tab DataGrid ë°”ì¸ë”© ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
                     }
 
-                     // ÄŞº¸¹Ú½º ¾÷µ¥ÀÌÆ® ÀÌº¥Æ® ±¸µ¶
+                     // ì½¤ë³´ë°•ìŠ¤ ì—…ë°ì´íŠ¸ ì´ë²¤íŠ¸ êµ¬ë…
                      _dataGridManager.ComboBoxFiltersUpdated += UpdateBusinessNameFilters;
 
-                    // ¸ÖÆ¼¼±ÅÃ ÄŞº¸¹Ú½º ÃÊ±âÈ­
+                    // ë©€í‹°ì„ íƒ ì½¤ë³´ë°•ìŠ¤ ì´ˆê¸°í™”
                     InitializeMultiSelectComboBoxes();
 
-                    _workLogService.AddLog("? DataGridManager¸¦ ÅëÇÑ ÃÊ±âÈ­ ¿Ï·á", WorkLogType.Success);
+                    _workLogService.AddLog("? DataGridManagerë¥¼ í†µí•œ ì´ˆê¸°í™” ì™„ë£Œ", WorkLogType.Success);
                 }
                 else
                 {
-                    _workLogService.AddLog("ÀÏºÎ DataGrid¸¦ Ã£À» ¼ö ¾øÀ½", WorkLogType.Warning);
+                    _workLogService.AddLog("ì¼ë¶€ DataGridë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŒ", WorkLogType.Warning);
                 }
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? DataGrid ÃÊ±âÈ­ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? DataGrid ì´ˆê¸°í™” ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
