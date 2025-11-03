@@ -506,7 +506,7 @@
                                               ToolTip="Filter DATA logs by business name (Multi-select with checkboxes)" 
                                               Margin="0,0,5,0" Padding="8,5" VerticalContentAlignment="Center"
                                               IsEditable="True"
-                                              Text="선택하세요">
+                                              Text="Select">
                                                     <ComboBox.ItemTemplate>
                                                         <DataTemplate>
                                                             <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
@@ -577,7 +577,7 @@
                                               ToolTip="Filter EVENT logs by MsgId (Multi-select with checkboxes)" 
                                               Margin="0,0,5,0" Padding="8,5" VerticalContentAlignment="Center"
                                               IsEditable="True"
-                                              Text="선택하세요">
+                                              Text="Select">
                                                     <ComboBox.ItemTemplate>
                                                         <DataTemplate>
                                                             <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
@@ -696,7 +696,7 @@
                                               ToolTip="Filter EXCEPTION logs by business name (Multi-select with checkboxes)" 
                                               Margin="0,0,5,0" Padding="8,5" VerticalContentAlignment="Center"
                                               IsEditable="True"
-                                              Text="선택하세요">
+                                              Text="Select">
                                                     <ComboBox.ItemTemplate>
                                                         <DataTemplate>
                                                             <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
@@ -831,7 +831,7 @@
                                           ToolTip="Filter by Business or MsgId (Multi-select with checkboxes)" 
                                           Margin="0,0,5,0" Padding="8,5" VerticalContentAlignment="Center"
                                           IsEditable="True"
-                                          Text="선택하세요">
+                                          Text="Select">
                                                 <ComboBox.ItemTemplate>
                                                     <DataTemplate>
                                                         <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
