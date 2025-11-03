@@ -43,8 +43,79 @@ namespace FACTOVA_LogAnalysis.Services
                 throw new FileNotFoundException($"로그 파일을 찾을 수 없습니다: {filePath}");
             }
 
-            // ✅ UTF-8 인코딩으로 변경
-            return await File.ReadAllTextAsync(filePath, Encoding.UTF8);
+            // ✅ 여러 인코딩을 시도하여 자동 감지
+            Encoding[] encodingsToTry = new[]
+            {
+                Encoding.UTF8,                          // UTF-8 시도
+                Encoding.GetEncoding("EUC-KR"),        // EUC-KR (한국어 기본)
+                Encoding.GetEncoding(949),             // CP949 (Windows 한국어)
+                Encoding.Default,                       // 시스템 기본 인코딩
+            };
+
+            string? bestContent = null;
+            int bestScore = -1;
+
+            foreach (var encoding in encodingsToTry)
+            {
+                try
+                {
+                    var content = await File.ReadAllTextAsync(filePath, encoding);
+                    
+                    // 한글 깨짐 체크: �, ?, 같은 문자가 많으면 낮은 점수
+                    int score = CalculateEncodingScore(content);
+                    
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                        bestContent = content;
+                    }
+                    
+                    // 완벽한 점수면 바로 리턴
+                    if (score >= 95)
+                        return content;
+                }
+                catch
+                {
+                    // 이 인코딩은 실패, 다음 시도
+                    continue;
+                }
+            }
+
+            // 가장 좋은 결과 반환
+            return bestContent ?? await File.ReadAllTextAsync(filePath, Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// 인코딩 품질 점수 계산 (0-100)
+        /// 한글이 제대로 표시되면 높은 점수
+        /// </summary>
+        private int CalculateEncodingScore(string content)
+        {
+            if (string.IsNullOrEmpty(content))
+                return 0;
+
+            int totalChars = Math.Min(content.Length, 1000); // 처음 1000자만 샘플링
+            int badChars = 0;
+
+            for (int i = 0; i < totalChars; i++)
+            {
+                char c = content[i];
+                
+                // 깨진 문자 감지
+                if (c == '�' || c == '\uFFFD')
+                {
+                    badChars += 3; // 높은 페널티
+                }
+                // 연속된 물음표 (인코딩 오류 가능성)
+                else if (c == '?' && i > 0 && content[i - 1] == '?')
+                {
+                    badChars += 1;
+                }
+            }
+
+            // 점수 계산: 깨진 문자가 적을수록 높은 점수
+            double badRatio = (double)badChars / totalChars;
+            return (int)((1.0 - badRatio) * 100);
         }
 
         public string CleanDataLogs(string dataContent)
