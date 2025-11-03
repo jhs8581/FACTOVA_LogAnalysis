@@ -65,6 +65,12 @@ namespace FACTOVA_LogAnalysis.Services
             {
                 lock (_workLogLock)
                 {
+                    // ✅ 폰트 설정 (한글 지원 폰트)
+                    if (workLogTextBox.FontFamily.Source != "맑은 고딕")
+                    {
+                        workLogTextBox.FontFamily = new System.Windows.Media.FontFamily("맑은 고딕, Malgun Gothic, Gulim, Arial Unicode MS, MS Gothic");
+                    }
+
                     string prefix = PrefixForLogType(logType);
                     string timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
                     string logMessage = string.IsNullOrWhiteSpace(prefix)

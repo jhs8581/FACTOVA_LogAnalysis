@@ -47,8 +47,15 @@ namespace FACTOVA_LogAnalysis.Services
             var bytes = await File.ReadAllBytesAsync(filePath);
             var encoding = DetectEncodingFromBytes(bytes);
 
-            System.Diagnostics.Debug.WriteLine($"📄 파일: {Path.GetFileName(filePath)}");
-            System.Diagnostics.Debug.WriteLine($"🔍 감지된 인코딩: {encoding.EncodingName} (CodePage: {encoding.CodePage})");
+            var fileName = Path.GetFileName(filePath);
+            var encodingInfo = $"{encoding.EncodingName} (CodePage: {encoding.CodePage})";
+            
+            System.Diagnostics.Debug.WriteLine($"📄 파일: {fileName}");
+            System.Diagnostics.Debug.WriteLine($"🔍 감지된 인코딩: {encodingInfo}");
+            
+            // ✅ 인코딩 정보를 콘솔에도 출력 (릴리즈 빌드에서 확인용)
+            Console.WriteLine($"📄 로그 파일 읽기: {fileName}");
+            Console.WriteLine($"🔍 감지된 인코딩: {encodingInfo}");
 
             // 감지된 인코딩으로 읽기
             return encoding.GetString(bytes);
