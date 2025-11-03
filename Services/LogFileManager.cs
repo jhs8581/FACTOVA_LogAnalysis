@@ -43,79 +43,158 @@ namespace FACTOVA_LogAnalysis.Services
                 throw new FileNotFoundException($"로그 파일을 찾을 수 없습니다: {filePath}");
             }
 
-            // ✅ 여러 인코딩을 시도하여 자동 감지
-            Encoding[] encodingsToTry = new[]
-            {
-                Encoding.UTF8,                          // UTF-8 시도
-                Encoding.GetEncoding("EUC-KR"),        // EUC-KR (한국어 기본)
-                Encoding.GetEncoding(949),             // CP949 (Windows 한국어)
-                Encoding.Default,                       // 시스템 기본 인코딩
-            };
+            // ✅ 바이트 수준에서 인코딩 감지
+            var bytes = await File.ReadAllBytesAsync(filePath);
+            var encoding = DetectEncodingFromBytes(bytes);
 
-            string? bestContent = null;
-            int bestScore = -1;
+            System.Diagnostics.Debug.WriteLine($"📄 파일: {Path.GetFileName(filePath)}");
+            System.Diagnostics.Debug.WriteLine($"🔍 감지된 인코딩: {encoding.EncodingName} (CodePage: {encoding.CodePage})");
 
-            foreach (var encoding in encodingsToTry)
-            {
-                try
-                {
-                    var content = await File.ReadAllTextAsync(filePath, encoding);
-                    
-                    // 한글 깨짐 체크: �, ?, 같은 문자가 많으면 낮은 점수
-                    int score = CalculateEncodingScore(content);
-                    
-                    if (score > bestScore)
-                    {
-                        bestScore = score;
-                        bestContent = content;
-                    }
-                    
-                    // 완벽한 점수면 바로 리턴
-                    if (score >= 95)
-                        return content;
-                }
-                catch
-                {
-                    // 이 인코딩은 실패, 다음 시도
-                    continue;
-                }
-            }
-
-            // 가장 좋은 결과 반환
-            return bestContent ?? await File.ReadAllTextAsync(filePath, Encoding.UTF8);
+            // 감지된 인코딩으로 읽기
+            return encoding.GetString(bytes);
         }
 
         /// <summary>
-        /// 인코딩 품질 점수 계산 (0-100)
-        /// 한글이 제대로 표시되면 높은 점수
+        /// 바이트 배열에서 인코딩을 감지
         /// </summary>
-        private int CalculateEncodingScore(string content)
+        private Encoding DetectEncodingFromBytes(byte[] bytes)
         {
-            if (string.IsNullOrEmpty(content))
-                return 0;
-
-            int totalChars = Math.Min(content.Length, 1000); // 처음 1000자만 샘플링
-            int badChars = 0;
-
-            for (int i = 0; i < totalChars; i++)
+            // 1. BOM 확인
+            if (bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF)
             {
-                char c = content[i];
-                
-                // 깨진 문자 감지
-                if (c == '�' || c == '\uFFFD')
+                System.Diagnostics.Debug.WriteLine("✅ UTF-8 BOM 발견");
+                return new UTF8Encoding(true); // UTF-8 with BOM
+            }
+
+            if (bytes.Length >= 2 && bytes[0] == 0xFF && bytes[1] == 0xFE)
+            {
+                System.Diagnostics.Debug.WriteLine("✅ UTF-16 LE BOM 발견");
+                return Encoding.Unicode;
+            }
+
+            if (bytes.Length >= 2 && bytes[0] == 0xFE && bytes[1] == 0xFF)
+            {
+                System.Diagnostics.Debug.WriteLine("✅ UTF-16 BE BOM 발견");
+                return Encoding.BigEndianUnicode;
+            }
+
+            // 2. BOM 없음 - 내용 분석으로 판단
+            // 샘플 크기 (최대 10KB)
+            int sampleSize = Math.Min(bytes.Length, 10240);
+            
+            // UTF-8 유효성 검사
+            bool isValidUtf8 = IsValidUtf8(bytes, sampleSize);
+            
+            // EUC-KR 가능성 검사 (0x81-0xFE 범위의 한글 바이트)
+            bool hasEucKrPattern = HasEucKrPattern(bytes, sampleSize);
+
+            System.Diagnostics.Debug.WriteLine($"   UTF-8 유효: {isValidUtf8}");
+            System.Diagnostics.Debug.WriteLine($"   EUC-KR 패턴: {hasEucKrPattern}");
+
+            // 판단 로직
+            if (isValidUtf8 && !hasEucKrPattern)
+            {
+                System.Diagnostics.Debug.WriteLine("✅ UTF-8 (BOM 없음) 선택");
+                return new UTF8Encoding(false);
+            }
+
+            if (hasEucKrPattern)
+            {
+                System.Diagnostics.Debug.WriteLine("✅ EUC-KR 선택");
+                return Encoding.GetEncoding("EUC-KR");
+            }
+
+            // 3. 기본값: EUC-KR (한국 Windows 기본)
+            System.Diagnostics.Debug.WriteLine("⚠️ 기본값 EUC-KR 사용");
+            return Encoding.GetEncoding("EUC-KR");
+        }
+
+        /// <summary>
+        /// UTF-8 유효성 검사
+        /// </summary>
+        private bool IsValidUtf8(byte[] bytes, int length)
+        {
+            int i = 0;
+            while (i < length)
+            {
+                byte b = bytes[i];
+
+                // ASCII (0x00-0x7F)
+                if (b <= 0x7F)
                 {
-                    badChars += 3; // 높은 페널티
+                    i++;
+                    continue;
                 }
-                // 연속된 물음표 (인코딩 오류 가능성)
-                else if (c == '?' && i > 0 && content[i - 1] == '?')
+
+                // 2바이트 UTF-8 (0xC0-0xDF)
+                if (b >= 0xC0 && b <= 0xDF)
                 {
-                    badChars += 1;
+                    if (i + 1 >= length || !IsContinuationByte(bytes[i + 1]))
+                        return false;
+                    i += 2;
+                    continue;
+                }
+
+                // 3바이트 UTF-8 (0xE0-0xEF)
+                if (b >= 0xE0 && b <= 0xEF)
+                {
+                    if (i + 2 >= length || !IsContinuationByte(bytes[i + 1]) || !IsContinuationByte(bytes[i + 2]))
+                        return false;
+                    i += 3;
+                    continue;
+                }
+
+                // 4바이트 UTF-8 (0xF0-0xF7)
+                if (b >= 0xF0 && b <= 0xF7)
+                {
+                    if (i + 3 >= length || !IsContinuationByte(bytes[i + 1]) || !IsContinuationByte(bytes[i + 2]) || !IsContinuationByte(bytes[i + 3]))
+                        return false;
+                    i += 4;
+                    continue;
+                }
+
+                // 유효하지 않은 UTF-8
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// UTF-8 연속 바이트 확인 (0x80-0xBF)
+        /// </summary>
+        private bool IsContinuationByte(byte b)
+        {
+            return b >= 0x80 && b <= 0xBF;
+        }
+
+        /// <summary>
+        /// EUC-KR 패턴 검사
+        /// </summary>
+        private bool HasEucKrPattern(byte[] bytes, int length)
+        {
+            int eucKrCount = 0;
+            int i = 0;
+
+            while (i < length - 1)
+            {
+                byte b1 = bytes[i];
+                byte b2 = bytes[i + 1];
+
+                // EUC-KR 한글 범위: 첫 바이트 0x81-0xFE, 두 번째 바이트 0x41-0xFE
+                if ((b1 >= 0x81 && b1 <= 0xFE) && (b2 >= 0x41 && b2 <= 0xFE))
+                {
+                    eucKrCount++;
+                    i += 2;
+                }
+                else
+                {
+                    i++;
                 }
             }
 
-            // 점수 계산: 깨진 문자가 적을수록 높은 점수
-            double badRatio = (double)badChars / totalChars;
-            return (int)((1.0 - badRatio) * 100);
+            // 샘플에서 10개 이상의 EUC-KR 패턴이 발견되면 EUC-KR로 판단
+            return eucKrCount >= 10;
         }
 
         public string CleanDataLogs(string dataContent)
