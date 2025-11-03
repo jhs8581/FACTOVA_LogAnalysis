@@ -5,13 +5,16 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     
     <!-- ✅ 버전 정보 -->
-    <Version>1.0.7</Version>
-    <AssemblyVersion>1.0.7.0</AssemblyVersion>
-    <FileVersion>1.0.7.0</FileVersion>
+    <Version>1.0.8</Version>
+    <AssemblyVersion>1.0.8.0</AssemblyVersion>
+    <FileVersion>1.0.8.0</FileVersion>
     
     <!-- ✅ UTF-8 인코딩 강제 설정 -->
     <Utf8Output>true</Utf8Output>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    
+    <!-- ✅ UTF-8 BOM 없이 저장 -->
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -44,6 +47,8 @@
     <PackageReference Include="ClosedXML" Version="0.103.0" />
     <PackageReference Include="EPPlus" Version="7.0.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.1" />
+    <!-- ✅ 인코딩 지원 패키지 추가 -->
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
