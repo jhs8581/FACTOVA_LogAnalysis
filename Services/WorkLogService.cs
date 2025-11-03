@@ -26,7 +26,13 @@ namespace FACTOVA_LogAnalysis.Services
 
         public void AddLog(string message, WorkLogType logType = WorkLogType.Info)
         {
+            // ✅ 메시지를 UTF-8로 명시적 변환 (혹시 모를 인코딩 문제 방지)
             string cleaned = CleanMessage(message);
+            
+            // ✅ 디버그 출력으로 실제 메시지 확인
+            System.Diagnostics.Debug.WriteLine($"[WorkLogService] AddLog: {cleaned}");
+            Console.WriteLine($"[WorkLogService] AddLog: {cleaned}");
+            
             LogAdded?.Invoke(cleaned, logType);
         }
 
@@ -65,17 +71,22 @@ namespace FACTOVA_LogAnalysis.Services
             {
                 lock (_workLogLock)
                 {
-                    // ✅ 폰트 설정 (한글 지원 폰트)
-                    if (workLogTextBox.FontFamily.Source != "맑은 고딕")
+                    // ✅ 폰트 설정
+                    if (workLogTextBox.FontFamily.Source != "Malgun Gothic")
                     {
-                        workLogTextBox.FontFamily = new System.Windows.Media.FontFamily("맑은 고딕, Malgun Gothic, Gulim, Arial Unicode MS, MS Gothic");
+                        workLogTextBox.FontFamily = new System.Windows.Media.FontFamily("Malgun Gothic, 맑은 고딕, Gulim, Arial Unicode MS");
                     }
 
                     string prefix = PrefixForLogType(logType);
                     string timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
+                    
+                    // ✅ 메시지를 명시적으로 string으로 처리 (인코딩 보장)
                     string logMessage = string.IsNullOrWhiteSpace(prefix)
                         ? $"[{timestamp}] {message}"
                         : $"[{timestamp}] {prefix} {message}";
+
+                    // ✅ 디버그: 실제 문자열 확인
+                    System.Diagnostics.Debug.WriteLine($"[RichTextBox] Adding: {logMessage}");
 
                     var color = logType switch
                     {
@@ -99,11 +110,16 @@ namespace FACTOVA_LogAnalysis.Services
                     if (_workLogLineCounter == 1 && paragraph.Inlines.Count > 0)
                         paragraph.Inlines.Clear();
 
+                    // ✅ Run 생성 시 TextOptions 설정
                     var run = new Run(logMessage)
                     {
                         Foreground = new SolidColorBrush(color),
                         FontWeight = logType == WorkLogType.Error ? System.Windows.FontWeights.Bold : System.Windows.FontWeights.Normal
                     };
+                    
+                    // ✅ TextOptions 설정 (텍스트 렌더링 힌트)
+                    System.Windows.Media.TextOptions.SetTextFormattingMode(run, System.Windows.Media.TextFormattingMode.Display);
+                    System.Windows.Media.TextOptions.SetTextRenderingMode(run, System.Windows.Media.TextRenderingMode.ClearType);
 
                     paragraph.Inlines.Add(run);
                     paragraph.Inlines.Add(new LineBreak());
