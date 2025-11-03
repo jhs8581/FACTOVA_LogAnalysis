@@ -1,0 +1,46 @@
+# .editorconfig for UTF-8 encoding enforcement
+
+# Top-most EditorConfig file
+root = true
+
+# All files
+[*]
+charset = utf-8-bom
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Code files
+[*.{cs,csx,vb,vbx}]
+charset = utf-8-bom
+indent_style = space
+indent_size = 4
+
+# XAML files
+[*.xaml]
+charset = utf-8-bom
+indent_style = space
+indent_size = 4
+
+# XML project files
+[*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,projitems,shproj}]
+charset = utf-8-bom
+indent_style = space
+indent_size = 2
+
+# YAML files
+[*.{yml,yaml}]
+charset = utf-8
+indent_style = space
+indent_size = 2
+
+# JSON files
+[*.json]
+charset = utf-8
+indent_style = space
+indent_size = 2
+
+# Markdown files
+[*.md]
+charset = utf-8
+trim_trailing_whitespace = false

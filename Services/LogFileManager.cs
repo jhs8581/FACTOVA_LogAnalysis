@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,7 +12,7 @@ namespace FACTOVA_LogAnalysis.Services
 {
     public class LogFileManager
     {
-        // ?? ¹Ğ¸®ÃÊ Áö¿ø: [dd-MM-yyyy HH:mm:ss] ¶Ç´Â [dd-MM-yyyy HH:mm:ss.fff]
+        // ë¡œê·¸ ì‹œì‘ì„ íŒë³„í•˜ëŠ” ì •ê·œì‹: [dd-MM-yyyy HH:mm:ss] ë˜ëŠ” [dd-MM-yyyy HH:mm:ss.fff]
         private static readonly Regex LogStartRegex = new Regex(@"^\[\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}(?:\.\d{3})?\]", RegexOptions.Compiled | RegexOptions.Multiline);
         
         public string LogFolderPath { get; set; } = "";
@@ -24,10 +24,10 @@ namespace FACTOVA_LogAnalysis.Services
 
         public string GetLogFilePath(string year, string month, string fileName)
         {
-            // 1Â÷ °æ·Î: ³â/¿ù ÇÏÀ§ Æú´õ
+            // 1ì°¨ ì‹œë„: ë…„/ì›” í´ë” êµ¬ì¡°
             string filePath = Path.Combine(LogFolderPath, year, month, fileName);
             
-            // 1Â÷ °æ·Î¿¡ ÆÄÀÏÀÌ ¾øÀ¸¸é 2Â÷ °æ·Î(·çÆ®) ¹İÈ¯
+            // 1ì°¨ ì‹œë„ì— íŒŒì¼ì´ ì—†ìœ¼ë©´ 2ì°¨ ì‹œë„(ë£¨íŠ¸) íƒìƒ‰
             if (!File.Exists(filePath))
             {
                 filePath = Path.Combine(LogFolderPath, fileName);
@@ -40,10 +40,11 @@ namespace FACTOVA_LogAnalysis.Services
         {
             if (!File.Exists(filePath))
             {
-                throw new FileNotFoundException($"·Î±× ÆÄÀÏÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù: {filePath}");
+                throw new FileNotFoundException($"ë¡œê·¸ íŒŒì¼ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤: {filePath}");
             }
 
-            return await File.ReadAllTextAsync(filePath, Encoding.Default);
+            // âœ… UTF-8 ì¸ì½”ë”©ìœ¼ë¡œ ë³€ê²½
+            return await File.ReadAllTextAsync(filePath, Encoding.UTF8);
         }
 
         public string CleanDataLogs(string dataContent)
@@ -51,19 +52,19 @@ namespace FACTOVA_LogAnalysis.Services
             if (string.IsNullOrEmpty(dataContent))
                 return dataContent;
 
-            // BIZACTOR_INFO¿Í TRACE_INFO Á¦°Å
+            // BIZACTOR_INFOì™€ TRACE_INFO ì œê±°
             var bizactorRegex = new Regex(@"\s*<__BIZACTOR_INFO__>.*?</__BIZACTOR_INFO__>\s*", RegexOptions.Singleline | RegexOptions.IgnoreCase);
             dataContent = bizactorRegex.Replace(dataContent, "");
 
             var traceRegex = new Regex(@"\s*<__TRACE_INFO__>.*?</__TRACE_INFO__>\s*", RegexOptions.Singleline | RegexOptions.IgnoreCase);
             dataContent = traceRegex.Replace(dataContent, "");
 
-            // ±âº»ÀûÀÎ Æ÷¸ËÆÃ ¼öÇà
+            // ê¸°ë³¸ì ì¸ ì¤„ë°”ê¿ˆ ì •ë¦¬
             dataContent = Regex.Replace(dataContent, @"\s*/\s*exec\.Time\s*:", "\nexec.Time :");
             dataContent = Regex.Replace(dataContent, @"\s*/\s*TXN_ID\s*:", "\nTXN_ID :");
             dataContent = Regex.Replace(dataContent, @":\s*Parameter\s*:\s*<", ":\nParameter :\n<");
 
-            // XML ºÎºĞ¸¸ µé¿©¾²±â Àû¿ë (NewDataSet ºí·Ï¸¸)
+            // XML ë¶€ë¶„ë§Œ ë“¤ì—¬ì“°ê¸° ì ìš© (NewDataSet í•œì •)
             dataContent = FormatXmlBlocksOnly(dataContent);
 
             return dataContent;
@@ -74,40 +75,40 @@ namespace FACTOVA_LogAnalysis.Services
             if (string.IsNullOrEmpty(eventContent))
                 return eventContent;
 
-            // Á¦¿ÜÇÒ ·Î±× ÆĞÅÏµé Á¦°Å
-            // GetUpdateList - Start, GetUpdateList - End ÆĞÅÏ Á¦°Å
+            // ë¶ˆí•„ìš”í•œ ë¡œê·¸ í•­ëª©ë“¤ ì œê±°
+            // GetUpdateList - Start, GetUpdateList - End í˜•íƒœ ì œê±°
             var systemGetUpdateListRegex = new Regex(@"^\[.*?\]\s+System\s*:\s*GetUpdateList\s*-\s*(Start|End)\s*.*$", 
                 RegexOptions.Multiline | RegexOptions.IgnoreCase);
             eventContent = systemGetUpdateListRegex.Replace(eventContent, "");
 
-            // ¶Ç´Â ´õ ±¤¹üÀ§ÇÑ GetUpdateList ÆĞÅÏ Á¦°Å
+            // ë˜ëŠ” ë” ê´‘ë²”ìœ„í•œ GetUpdateList í˜•íƒœ ì œê±°
             var getUpdateListRegex = new Regex(@"^.*GetUpdateList\s*-\s*(Start|End).*$", 
                 RegexOptions.Multiline | RegexOptions.IgnoreCase);
             eventContent = getUpdateListRegex.Replace(eventContent, "");
 
-            // BIZACTOR_INFO¿Í TRACE_INFO Á¦°Å
+            // BIZACTOR_INFOì™€ TRACE_INFO ì œê±°
             var bizactorRegex = new Regex(@"\s*<__BIZACTOR_INFO__>.*?</__BIZACTOR_INFO__>\s*", RegexOptions.Singleline | RegexOptions.IgnoreCase);
             eventContent = bizactorRegex.Replace(eventContent, "");
 
             var traceRegex = new Regex(@"\s*<__TRACE_INFO__>.*?</__TRACE_INFO__>\s*", RegexOptions.Singleline | RegexOptions.IgnoreCase);
             eventContent = traceRegex.Replace(eventContent, "");
 
-            // EVENTµµ DATAÃ³·³ ±âº»ÀûÀÎ Æ÷¸ËÆÃ ¼öÇà
+            // EVENTë„ DATAì²˜ëŸ¼ ê¸°ë³¸ì ì¸ ì¤„ë°”ê¿ˆ ì •ë¦¬
             eventContent = Regex.Replace(eventContent, @"\s*/\s*exec\.Time\s*:", "\nexec.Time :");
             eventContent = Regex.Replace(eventContent, @"\s*/\s*TXN_ID\s*:", "\nTXN_ID :");
             eventContent = Regex.Replace(eventContent, @":\s*Parameter\s*:\s*<", ":\nParameter :\n<");
 
-            // EVENTµµ XML Æ÷¸ËÆÃ Àû¿ë
+            // EVENTë„ XML í¬ë§·íŒ… ì ìš©
             eventContent = FormatXmlBlocksOnly(eventContent);
 
-            // ¸ğµç ºó ÇàÀ» ¿ÏÀüÈ÷ Á¦°Å
-            // 1. ¸ğµç °ø¹é¸¸ ÀÖ´Â ÁÙµéÀ» Á¦°Å
+            // ë§ˆì§€ë§‰ ë‹¨ê³„: ë¹ˆ ì¤„ë“¤ì„ ì •ë¦¬
+            // 1. ê³µë°±ë§Œ ìˆëŠ” ì¤„ë“¤ì€ ì œê±°
             eventContent = Regex.Replace(eventContent, @"^\s*$", "", RegexOptions.Multiline);
             
-            // 2. ¸ğµç ¿¬¼ÓµÈ °³Çà ¹®ÀÚµéÀ» ÇÏ³ªÀÇ °³ÇàÀ¸·Î ÅëÇÕ
+            // 2. ì—°ì† ì—¬ëŸ¬ ê°œì˜ ì¤„ë°”ê¿ˆì„ í•˜ë‚˜ë¡œ ì••ì¶•
             eventContent = Regex.Replace(eventContent, @"\n+", "\n");
             
-            // 3. ¾ÕµÚ °ø¹é ¹× °³Çà Á¦°Å
+            // 3. ì•ë’¤ ê³µë°± ë° ì¤„ë°”ê¿ˆ ì œê±°
             eventContent = eventContent.Trim();
 
             return eventContent;
@@ -115,14 +116,14 @@ namespace FACTOVA_LogAnalysis.Services
 
         private string FormatXmlBlocksOnly(string content)
         {
-            // NewDataSet XML ºí·Ï¸¸ Ã£¾Æ¼­ µé¿©¾²±â Àû¿ë
+            // NewDataSet XML í•œì •ìœ¼ë¡œ ì°¾ì•„ì„œ ë“¤ì—¬ì“°ê¸° ì ìš©
             var xmlRegex = new Regex(@"(<NewDataSet>.*?</NewDataSet>)", RegexOptions.Singleline | RegexOptions.IgnoreCase);
             
             return xmlRegex.Replace(content, match =>
             {
                 string xmlContent = match.Value;
                 
-                // ´õ Á¤È®ÇÑ XML Æ÷¸ËÆÃ
+                // ë” ì •í™•í•œ XML íŒŒì‹±
                 try
                 {
                     var xmlDoc = new XmlDocument();
@@ -132,7 +133,7 @@ namespace FACTOVA_LogAnalysis.Services
                     using (var xmlWriter = XmlWriter.Create(stringWriter, new XmlWriterSettings
                     {
                         Indent = true,
-                        IndentChars = "  ", // 2Ä­ µé¿©¾²±â
+                        IndentChars = "  ", // 2ì¹¸ ë“¤ì—¬ì“°ê¸°
                         NewLineChars = "\n",
                         OmitXmlDeclaration = true,
                         NewLineHandling = NewLineHandling.Replace
@@ -145,7 +146,7 @@ namespace FACTOVA_LogAnalysis.Services
                 }
                 catch
                 {
-                    // XML ÆÄ½Ì ½ÇÆĞ ½Ã ¼öµ¿ Æ÷¸ËÆÃ
+                    // XML íŒŒì‹± ì‹¤íŒ¨ ì‹œ ìˆ˜ë™ í¬ë§¤íŒ…
                     xmlContent = Regex.Replace(xmlContent, @"><", ">\n<");
                     
                     var lines = xmlContent.Split('\n');
@@ -157,17 +158,17 @@ namespace FACTOVA_LogAnalysis.Services
                         string trimmedLine = line.Trim();
                         if (string.IsNullOrEmpty(trimmedLine)) continue;
 
-                        // ´İ´Â ÅÂ±×´Â µé¿©¾²±â ·¹º§À» ¸ÕÀú °¨¼Ò
+                        // ë‹«ëŠ” íƒœê·¸ëŠ” ë“¤ì—¬ì“°ê¸° ë ˆë²¨ì„ ë¨¼ì € ê°ì†Œ
                         if (trimmedLine.StartsWith("</"))
                         {
                             indentLevel = Math.Max(0, indentLevel - 1);
                         }
 
-                        // µé¿©¾²±â Àû¿ë
+                        // ë“¤ì—¬ì“°ê¸° ì ìš©
                         string indent = new string(' ', indentLevel * 2);
                         result.AppendLine(indent + trimmedLine);
 
-                        // ¿©´Â ÅÂ±×´Â µé¿©¾²±â ·¹º§À» Áõ°¡ (ÀÚÃ¼ ´İÈû ÅÂ±×´Â Á¦¿Ü)
+                        // ì—¬ëŠ” íƒœê·¸ëŠ” ë“¤ì—¬ì“°ê¸° ë ˆë²¨ì„ ì¦ê°€ (ìì²´ ë‹«ëŠ” íƒœê·¸ëŠ” ì œì™¸)
                         if (trimmedLine.StartsWith("<") && !trimmedLine.StartsWith("</") && !trimmedLine.EndsWith("/>") && !trimmedLine.Contains("</"))
                         {
                             indentLevel++;
@@ -203,7 +204,7 @@ namespace FACTOVA_LogAnalysis.Services
 
             int firstMatchIndex = content.IndexOf(searchText, StringComparison.OrdinalIgnoreCase);
             
-            // Ã¹ ¹øÂ° ÀÏÄ¡ À§Ä¡±îÁöÀÇ ¸ğµç ³»¿ë ¹İÈ¯
+            // ì²« ë²ˆì§¸ ë§¤ì¹­ ìœ„ì¹˜ê¹Œì§€ ëª¨ë“  ë‚´ìš© ë°˜í™˜
             return content.Substring(0, firstMatchIndex + searchText.Length);
         }
 
@@ -216,7 +217,7 @@ namespace FACTOVA_LogAnalysis.Services
 
             int firstMatchIndex = content.IndexOf(searchText, StringComparison.OrdinalIgnoreCase);
             
-            // Ã¹ ¹øÂ° ÀÏÄ¡ À§Ä¡ºÎÅÍ ³¡±îÁöÀÇ ¸ğµç ³»¿ë ¹İÈ¯
+            // ì²« ë²ˆì§¸ ë§¤ì¹­ ìœ„ì¹˜ë¶€í„° ëê¹Œì§€ ëª¨ë“  ë‚´ìš© ë°˜í™˜
             return content.Substring(firstMatchIndex);
         }
 

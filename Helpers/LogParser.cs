@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Text.RegularExpressions;
 using FACTOVA_LogAnalysis.Models;
 
@@ -14,35 +14,35 @@ namespace FACTOVA_LogAnalysis.Helpers
             @"\[(?<timestamp>\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2})\] (?<log>.*)",
             RegexOptions.Compiled);
 
-        // EVENT ·Î±×¸¦ ÀÎ½ÄÇÏ´Â Á¤±Ô½Ä - ´Ù¾çÇÑ ·Î±× Çü½Ä¿¡ ¸Â°Ô °³¼±
+        // EVENT ë¡œê·¸ë¥¼ íŒŒì‹±í•˜ëŠ” ì •ê·œì‹ - ì‹¤ì œë¡œ ë¡œê·¸ í˜•ì‹ì— ë§ê²Œ ì¡°ì •
         private static readonly Regex EventLogRegex = new Regex(
             @"\[(?<timestamp>\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2})\]\[SENDDATA\]\s*DYNAMIC\.EVENT\.REQUEST=\{(?<content>.*?)\}(?=\s*$|\s*\[|\s*\Z)",
             RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.Multiline);
 
-        // ELEMENT Çü½ÄÀÇ EVENT ·Î±×¸¦ ÀÎ½ÄÇÏ´Â »õ·Î¿î Á¤±Ô½Ä Ãß°¡
+        // ELEMENT í˜•ì‹ì˜ EVENT ë¡œê·¸ë¥¼ íŒŒì‹±í•˜ëŠ” ìƒˆë¡œìš´ ì •ê·œì‹ ì¶”ê°€
         private static readonly Regex ElementEventLogRegex = new Regex(
             @"\[(?<timestamp>\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2})\]\s*(?<msgid>\d+)\s+\[ELEMENT,\s*ELEMENT=\{(?<content>.*?)\}\]",
             RegexOptions.Compiled | RegexOptions.Singleline);
 
-        // MSGID¸¦ ÃßÃâÇÏ´Â Á¤±Ô½Ä - ELEMENT ±¸¹®¿¡¼­ Ã£±â
+        // MSGIDë¥¼ ì¶”ì¶œí•˜ëŠ” ì •ê·œì‹ - ELEMENT í˜•ì‹ì—ì„œ ì°¾ê¸°
         private static readonly Regex MsgIdRegex = new Regex(@"<MSGID=(?<msgid>\d+)>", RegexOptions.Compiled);
         
-        // PROCID¸¦ ÃßÃâÇÏ´Â Á¤±Ô½Ä Ãß°¡
+        // PROCIDë¥¼ ì¶”ì¶œí•˜ëŠ” ì •ê·œì‹ ì¶”ê°€
         private static readonly Regex ProcIdRegex = new Regex(@"<PROCID=(?<procid>[^>]+)>", RegexOptions.Compiled);
         
-        // ITEM ¼½¼ÇÀ» ÃßÃâÇÏ´Â Á¤±Ô½Ä - ´õ Á¤È®ÇÏ°Ô °³¼±
+        // ITEM ë¶€ë¶„ì„ ì¶”ì¶œí•˜ëŠ” ì •ê·œì‹ - ë” ì •í™•í•˜ê²Œ ìˆ˜ì •
         private static readonly Regex ItemSectionRegex = new Regex(@"\[ITEM,\s*ITEM=\{(.*?)\}\]", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.Multiline);
 
         public static LogLineItem? Parse(string line, int lineNumber)
         {
-            // ELEMENT Çü½ÄÀÇ EVENT ·Î±× ¸ÕÀú È®ÀÎ
+            // ELEMENT í˜•ì‹ì˜ EVENT ë¡œê·¸ ë¨¼ì € í™•ì¸
             var elementEventMatch = ElementEventLogRegex.Match(line);
             if (elementEventMatch.Success)
             {
                 string content = elementEventMatch.Groups["content"].Value;
                 string msgId = elementEventMatch.Groups["msgid"].Value;
                 
-                // PROCID ÃßÃâ
+                // PROCID ì¶”ì¶œ
                 var procIdMatch = ProcIdRegex.Match(content);
                 string procId = procIdMatch.Success ? procIdMatch.Groups["procid"].Value : "";
 
@@ -57,7 +57,7 @@ namespace FACTOVA_LogAnalysis.Helpers
                 };
             }
 
-            // EVENT ·Î±× È®ÀÎÀ» ´ÙÀ½ ½Ãµµ
+            // EVENT ë¡œê·¸ í™•ì¸ì„ ë¨¼ì € ì‹œë„
             if (line.Contains("[SENDDATA]") && line.Contains("DYNAMIC.EVENT.REQUEST"))
             {
                 var eventMatch = EventLogRegex.Match(line);
@@ -112,7 +112,7 @@ namespace FACTOVA_LogAnalysis.Helpers
         }
 
         /// <summary>
-        /// TimeStamp¸¦ yyyy-MM-dd HH:mm:ss Çü½ÄÀ¸·Î º¯È¯
+        /// TimeStampë¥¼ yyyy-MM-dd HH:mm:ss í˜•ì‹ìœ¼ë¡œ ë³€í™˜
         /// </summary>
         private static string FormatTimestamp(string timestamp)
         {
@@ -121,7 +121,7 @@ namespace FACTOVA_LogAnalysis.Helpers
 
             try
             {
-                // ¿øº» Çü½Ä: dd-MM-yyyy HH:mm:ss ¸¦ yyyy-MM-dd HH:mm:ss
+                // ì…ë ¥ í˜•ì‹: dd-MM-yyyy HH:mm:ss ë¥¼ yyyy-MM-dd HH:mm:ss
                 if (DateTime.TryParseExact(timestamp, "dd-MM-yyyy HH:mm:ss", 
                     System.Globalization.CultureInfo.InvariantCulture, 
                     System.Globalization.DateTimeStyles.None, out DateTime parsedDate))
@@ -129,13 +129,13 @@ namespace FACTOVA_LogAnalysis.Helpers
                     return parsedDate.ToString("yyyy-MM-dd HH:mm:ss");
                 }
 
-                // ´Ù¸¥ Çü½Äµéµµ ½Ãµµ
+                // ë‹¤ë¥¸ í˜•ì‹ë“¤ë„ ì‹œë„
                 if (DateTime.TryParse(timestamp, out DateTime parsedDate2))
                 {
                     return parsedDate2.ToString("yyyy-MM-dd HH:mm:ss");
                 }
 
-                return timestamp; // ÆÄ½Ì ½ÇÆĞ ½Ã ¿øº» ¹İÈ¯
+                return timestamp; // íŒŒì‹± ì‹¤íŒ¨ ì‹œ ì›ë³¸ ë°˜í™˜
             }
             catch
             {
@@ -144,20 +144,20 @@ namespace FACTOVA_LogAnalysis.Helpers
         }
 
         /// <summary>
-        /// EVENT ³»¿ë¿¡¼­ ITEMÁ¤º¸ ÃßÃâÇÏ¿© Á¤¸®
+        /// EVENT ë‚´ìš©ì—ì„œ ITEMë§Œì„ ì¶”ì¶œí•˜ì—¬ ë°˜í™˜
         /// </summary>
         private static string ExtractItemsFromEventContent(string content)
         {
             try
             {
-                // Ã¹ ¹øÂ° ½Ãµµ: ITEM ¼½¼Ç ÀüÃ¼ ÃßÃâ
+                // ì²« ë²ˆì§¸ ì‹œë„: ITEM ì„¹ì…˜ ì „ì²´ ì¶”ì¶œ
                 var itemMatch = ItemSectionRegex.Match(content);
                 if (itemMatch.Success)
                 {
                     return CleanItemContent(itemMatch.Groups[1].Value);
                 }
 
-                // µÎ ¹øÂ° ½Ãµµ: °³º° ¾ÆÀÌÅÛµé [1, 1={...}], [2, 2={...}] Çü½Ä Ã£±â
+                // ë‘ ë²ˆì§¸ ì‹œë„: ê°œë³„ í•­ëª©ë“¤ì¸ [1, 1={...}], [2, 2={...}] í˜•ì‹ ì°¾ê¸°
                 var itemsPattern = @"\[\d+,\s*\d+=\{[^}]*\}\]";
                 var itemsMatches = Regex.Matches(content, itemsPattern);
                 
@@ -171,7 +171,7 @@ namespace FACTOVA_LogAnalysis.Helpers
                     return string.Join(" ", items);
                 }
 
-                // ¼¼ ¹øÂ° ½Ãµµ: ELEMENT ºÎºĞ Á¦°ÅÇÏ°í ³ª¸ÓÁö ¹İÈ¯
+                // ì„¸ ë²ˆì§¸ ì‹œë„: ELEMENT ë¶€ë¶„ ì œì™¸í•˜ê³  ë‚˜ë¨¸ì§€ ë°˜í™˜
                 var elementPattern = @"\[ELEMENT,\s*ELEMENT=\{[^}]*\}\]";
                 var cleanedContent = Regex.Replace(content, elementPattern, "").Trim();
                 
@@ -184,7 +184,7 @@ namespace FACTOVA_LogAnalysis.Helpers
         }
 
         /// <summary>
-        /// ITEM ³»¿ë Á¤¸®
+        /// ITEM ë‚´ìš© ì •ë¦¬
         /// </summary>
         private static string CleanItemContent(string itemContent)
         {

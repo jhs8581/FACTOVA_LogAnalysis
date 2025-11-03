@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -105,9 +105,9 @@ namespace FACTOVA_LogAnalysis.Services
                     UpdateLineNumbers(workLogLineNumberTextBox);
 
                     if (!string.IsNullOrEmpty(message))
-                        statusText.Text = message.Length > 30 ? $"·Î±× {_workLogLineCounter}ÁÙ | {message.Substring(0, 30)}..." : $"·Î±× {_workLogLineCounter}ÁÙ | {message}";
+                        statusText.Text = message.Length > 30 ? $"ë¡œê·¸ {_workLogLineCounter}ì¤„ | {message.Substring(0, 30)}..." : $"ë¡œê·¸ {_workLogLineCounter}ì¤„ | {message}";
                     else
-                        statusText.Text = $"·Î±× {_workLogLineCounter}ÁÙ";
+                        statusText.Text = $"ë¡œê·¸ {_workLogLineCounter}ì¤„";
 
                     _workLogLineCounter++;
 
@@ -135,7 +135,7 @@ namespace FACTOVA_LogAnalysis.Services
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"AddToRichTextBox ¿À·ù: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"AddToRichTextBox ì˜¤ë¥˜: {ex.Message}");
             }
         }
 
@@ -152,7 +152,7 @@ namespace FACTOVA_LogAnalysis.Services
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UpdateLineNumbers ¿À·ù: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UpdateLineNumbers ì˜¤ë¥˜: {ex.Message}");
             }
         }
 
@@ -166,7 +166,7 @@ namespace FACTOVA_LogAnalysis.Services
                 {
                     workLogTextBox.Document.Blocks.Clear();
                     var paragraph = new Paragraph();
-                    paragraph.Inlines.Add(new Run("ÀÛ¾÷ ·Î±×°¡ ¿©±â¿¡ Ç¥½ÃµË´Ï´Ù...")
+                    paragraph.Inlines.Add(new Run("ì‘ì—… ë¡œê·¸ê°€ ì—¬ê¸°ì— í‘œì‹œë©ë‹ˆë‹¤...")
                     {
                         Foreground = System.Windows.Media.Brushes.Gray,
                         FontStyle = System.Windows.FontStyles.Italic
@@ -175,12 +175,12 @@ namespace FACTOVA_LogAnalysis.Services
 
                     workLogLineNumberTextBox.Text = string.Empty;
                     _workLogLineCounter = 1;
-                    statusText.Text = "·Î±×°¡ ÃÊ±âÈ­µÇ¾ú½À´Ï´Ù";
+                    statusText.Text = "ë¡œê·¸ê°€ ì´ˆê¸°í™”ë˜ì—ˆìŠµë‹ˆë‹¤";
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception($"·Î±× ÃÊ±âÈ­ Áß ¿À·ù ¹ß»ı: {ex.Message}");
+                throw new Exception($"ë¡œê·¸ ì´ˆê¸°í™” ì¤‘ ì˜¤ë¥˜ ë°œìƒ: {ex.Message}");
             }
         }
 
@@ -190,12 +190,12 @@ namespace FACTOVA_LogAnalysis.Services
             {
                 var range = new TextRange(workLogTextBox.Document.ContentStart, workLogTextBox.Document.ContentEnd);
                 File.WriteAllText(filePath, range.Text, Encoding.UTF8);
-                AddLog($"ÀÛ¾÷ ·Î±×°¡ ÀúÀåµÊ: {filePath}", WorkLogType.Success);
+                AddLog($"ì‘ì—… ë¡œê·¸ê°€ ì €ì¥ë¨: {filePath}", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                AddLog($"·Î±× ÀúÀå ½ÇÆĞ: {ex.Message}", WorkLogType.Error);
-                throw new Exception($"·Î±× ÀúÀå Áß ¿À·ù ¹ß»ı: {ex.Message}");
+                AddLog($"ë¡œê·¸ ì €ì¥ ì‹¤íŒ¨: {ex.Message}", WorkLogType.Error);
+                throw new Exception($"ë¡œê·¸ ì €ì¥ ì¤‘ ì˜¤ë¥˜ ë°œìƒ: {ex.Message}");
             }
         }
     }
