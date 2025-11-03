@@ -1,0 +1,260 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Xml;
+
+namespace FACTOVA_LogAnalysis.Services
+{
+    public class LogFileManager
+    {
+        // ?? 밀리초 지원: [dd-MM-yyyy HH:mm:ss] 또는 [dd-MM-yyyy HH:mm:ss.fff]
+        private static readonly Regex LogStartRegex = new Regex(@"^\[\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}(?:\.\d{3})?\]", RegexOptions.Compiled | RegexOptions.Multiline);
+        
+        public string LogFolderPath { get; set; } = "";
+
+        public LogFileManager(string logFolderPath = "")
+        {
+            LogFolderPath = logFolderPath;
+        }
+
+        public string GetLogFilePath(string year, string month, string fileName)
+        {
+            // 1차 경로: 년/월 하위 폴더
+            string filePath = Path.Combine(LogFolderPath, year, month, fileName);
+            
+            // 1차 경로에 파일이 없으면 2차 경로(루트) 반환
+            if (!File.Exists(filePath))
+            {
+                filePath = Path.Combine(LogFolderPath, fileName);
+            }
+            
+            return filePath;
+        }
+
+        public async Task<string> ReadLogFileAsync(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException($"로그 파일을 찾을 수 없습니다: {filePath}");
+            }
+
+            return await File.ReadAllTextAsync(filePath, Encoding.Default);
+        }
+
+        public string CleanDataLogs(string dataContent)
+        {
+            if (string.IsNullOrEmpty(dataContent))
+                return dataContent;
+
+            // BIZACTOR_INFO와 TRACE_INFO 제거
+            var bizactorRegex = new Regex(@"\s*<__BIZACTOR_INFO__>.*?</__BIZACTOR_INFO__>\s*", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+            dataContent = bizactorRegex.Replace(dataContent, "");
+
+            var traceRegex = new Regex(@"\s*<__TRACE_INFO__>.*?</__TRACE_INFO__>\s*", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+            dataContent = traceRegex.Replace(dataContent, "");
+
+            // 기본적인 포맷팅 수행
+            dataContent = Regex.Replace(dataContent, @"\s*/\s*exec\.Time\s*:", "\nexec.Time :");
+            dataContent = Regex.Replace(dataContent, @"\s*/\s*TXN_ID\s*:", "\nTXN_ID :");
+            dataContent = Regex.Replace(dataContent, @":\s*Parameter\s*:\s*<", ":\nParameter :\n<");
+
+            // XML 부분만 들여쓰기 적용 (NewDataSet 블록만)
+            dataContent = FormatXmlBlocksOnly(dataContent);
+
+            return dataContent;
+        }
+
+        public string CleanEventLogs(string eventContent)
+        {
+            if (string.IsNullOrEmpty(eventContent))
+                return eventContent;
+
+            // 제외할 로그 패턴들 제거
+            // GetUpdateList - Start, GetUpdateList - End 패턴 제거
+            var systemGetUpdateListRegex = new Regex(@"^\[.*?\]\s+System\s*:\s*GetUpdateList\s*-\s*(Start|End)\s*.*$", 
+                RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            eventContent = systemGetUpdateListRegex.Replace(eventContent, "");
+
+            // 또는 더 광범위한 GetUpdateList 패턴 제거
+            var getUpdateListRegex = new Regex(@"^.*GetUpdateList\s*-\s*(Start|End).*$", 
+                RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            eventContent = getUpdateListRegex.Replace(eventContent, "");
+
+            // BIZACTOR_INFO와 TRACE_INFO 제거
+            var bizactorRegex = new Regex(@"\s*<__BIZACTOR_INFO__>.*?</__BIZACTOR_INFO__>\s*", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+            eventContent = bizactorRegex.Replace(eventContent, "");
+
+            var traceRegex = new Regex(@"\s*<__TRACE_INFO__>.*?</__TRACE_INFO__>\s*", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+            eventContent = traceRegex.Replace(eventContent, "");
+
+            // EVENT도 DATA처럼 기본적인 포맷팅 수행
+            eventContent = Regex.Replace(eventContent, @"\s*/\s*exec\.Time\s*:", "\nexec.Time :");
+            eventContent = Regex.Replace(eventContent, @"\s*/\s*TXN_ID\s*:", "\nTXN_ID :");
+            eventContent = Regex.Replace(eventContent, @":\s*Parameter\s*:\s*<", ":\nParameter :\n<");
+
+            // EVENT도 XML 포맷팅 적용
+            eventContent = FormatXmlBlocksOnly(eventContent);
+
+            // 모든 빈 행을 완전히 제거
+            // 1. 모든 공백만 있는 줄들을 제거
+            eventContent = Regex.Replace(eventContent, @"^\s*$", "", RegexOptions.Multiline);
+            
+            // 2. 모든 연속된 개행 문자들을 하나의 개행으로 통합
+            eventContent = Regex.Replace(eventContent, @"\n+", "\n");
+            
+            // 3. 앞뒤 공백 및 개행 제거
+            eventContent = eventContent.Trim();
+
+            return eventContent;
+        }
+
+        private string FormatXmlBlocksOnly(string content)
+        {
+            // NewDataSet XML 블록만 찾아서 들여쓰기 적용
+            var xmlRegex = new Regex(@"(<NewDataSet>.*?</NewDataSet>)", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+            
+            return xmlRegex.Replace(content, match =>
+            {
+                string xmlContent = match.Value;
+                
+                // 더 정확한 XML 포맷팅
+                try
+                {
+                    var xmlDoc = new XmlDocument();
+                    xmlDoc.LoadXml(xmlContent);
+                    
+                    using (var stringWriter = new StringWriter())
+                    using (var xmlWriter = XmlWriter.Create(stringWriter, new XmlWriterSettings
+                    {
+                        Indent = true,
+                        IndentChars = "  ", // 2칸 들여쓰기
+                        NewLineChars = "\n",
+                        OmitXmlDeclaration = true,
+                        NewLineHandling = NewLineHandling.Replace
+                    }))
+                    {
+                        xmlDoc.WriteTo(xmlWriter);
+                        xmlWriter.Flush();
+                        return stringWriter.ToString();
+                    }
+                }
+                catch
+                {
+                    // XML 파싱 실패 시 수동 포맷팅
+                    xmlContent = Regex.Replace(xmlContent, @"><", ">\n<");
+                    
+                    var lines = xmlContent.Split('\n');
+                    var result = new StringBuilder();
+                    int indentLevel = 0;
+
+                    foreach (string line in lines)
+                    {
+                        string trimmedLine = line.Trim();
+                        if (string.IsNullOrEmpty(trimmedLine)) continue;
+
+                        // 닫는 태그는 들여쓰기 레벨을 먼저 감소
+                        if (trimmedLine.StartsWith("</"))
+                        {
+                            indentLevel = Math.Max(0, indentLevel - 1);
+                        }
+
+                        // 들여쓰기 적용
+                        string indent = new string(' ', indentLevel * 2);
+                        result.AppendLine(indent + trimmedLine);
+
+                        // 여는 태그는 들여쓰기 레벨을 증가 (자체 닫힘 태그는 제외)
+                        if (trimmedLine.StartsWith("<") && !trimmedLine.StartsWith("</") && !trimmedLine.EndsWith("/>") && !trimmedLine.Contains("</"))
+                        {
+                            indentLevel++;
+                        }
+                    }
+
+                    return result.ToString().TrimEnd();
+                }
+            });
+        }
+
+        public string GetSearchContent(string content, string searchText, string searchMode)
+        {
+            switch (searchMode)
+            {
+                case "Range":
+                    return GetSearchRange(content, searchText);
+                case "Before":
+                    return GetSearchBefore(content, searchText);
+                case "After":
+                    return GetSearchAfter(content, searchText);
+                default:
+                    return GetSearchRange(content, searchText);
+            }
+        }
+
+        private string GetSearchBefore(string content, string searchText)
+        {
+            if (string.IsNullOrEmpty(content) || !content.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            {
+                return $"No '{searchText}' found in this category.";
+            }
+
+            int firstMatchIndex = content.IndexOf(searchText, StringComparison.OrdinalIgnoreCase);
+            
+            // 첫 번째 일치 위치까지의 모든 내용 반환
+            return content.Substring(0, firstMatchIndex + searchText.Length);
+        }
+
+        private string GetSearchAfter(string content, string searchText)
+        {
+            if (string.IsNullOrEmpty(content) || !content.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            {
+                return $"No '{searchText}' found in this category.";
+            }
+
+            int firstMatchIndex = content.IndexOf(searchText, StringComparison.OrdinalIgnoreCase);
+            
+            // 첫 번째 일치 위치부터 끝까지의 모든 내용 반환
+            return content.Substring(firstMatchIndex);
+        }
+
+        private string GetSearchRange(string categoryContent, string searchText)
+        {
+            if (string.IsNullOrEmpty(categoryContent) || !categoryContent.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            {
+                return $"No '{searchText}' found in this category.";
+            }
+
+            int firstMatchIndex = categoryContent.IndexOf(searchText, StringComparison.OrdinalIgnoreCase);
+            int lastMatchIndex = categoryContent.LastIndexOf(searchText, StringComparison.OrdinalIgnoreCase);
+
+            var logStartMatches = LogStartRegex.Matches(categoryContent).Cast<Match>().ToList();
+            if (logStartMatches.Count == 0)
+            {
+                return categoryContent;
+            }
+
+            int finalStartIndex = 0;
+            var firstLog = logStartMatches.LastOrDefault(m => m.Index <= firstMatchIndex);
+            if (firstLog != null)
+            {
+                finalStartIndex = firstLog.Index;
+            }
+
+            int finalEndIndex = categoryContent.Length;
+            var lastLog = logStartMatches.LastOrDefault(m => m.Index <= lastMatchIndex);
+            if (lastLog != null)
+            {
+                int lastLogIndexInMatches = logStartMatches.IndexOf(lastLog);
+                if (lastLogIndexInMatches + 1 < logStartMatches.Count)
+                {
+                    finalEndIndex = logStartMatches[lastLogIndexInMatches + 1].Index;
+                }
+            }
+
+            return categoryContent.Substring(finalStartIndex, finalEndIndex - finalStartIndex);
+        }
+    }
+}

@@ -1,0 +1,37 @@
+<Window x:Class="FACTOVA_LogAnalysis.FindDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Find" Height="120" Width="520" WindowStartupLocation="CenterOwner"
+        WindowStyle="ToolWindow" ShowInTaskbar="False" 
+        Loaded="Window_Loaded" Closing="Window_Closing" KeyDown="Window_KeyDown"
+        ResizeMode="NoResize" Background="White">
+    
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Margin="0,0,0,8">
+            <Label Content="Find:" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Name="prevButton" Content="^" Width="24" Height="24" 
+                        Margin="2,0,0,0" Click="PrevButton_Click" ToolTip="Previous"/>
+                <Button Name="nextButton" Content="v" Width="24" Height="24" 
+                        Margin="1,0,0,0" Click="NextButton_Click" ToolTip="Next"/>
+            </StackPanel>
+            <TextBox Name="searchTextBox" Height="23" VerticalAlignment="Center"
+                     TextChanged="SearchTextBox_TextChanged" 
+                     KeyDown="SearchTextBox_KeyDown" Margin="0,0,8,0"/>
+        </DockPanel>
+
+        <DockPanel Grid.Row="1" Margin="0,4,0,0">
+            <CheckBox Name="caseCheckBox" Content="Match case" 
+                      VerticalAlignment="Center" DockPanel.Dock="Left"
+                      Checked="CaseCheckBox_Changed" Unchecked="CaseCheckBox_Changed"/>
+            <Label Name="statusLabel" Content="0/0" 
+                   VerticalAlignment="Center" FontWeight="Bold" Width="120" 
+                   HorizontalContentAlignment="Right" DockPanel.Dock="Right"/>
+        </DockPanel>
+    </Grid>
+</Window>

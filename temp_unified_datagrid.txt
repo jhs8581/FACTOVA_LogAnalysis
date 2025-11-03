@@ -1,0 +1,31 @@
+                    <!-- Unified DataGrid -->
+                    <DataGrid Grid.Row="1" Name="unifiedLogDataGrid"
+                              AutoGenerateColumns="False"
+                              GridLinesVisibility="All"
+                              HeadersVisibility="Column"
+                              SelectionMode="Extended"
+                              SelectionUnit="FullRow"
+                              CanUserReorderColumns="False"
+                              CanUserSortColumns="True"
+                              IsReadOnly="False"
+                              VirtualizingPanel.IsVirtualizing="True"
+                              VirtualizingPanel.VirtualizationMode="Recycling"
+                              FontFamily="Consolas"
+                              FontSize="11"
+                              AlternatingRowBackground="WhiteSmoke"
+                              RowBackground="White"
+                              Margin="5"
+                              ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                              ScrollViewer.VerticalScrollBarVisibility="Auto"
+                              LoadingRow="UnifiedLogDataGrid_LoadingRow">
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="120" IsReadOnly="False"/>
+                            <DataGridTextColumn Header="LogType" Binding="{Binding LogLevel}" Width="90" IsReadOnly="False"/>
+                            <DataGridTextColumn Header="Business" Binding="{Binding BusinessName}" Width="200" IsReadOnly="False"/>
+                            <DataGridTextColumn Header="MsgId" Binding="{Binding MsgId}" Width="80" IsReadOnly="False"/>
+                            <DataGridTextColumn Header="ExecTime" Binding="{Binding ExecTime}" Width="90" IsReadOnly="False"/>
+                            <DataGridTextColumn Header="TxnId" Binding="{Binding TxnId}" Width="140" IsReadOnly="False"/>
+                            <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="*" IsReadOnly="False"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
