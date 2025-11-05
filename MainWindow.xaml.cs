@@ -1752,6 +1752,32 @@ namespace FACTOVA_LogAnalysis
             }
         }
 
+        /// <summary>
+        /// DataGrid Content 셀의 TextBox 드래그 방지 및 복사 지원
+        /// </summary>
+        private void ContentTextBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                if (sender is System.Windows.Controls.TextBox textBox && textBox.IsReadOnly)
+                {
+                    // 이미 선택된 텍스트가 있으면 복사 가능하도록 포커스 유지
+                    if (!string.IsNullOrEmpty(textBox.SelectedText))
+                    {
+                        return; // 기존 선택 유지
+                    }
+
+                    // 새로운 클릭은 전체 텍스트를 선택하지 않고 클릭 위치로 캐럿 이동
+                    textBox.Focus();
+                    e.Handled = false; // 기본 동작 허용
+                }
+            }
+            catch
+            {
+                // 예외 무시
+            }
+        }
+
         // Export DataGrid to CSV (Excel)
 
         private void ExportDataGridButton_Click(object sender, RoutedEventArgs e)

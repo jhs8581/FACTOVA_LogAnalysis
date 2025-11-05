@@ -19,6 +19,48 @@
             <Setter Property="Background" Value="WhiteSmoke"/>
         </Style>
 
+        <!-- Content 컬럼 스타일: 고정 높이 + 내부 스크롤 + 복사 가능 -->
+        <Style x:Key="ContentCellStyle" TargetType="DataGridCell">
+            <Setter Property="BorderBrush" Value="LightGray"/>
+            <Setter Property="BorderThickness" Value="0.5"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="White">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                          HorizontalScrollBarVisibility="Auto"
+                                          MaxHeight="100"
+                                          Focusable="False">
+                                <TextBox Text="{Binding Content, Mode=OneWay}"
+                                         IsReadOnly="True"
+                                         BorderThickness="0"
+                                         Background="Transparent"
+                                         Foreground="Black"
+                                         TextWrapping="Wrap"
+                                         Margin="4,2"
+                                         Padding="0"
+                                         VerticalAlignment="Top"
+                                         FontFamily="Consolas"
+                                         AcceptsReturn="True"
+                                         Cursor="Arrow"
+                                         IsReadOnlyCaretVisible="False"
+                                         Focusable="True"
+                                         IsTabStop="False"
+                                         SelectionBrush="#3399FF"
+                                         SelectionTextBrush="White"
+                                         SelectionOpacity="0.4"
+                                         PreviewMouseLeftButtonDown="ContentTextBox_PreviewMouseLeftButtonDown"/>
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Global DataGrid style so all DataGrids get full grid lines and the cell/header styles -->
         <Style TargetType="DataGrid">
             <Setter Property="GridLinesVisibility" Value="All" />
@@ -537,6 +579,7 @@
                                       SelectionUnit="FullRow"
                                       CanUserReorderColumns="False"
                                       CanUserSortColumns="True"
+                                      CanUserResizeRows="True"
                                       IsReadOnly="False"
                                       VirtualizingPanel.IsVirtualizing="True"
                                       VirtualizingPanel.VirtualizationMode="Recycling"
@@ -554,7 +597,8 @@
                                                 <DataGridTextColumn Header="Business" Binding="{Binding BusinessName}" Width="200" IsReadOnly="False"/>
                                                 <DataGridTextColumn Header="ExecTime" Binding="{Binding ExecTime}" Width="Auto" IsReadOnly="False"/>
                                                 <DataGridTextColumn Header="TxnId" Binding="{Binding TxnId}" Width="150" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="*" IsReadOnly="False"/>
+                                                <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="*" IsReadOnly="False" 
+                                                                    CellStyle="{StaticResource ContentCellStyle}"/>
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </GroupBox>
@@ -608,6 +652,7 @@
                                       SelectionUnit="FullRow"
                                       CanUserReorderColumns="False"
                                       CanUserSortColumns="True"
+                                      CanUserResizeRows="True"
                                       IsReadOnly="False"
                                       VirtualizingPanel.IsVirtualizing="True"
                                       VirtualizingPanel.VirtualizationMode="Recycling"
@@ -624,7 +669,8 @@
                                                 <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="100" IsReadOnly="False"/>
                                                 <DataGridTextColumn Header="MsgId" Binding="{Binding MsgId}" Width="100" IsReadOnly="False"/>
                                                 <DataGridTextColumn Header="ProcId" Binding="{Binding ProcId}" Width="100" IsReadOnly="False" Visibility="Collapsed"/>
-                                                <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="300" IsReadOnly="False"/>
+                                                <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="300" IsReadOnly="False" 
+                                                                    CellStyle="{StaticResource ContentCellStyle}"/>
                                                 <DataGridTextColumn Header="BCR_ID" Binding="{Binding BCR_ID}" Width="Auto" IsReadOnly="False"/>
                                                 <DataGridTextColumn Header="RETURN_CODE" Binding="{Binding RETURN_CODE}" Width="100" IsReadOnly="False"/>
                                                 <DataGridTextColumn Header="MSG_NO" Binding="{Binding MSG_NO}" Width="100" IsReadOnly="False"/>
@@ -637,8 +683,8 @@
                                         </DataGrid>
                                     </GroupBox>
 
-                                    <!-- Horizontal GridSplitter -->
-                                    <GridSplitter Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
+                                    <!-- Vertical GridSplitter -->
+                                    <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="3"
                                       HorizontalAlignment="Stretch"
                                       VerticalAlignment="Stretch"
                                       Background="LightGray"
@@ -667,6 +713,7 @@
                                       SelectionUnit="FullRow"
                                       CanUserReorderColumns="False"
                                       CanUserSortColumns="True"
+                                      CanUserResizeRows="True"
                                       IsReadOnly="False"
                                       VirtualizingPanel.IsVirtualizing="True"
                                       VirtualizingPanel.VirtualizationMode="Recycling"
@@ -681,7 +728,8 @@
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Line" Binding="{Binding LineNumber}" Width="50" IsReadOnly="True"/>
                                                 <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="120" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="*" IsReadOnly="False"/>
+                                                <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="*" IsReadOnly="False" 
+                                                                    CellStyle="{StaticResource ContentCellStyle}"/>
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </GroupBox>
@@ -727,6 +775,7 @@
                                       SelectionUnit="FullRow"
                                       CanUserReorderColumns="False"
                                       CanUserSortColumns="True"
+                                      CanUserResizeRows="True"
                                       IsReadOnly="False"
                                       VirtualizingPanel.IsVirtualizing="True"
                                       VirtualizingPanel.VirtualizationMode="Recycling"
@@ -742,7 +791,8 @@
                                                 <DataGridTextColumn Header="Line" Binding="{Binding LineNumber}" Width="50" IsReadOnly="True"/>
                                                 <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="Auto" IsReadOnly="False"/>
                                                 <DataGridTextColumn Header="Business" Binding="{Binding BusinessName}" Width="Auto" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="500" IsReadOnly="False"/>
+                                                <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="500" IsReadOnly="False" 
+                                                                    CellStyle="{StaticResource ContentCellStyle}"/>
                                                 <DataGridTextColumn Header="Error Description" Binding="{Binding ErrorDescription}" Width="Auto" IsReadOnly="False"/>
                                             </DataGrid.Columns>
                                         </DataGrid>
@@ -877,6 +927,7 @@
                               SelectionUnit="FullRow"
                               CanUserReorderColumns="False"
                               CanUserSortColumns="True"
+                              CanUserResizeRows="True"
                               IsReadOnly="False"
                               VirtualizingPanel.IsVirtualizing="True"
                               VirtualizingPanel.VirtualizationMode="Recycling"
@@ -895,7 +946,8 @@
                                         <DataGridTextColumn Header="MsgId" Binding="{Binding MsgId}" Width="80" IsReadOnly="False"/>
                                         <DataGridTextColumn Header="ExecTime" Binding="{Binding ExecTime}" Width="90" IsReadOnly="False"/>
                                         <DataGridTextColumn Header="TxnId" Binding="{Binding TxnId}" Width="140" IsReadOnly="False"/>
-                                        <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="*" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="*" IsReadOnly="False" 
+                                                            CellStyle="{StaticResource ContentCellStyle}"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Grid>
@@ -1061,7 +1113,7 @@
                                         <Button Name="ClearExecTimeFilterButton" Content="🔄 초기화" Width="80" Height="26" Margin="5,0" Click="ClearExecTimeFilterButton_Click" ToolTip="Clear filter" Background="LightCoral"/>
                                         <Button Name="LoadExecTimeAnalysisButton" Content="📊 분석 로드" Width="100" Height="26" Margin="5,0" Click="LoadExecTimeAnalysisButton_Click" ToolTip="Load exec.Time analysis" Background="LightBlue"/>
                                         <Separator Margin="10,0"/>
-                                        <TextBlock Name="ExecTimeStatusText" Text="exec.Time Analysis Ready" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="DarkOrange"/>
+                                        <TextBlock Name="ExecTimeStatusText" Text="exec.Time Analysis Ready" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="DarkBlue"/>
                                     </StackPanel>
                                 </Border>
 
@@ -1091,7 +1143,8 @@
                                         <DataGridTextColumn Header="Business" Binding="{Binding BusinessName}" Width="200" IsReadOnly="False"/>
                                         <DataGridTextColumn Header="ExecTime" Binding="{Binding ExecTime}" Width="Auto" IsReadOnly="False"/>
                                         <DataGridTextColumn Header="TxnId" Binding="{Binding TxnId}" Width="150" IsReadOnly="False"/>
-                                        <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="*" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="*" IsReadOnly="False" 
+                                                            CellStyle="{StaticResource ContentCellStyle}"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Grid>

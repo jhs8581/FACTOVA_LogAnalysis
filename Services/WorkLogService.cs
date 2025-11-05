@@ -26,24 +26,11 @@ namespace FACTOVA_LogAnalysis.Services
 
         public void AddLog(string message, WorkLogType logType = WorkLogType.Info)
         {
-            // ✅ 메시지를 UTF-8로 명시적 변환 (혹시 모를 인코딩 문제 방지)
-            string cleaned = CleanMessage(message);
+            // 디버그 출력으로 실제 메시지 확인
+            System.Diagnostics.Debug.WriteLine($"[WorkLogService] AddLog: {message}");
+            Console.WriteLine($"[WorkLogService] AddLog: {message}");
             
-            // ✅ 디버그 출력으로 실제 메시지 확인
-            System.Diagnostics.Debug.WriteLine($"[WorkLogService] AddLog: {cleaned}");
-            Console.WriteLine($"[WorkLogService] AddLog: {cleaned}");
-            
-            LogAdded?.Invoke(cleaned, logType);
-        }
-
-        private static string CleanMessage(string message)
-        {
-            if (string.IsNullOrWhiteSpace(message))
-                return string.Empty;
-
-            int idx = 0;
-            while (idx < message.Length && (message[idx] == '?' || char.IsWhiteSpace(message[idx]))) idx++;
-            return message.Substring(idx);
+            LogAdded?.Invoke(message, logType);
         }
 
         private static string PrefixForLogType(WorkLogType type)

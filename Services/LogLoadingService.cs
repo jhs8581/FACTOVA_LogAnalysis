@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,8 +12,8 @@ using WpfTextBox = System.Windows.Controls.TextBox;
 namespace FACTOVA_LogAnalysis.Services
 {
     /// <summary>
-    /// ·Î±× ·Îµù ·ÎÁ÷À» ´ã´çÇÏ´Â ¼­ºñ½º Å¬·¡½º
-    /// MainWindow¿¡¼­ ºĞ¸®ÇÏ¿© ·Î±× ÆÄÀÏ ·Îµù ±â´ÉÀ» Àü´ã
+    /// ë¡œê·¸ ë¡œë”© ë¡œì§ì„ ë‹´ë‹¹í•˜ëŠ” ì„œë¹„ìŠ¤ í´ë˜ìŠ¤
+    /// MainWindowì—ì„œ ë¶„ë¦¬í•˜ì—¬ ë¡œê·¸ íŒŒì¼ ë¡œë”© ê¸°ëŠ¥ì„ ì „ë‹´
     /// </summary>
     public class LogLoadingService
     {
@@ -37,7 +37,7 @@ namespace FACTOVA_LogAnalysis.Services
         #region Public Methods
 
         /// <summary>
-        /// °³º° ·Î±× ÆÄÀÏµéÀ» ·ÎµåÇÏ´Â ¸ŞÀÎ ¸Ş¼Òµå
+        /// ê°œë³„ ë¡œê·¸ íŒŒì¼ë“¤ì„ ë¡œë“œí•˜ëŠ” ë©”ì¸ ë©”ì†Œë“œ
         /// </summary>
         public async Task LoadIndividualLogFiles(DateTime selectedDate, string searchText, string searchMode,
             WpfTextBox dataTextBox, WpfTextBox eventTextBox, WpfTextBox debugTextBox, WpfTextBox exceptionTextBox,
@@ -47,7 +47,7 @@ namespace FACTOVA_LogAnalysis.Services
             _workLogService.AddLog("=== Loading log files ===", WorkLogType.Info);
             _workLogService.AddLog($"Selected date: {selectedDate:yyyy-MM-dd}", WorkLogType.Info);
             
-            // ½Ã°£ ¹üÀ§ ·Î±× Ãâ·Â
+            // ì‹œê°„ ë²”ìœ„ ë¡œê·¸ ì¶œë ¥
             if (fromTime != default || toTime != default)
             {
                 _workLogService.AddLog($"Time range: {fromTime:hh\\:mm} ~ {toTime:hh\\:mm}", WorkLogType.Info);
@@ -91,7 +91,7 @@ namespace FACTOVA_LogAnalysis.Services
         }
 
         /// <summary>
-        /// ´ÜÀÏ ·Î±× ÆÄÀÏÀ» TextBox¿¡ ·Îµå
+        /// ë‹¨ì¼ ë¡œê·¸ íŒŒì¼ì„ TextBoxì— ë¡œë“œ
         /// </summary>
         public async Task LoadSingleLogFileToTextBox(string logType, string fileName, WpfTextBox textBox, 
             WpfTextBox lineNumberBox, Func<string, string> cleaner, string searchText, string searchMode, 
@@ -105,7 +105,7 @@ namespace FACTOVA_LogAnalysis.Services
                 {
                     string content = await _logFileManager.ReadLogFileAsync(filePath);
                     
-                    // ½Ã°£ ¹üÀ§ ÇÊÅÍ¸µ Àû¿ë
+                    // ì‹œê°„ ë²”ìœ„ í•„í„°ë§ ì ìš©
                     if (fromTime != default || toTime != default)
                     {
                         content = FilterLogByTimeRange(content, fromTime, toTime);
@@ -119,7 +119,7 @@ namespace FACTOVA_LogAnalysis.Services
                         _workLogService.AddLog($"{logType}: Time range filtering applied", WorkLogType.Info);
                     }
                     
-                    // °Ë»ö¾î ÀÖ´Â °æ¿ì ÇÊÅÍ¸µ
+                    // ê²€ìƒ‰ì–´ ìˆëŠ” ê²½ìš° í•„í„°ë§
                     if (!string.IsNullOrWhiteSpace(searchText))
                     {
                         if (content.Contains(searchText, StringComparison.OrdinalIgnoreCase))
@@ -134,13 +134,13 @@ namespace FACTOVA_LogAnalysis.Services
                         }
                     }
                     
-                    // ·Î±× ³»¿ë Á¤¸®
+                    // ë¡œê·¸ ë‚´ìš© ì •ë¦¬
                     string cleanedContent = cleaner(content);
                     
-                    // ÅØ½ºÆ®¹Ú½º¿¡ ¼³Á¤
+                    // í…ìŠ¤íŠ¸ë°•ìŠ¤ì— ì„¤ì •
                     textBox.Text = cleanedContent;
                     
-                    // ÁÙ ¹øÈ£ »ı¼º
+                    // ì¤„ ë²ˆí˜¸ ìƒì„±
                     GenerateLineNumbers(cleanedContent, lineNumberBox);
                     
                     int lineCount = cleanedContent.Split('\n').Length;
@@ -166,7 +166,7 @@ namespace FACTOVA_LogAnalysis.Services
         }
 
         /// <summary>
-        /// ·Î±× Å¸ÀÔº°·Î DataGrid¿ë µ¥ÀÌÅÍ ·Îµå
+        /// ë¡œê·¸ íƒ€ì…ë³„ë¡œ DataGridìš© ë°ì´í„° ë¡œë“œ
         /// </summary>
         public async Task<List<LogLineItem>> LoadLogDataForDataGrid(string logType, DateTime selectedDate, string searchText, string searchMode, TimeSpan fromTime = default, TimeSpan toTime = default)
         {
@@ -181,25 +181,25 @@ namespace FACTOVA_LogAnalysis.Services
                 
                 if (!File.Exists(filePath))
                 {
-                    _workLogService.AddLog($"{logType} ÆÄÀÏÀ» Ã£À» ¼ö ¾øÀ½: {filePath}", WorkLogType.Warning);
+                    _workLogService.AddLog($"{logType} íŒŒì¼ì„ ì°¾ì„ ìˆ˜ ì—†ìŒ: {filePath}", WorkLogType.Warning);
                     return new List<LogLineItem>();
                 }
 
-                _workLogService.AddLog($"{logType} ÆÄÀÏ ·Îµå Áß: {fileName}", WorkLogType.Info);
+                _workLogService.AddLog($"{logType} íŒŒì¼ ë¡œë“œ ì¤‘: {fileName}", WorkLogType.Info);
                 string content = await _logFileManager.ReadLogFileAsync(filePath);
                 
-                // ½Ã°£ ¹üÀ§ ÇÊÅÍ¸µ
+                // ì‹œê°„ ë²”ìœ„ í•„í„°ë§
                 if (fromTime != default || toTime != default)
                 {
                     content = FilterLogByTimeRange(content, fromTime, toTime);
                     if (string.IsNullOrEmpty(content))
                     {
-                        _workLogService.AddLog($"{logType}: ÁöÁ¤µÈ ½Ã°£ ¹üÀ§¿¡ ·Î±×°¡ ¾øÀ½", WorkLogType.Warning);
+                        _workLogService.AddLog($"{logType}: ì§€ì •ëœ ì‹œê°„ ë²”ìœ„ì— ë¡œê·¸ê°€ ì—†ìŒ", WorkLogType.Warning);
                         return new List<LogLineItem>();
                     }
                 }
                 
-                // °Ë»ö¾î ÇÊÅÍ¸µ
+                // ê²€ìƒ‰ì–´ í•„í„°ë§
                 if (!string.IsNullOrWhiteSpace(searchText))
                 {
                     if (content.Contains(searchText, StringComparison.OrdinalIgnoreCase))
@@ -208,12 +208,12 @@ namespace FACTOVA_LogAnalysis.Services
                     }
                     else
                     {
-                        _workLogService.AddLog($"'{searchText}'¸¦ {logType}¿¡¼­ Ã£À» ¼ö ¾øÀ½", WorkLogType.Warning);
+                        _workLogService.AddLog($"'{searchText}'ë¥¼ {logType}ì—ì„œ ì°¾ì„ ìˆ˜ ì—†ìŒ", WorkLogType.Warning);
                         return new List<LogLineItem>();
                     }
                 }
                 
-                // ·Î±× Á¤¸®
+                // ë¡œê·¸ ì •ë¦¬
                 string cleanedContent = logType switch
                 {
                     "DATA" => _logFileManager.CleanDataLogs(content),
@@ -221,53 +221,53 @@ namespace FACTOVA_LogAnalysis.Services
                     _ => content
                 };
                 
-                // LogLineItemÀ¸·Î º¯È¯
+                // LogLineItemìœ¼ë¡œ ë³€í™˜
                 List<LogLineItem> result;
                 if (logType == "DATA")
                 {
-                    // DATA ·Î±×´Â ExecuteService °ü·Ã ÆÄ½Ì
+                    // DATA ë¡œê·¸ëŠ” ExecuteService ê´€ë ¨ íŒŒì‹±
                     result = LogDataGridHelper.ConvertToLogLines(cleanedContent);
                 }
                 else if (logType == "EXCEPTION")
                 {
-                    // EXCEPTION ·Î±×´Â ExecuteServiceSync °ü·Ã ÆÄ½Ì
+                    // EXCEPTION ë¡œê·¸ëŠ” ExecuteServiceSync ê´€ë ¨ íŒŒì‹±
                     result = LogDataGridHelper.ConvertExceptionLogLines(cleanedContent);
                 }
                 else
                 {
-                    // EVENT, DEBUG´Â ´Ü¼ø ¶óÀÎº° ÆÄ½Ì
+                    // EVENT, DEBUGëŠ” ë‹¨ìˆœ ë¼ì¸ë³„ íŒŒì‹±
                     result = ConvertSimpleLogLines(cleanedContent, logType);
                 }
                 
-                // ·Î±× ·¹º§ ¼³Á¤
+                // ë¡œê·¸ ë ˆë²¨ ì„¤ì •
                 foreach (var item in result)
                 {
                     item.LogLevel = logType;
                 }
                 
                 string timeInfo = (fromTime != default || toTime != default) 
-                    ? $" (½Ã°£¹üÀ§: {fromTime:hh\\:mm}~{toTime:hh\\:mm})" 
+                    ? $" (ì‹œê°„ë²”ìœ„: {fromTime:hh\\:mm}~{toTime:hh\\:mm})" 
                     : "";
-                _workLogService.AddLog($"? {logType}: {result.Count}°³ Çà ÆÄsing ¿Ï·á{timeInfo}", WorkLogType.Success);
+                _workLogService.AddLog($"? {logType}: {result.Count}ê°œ í–‰ íŒŒsing ì™„ë£Œ{timeInfo}", WorkLogType.Success);
                 
                 return result;
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? {logType} ·Îµå ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? {logType} ë¡œë“œ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
                 return new List<LogLineItem>();
             }
         }
 
         /// <summary>
-        /// ¸ğµç DataGrid¿¡ µ¥ÀÌÅÍ¸¦ º´·Ä·Î ·Îµå
+        /// ëª¨ë“  DataGridì— ë°ì´í„°ë¥¼ ë³‘ë ¬ë¡œ ë¡œë“œ
         /// </summary>
         public async Task<Dictionary<string, List<LogLineItem>>> LoadAllDataGridData(DateTime selectedDate, string searchText, string searchMode, TimeSpan fromTime = default, TimeSpan toTime = default)
         {
             var result = new Dictionary<string, List<LogLineItem>>();
             var logTypes = new[] { "DATA", "EVENT", "DEBUG", "EXCEPTION" };
             
-            _workLogService.AddLog("¸ğµç DataGrid µ¥ÀÌÅÍ º´·Ä ·Îµå ½ÃÀÛ", WorkLogType.Info);
+            _workLogService.AddLog("ëª¨ë“  DataGrid ë°ì´í„° ë³‘ë ¬ ë¡œë“œ ì‹œì‘", WorkLogType.Info);
             
             var tasks = logTypes.Select(async logType => 
             {
@@ -283,13 +283,13 @@ namespace FACTOVA_LogAnalysis.Services
             }
             
             var totalCount = result.Values.Sum(list => list.Count);
-            _workLogService.AddLog($"? ¸ğµç DataGrid µ¥ÀÌÅÍ ·Îµå ¿Ï·á: ÃÑ {totalCount}°³ Çà", WorkLogType.Success);
+            _workLogService.AddLog($"? ëª¨ë“  DataGrid ë°ì´í„° ë¡œë“œ ì™„ë£Œ: ì´ {totalCount}ê°œ í–‰", WorkLogType.Success);
             
             return result;
         }
 
         /// <summary>
-        /// ÀÚµ¿ ·Î±× ÆÄÀÏ ·Îµå (³¯Â¥ º¯°æ ½Ã)
+        /// ìë™ ë¡œê·¸ íŒŒì¼ ë¡œë“œ (ë‚ ì§œ ë³€ê²½ ì‹œ)
         /// </summary>
         public async Task AutoLoadLogFiles(DateTime selectedDate, string searchText, string searchMode,
             WpfTextBox dataTextBox, WpfTextBox eventTextBox, WpfTextBox debugTextBox, WpfTextBox exceptionTextBox,
@@ -297,17 +297,17 @@ namespace FACTOVA_LogAnalysis.Services
         {
             try
             {
-                _workLogService.AddLog($"ÀÚµ¿ ·Îµå ½ÃÀÛ: {selectedDate:yyyy-MM-dd}, °Ë»ö¾î: '{searchText}'", WorkLogType.Info);
+                _workLogService.AddLog($"ìë™ ë¡œë“œ ì‹œì‘: {selectedDate:yyyy-MM-dd}, ê²€ìƒ‰ì–´: '{searchText}'", WorkLogType.Info);
                 
                 await LoadIndividualLogFiles(selectedDate, searchText, searchMode,
                     dataTextBox, eventTextBox, debugTextBox, exceptionTextBox,
                     dataLineTextBox, eventLineTextBox, debugLineTextBox, exceptionLineTextBox);
                 
-                _workLogService.AddLog("? ÀÚµ¿ ·Îµå ¿Ï·á", WorkLogType.Success);
+                _workLogService.AddLog("? ìë™ ë¡œë“œ ì™„ë£Œ", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ÀÚµ¿ ·Îµå ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ìë™ ë¡œë“œ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -316,8 +316,8 @@ namespace FACTOVA_LogAnalysis.Services
         #region Private Methods
 
         /// <summary>
-        /// ½Ã°£ ¹üÀ§·Î ·Î±× ³»¿ë ÇÊÅÍ¸µ
-        /// ?? Å¸ÀÓ½ºÅÆÇÁ Çü½Ä: [dd-MM-yyyy HH:mm:ss] ¶Ç´Â [dd-MM-yyyy HH:mm:ss.fff] (¹Ğ¸®ÃÊ Áö¿ø)
+        /// ì‹œê°„ ë²”ìœ„ë¡œ ë¡œê·¸ ë‚´ìš© í•„í„°ë§
+        /// ?? íƒ€ì„ìŠ¤íƒ¬í”„ í˜•ì‹: [dd-MM-yyyy HH:mm:ss] ë˜ëŠ” [dd-MM-yyyy HH:mm:ss.fff] (ë°€ë¦¬ì´ˆ ì§€ì›)
         /// </summary>
         private string FilterLogByTimeRange(string content, TimeSpan fromTime, TimeSpan toTime)
         {
@@ -328,13 +328,13 @@ namespace FACTOVA_LogAnalysis.Services
             {
                 var lines = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                 var filteredLines = new List<string>();
-                bool lastLineWasInRange = false; // ¸¶Áö¸· ¶óÀÎÀÌ ¹üÀ§ ¾È¿¡ ÀÖ¾ú´ÂÁö ÃßÀû
+                bool lastLineWasInRange = false; // ë§ˆì§€ë§‰ ë¼ì¸ì´ ë²”ìœ„ ì•ˆì— ìˆì—ˆëŠ”ì§€ ì¶”ì 
 
                 foreach (string line in lines)
                 {
                     if (string.IsNullOrWhiteSpace(line))
                     {
-                        // ºó ¶óÀÎÀº ÀÌÀü ¶óÀÎÀÌ ¹üÀ§ ¾È¿¡ ÀÖ¾úÀ» ¶§¸¸ Æ÷ÇÔ
+                        // ë¹ˆ ë¼ì¸ì€ ì´ì „ ë¼ì¸ì´ ë²”ìœ„ ì•ˆì— ìˆì—ˆì„ ë•Œë§Œ í¬í•¨
                         if (lastLineWasInRange)
                         {
                             filteredLines.Add(line);
@@ -342,29 +342,29 @@ namespace FACTOVA_LogAnalysis.Services
                         continue;
                     }
 
-                    // Å¸ÀÓ½ºÅÆÇÁ ÃßÃâ: 2°¡Áö Çü½Ä Áö¿ø
-                    // 1) ±¸Çü: [dd-MM-yyyy HH:mm:ss]
-                    // 2) ½ÅÇü: [dd-MM-yyyy HH:mm:ss.fff] (¹Ğ¸®ÃÊ Æ÷ÇÔ)
+                    // íƒ€ì„ìŠ¤íƒ¬í”„ ì¶”ì¶œ: 2ê°€ì§€ í˜•ì‹ ì§€ì›
+                    // 1) êµ¬í˜•: [dd-MM-yyyy HH:mm:ss]
+                    // 2) ì‹ í˜•: [dd-MM-yyyy HH:mm:ss.fff] (ë°€ë¦¬ì´ˆ í¬í•¨)
                     var timeMatch = System.Text.RegularExpressions.Regex.Match(line, @"\[\d{2}-\d{2}-\d{4} (\d{2}):(\d{2}):(\d{2})(?:\.(\d{3}))?\]");
                     
                     if (timeMatch.Success)
                     {
-                        // Å¸ÀÓ½ºÅÆÇÁ°¡ ÀÖ´Â ¶óÀÎ
+                        // íƒ€ì„ìŠ¤íƒ¬í”„ê°€ ìˆëŠ” ë¼ì¸
                         int hours = int.Parse(timeMatch.Groups[1].Value);
                         int minutes = int.Parse(timeMatch.Groups[2].Value);
                         int seconds = int.Parse(timeMatch.Groups[3].Value);
                         
-                        // ¹Ğ¸®ÃÊ Ã³¸® (ÀÖÀ¸¸é Æ÷ÇÔ, ¾øÀ¸¸é 0)
+                        // ë°€ë¦¬ì´ˆ ì²˜ë¦¬ (ìˆìœ¼ë©´ í¬í•¨, ì—†ìœ¼ë©´ 0)
                         int milliseconds = 0;
                         if (timeMatch.Groups[4].Success)
                         {
                             milliseconds = int.Parse(timeMatch.Groups[4].Value);
                         }
                         
-                        // ¹Ğ¸®ÃÊ±îÁö Æ÷ÇÔÇÑ Á¤È®ÇÑ ½Ã°£ »ı¼º
+                        // ë°€ë¦¬ì´ˆê¹Œì§€ í¬í•¨í•œ ì •í™•í•œ ì‹œê°„ ìƒì„±
                         var logTime = new TimeSpan(0, hours, minutes, seconds, milliseconds);
 
-                        // ½Ã°£ ¹üÀ§ Ã¼Å© (¹Ğ¸®ÃÊ ´ÜÀ§±îÁö Á¤È®È÷ ºñ±³)
+                        // ì‹œê°„ ë²”ìœ„ ì²´í¬ (ë°€ë¦¬ì´ˆ ë‹¨ìœ„ê¹Œì§€ ì •í™•íˆ ë¹„êµ)
                         if (logTime >= fromTime && logTime <= toTime)
                         {
                             filteredLines.Add(line);
@@ -377,8 +377,8 @@ namespace FACTOVA_LogAnalysis.Services
                     }
                     else
                     {
-                        // Å¸ÀÓ½ºÅÆÇÁ°¡ ¾ø´Â ¶óÀÎ (¿¬¼Ó ·Î±× ¶óÀÎ)
-                        // ÀÌÀü ¶óÀÎÀÌ ¹üÀ§ ¾È¿¡ ÀÖ¾úÀ» ¶§¸¸ Æ÷ÇÔ
+                        // íƒ€ì„ìŠ¤íƒ¬í”„ê°€ ì—†ëŠ” ë¼ì¸ (ì—°ì† ë¡œê·¸ ë¼ì¸)
+                        // ì´ì „ ë¼ì¸ì´ ë²”ìœ„ ì•ˆì— ìˆì—ˆì„ ë•Œë§Œ í¬í•¨
                         if (lastLineWasInRange)
                         {
                             filteredLines.Add(line);
@@ -395,12 +395,12 @@ namespace FACTOVA_LogAnalysis.Services
             catch (Exception ex)
             {
                 _workLogService.AddLog($"Time filtering error: {ex.Message}", WorkLogType.Error);
-                return content; // ¿À·ù ½Ã ¿øº» ¹İÈ¯
+                return content; // ì˜¤ë¥˜ ì‹œ ì›ë³¸ ë°˜í™˜
             }
         }
 
         /// <summary>
-        /// Çà ¹øÈ£ »ı¼º
+        /// í–‰ ë²ˆí˜¸ ìƒì„±
         /// </summary>
         private void GenerateLineNumbers(string content, WpfTextBox lineNumberBox)
         {
@@ -416,13 +416,13 @@ namespace FACTOVA_LogAnalysis.Services
         }
 
         /// <summary>
-        /// ´Ü¼ø ·Î±× ¶óÀÎµéÀ» LogLineItemÀ¸·Î º¯È¯ (EVENT, DEBUG¿ë)
+        /// ë‹¨ìˆœ ë¡œê·¸ ë¼ì¸ë“¤ì„ LogLineItemìœ¼ë¡œ ë³€í™˜ (EVENT, DEBUGìš©)
         /// </summary>
         private List<LogLineItem> ConvertSimpleLogLines(string content, string logType)
         {
             if (logType == "EVENT")
             {
-                // EVENT ·Î±×´Â Æ¯º° Ã³¸® - °³¼±µÈ ÆÄ¼­ »ç¿ë
+                // EVENT ë¡œê·¸ëŠ” íŠ¹ë³„ ì²˜ë¦¬ - ê°œì„ ëœ íŒŒì„œ ì‚¬ìš©
                 return ConvertEventLogLines(content);
             }
             
@@ -441,13 +441,13 @@ namespace FACTOVA_LogAnalysis.Services
                     if (string.IsNullOrWhiteSpace(line))
                         continue;
                     
-                    // Å¸ÀÓ½ºÅÆÇÁ ÃßÃâ
+                    // íƒ€ì„ìŠ¤íƒ¬í”„ ì¶”ì¶œ
                     string timestamp = ExtractTimestampFromLine(line);
                     
-                    // ºñÁî´Ï½º¸í ÃßÃâ
+                    // ë¹„ì¦ˆë‹ˆìŠ¤ëª… ì¶”ì¶œ
                     string businessName = ExtractBusinessNameFromSimpleLine(line, logType);
                     
-                    // ³»¿ë (Å¸ÀÓ½ºÅÆÇÁ Á¦°Å)
+                    // ë‚´ìš© (íƒ€ì„ìŠ¤íƒ¬í”„ ì œê±°)
                     string cleanContent = RemoveTimestampFromLine(line);
                     
                     var logItem = new LogLineItem(i + 1, timestamp, businessName, "", "", cleanContent)
@@ -462,170 +462,148 @@ namespace FACTOVA_LogAnalysis.Services
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? {logType} ´Ü¼ø ÆÄ½Ì ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? {logType} ë‹¨ìˆœ íŒŒì‹± ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
                 return result;
             }
         }
 
         /// <summary>
-        /// EVENT ·Î±×¸¦ Á¤¹ĞÇÏ°Ô Ã³¸®ÇÏ¿© LogLineItemÀ¸·Î º¯È¯ (SENDDATA ºí·Ï ÅëÇÕ)
+        /// EVENT ë¡œê·¸ë¥¼ ì •êµí•˜ê²Œ ì²˜ë¦¬í•˜ì—¬ LogLineItemìœ¼ë¡œ ë³€í™˜ (SENDDATA ë“±ì˜ ë¸”ë¡ í¬í•¨)
+        /// âœ… íƒ€ì„ìŠ¤íƒ¬í”„ ê¸°ì¤€ìœ¼ë¡œ ë¸”ë¡ ë‹¨ìœ„ë¡œ íŒŒì‹±
         /// </summary>
         private List<LogLineItem> ConvertEventLogLines(string content)
         {
             var result = new List<LogLineItem>();
             if (string.IsNullOrWhiteSpace(content))
                 return result;
+            
             try
             {
-                var lines = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                int lineNumber = 1;
-                // _workLogService.AddLog($"EVENT ·Î±× ÆÄ½Ì ½ÃÀÛ: ÃÑ {lines.Length}°³ ¶óÀÎ", WorkLogType.Info);
-                for (int i = 0; i < lines.Length; i++)
+                // âœ… ì „ì²´ ë¡œê·¸ë¥¼ íƒ€ì„ìŠ¤íƒ¬í”„ ê¸°ì¤€ìœ¼ë¡œ ë¸”ë¡ ë¶„ë¦¬
+                var timestampPattern = @"\[(\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}(?:\.\d{3})?)\]";
+                var matches = System.Text.RegularExpressions.Regex.Matches(content, timestampPattern);
+                
+                if (matches.Count == 0)
                 {
-                    string line = lines[i].Trim();
-                    if (string.IsNullOrWhiteSpace(line))
+                    _workLogService.AddLog("EVENT ë¡œê·¸ì— íƒ€ì„ìŠ¤íƒ¬í”„ê°€ ì—†ìŠµë‹ˆë‹¤.", WorkLogType.Warning);
+                    return result;
+                }
+                
+                int lineNumber = 1;
+                
+                for (int i = 0; i < matches.Count; i++)
+                {
+                    var match = matches[i];
+                    string timestamp = FormatTimestamp(match.Groups[1].Value);
+                    
+                    // í˜„ì¬ íƒ€ì„ìŠ¤íƒ¬í”„ë¶€í„° ë‹¤ìŒ íƒ€ì„ìŠ¤íƒ¬í”„ ì „ê¹Œì§€ì˜ ë‚´ìš© ì¶”ì¶œ
+                    int startIndex = match.Index;
+                    int endIndex = (i + 1 < matches.Count) ? matches[i + 1].Index : content.Length;
+                    
+                    string blockContent = content.Substring(startIndex, endIndex - startIndex).Trim();
+                    
+                    // íƒ€ì„ìŠ¤íƒ¬í”„ ì œê±°í•œ ì‹¤ì œ ë‚´ìš©
+                    string contentWithoutTimestamp = blockContent.Substring(match.Length).Trim();
+                    
+                    if (string.IsNullOrWhiteSpace(contentWithoutTimestamp))
                         continue;
-
-                    // ImageList : ºí·Ï Ã³¸® (ONBOARD FLASH±îÁö) - »õ·Î Ãß°¡µÈ ·ÎÁ÷
-                    if (line.Contains("ImageList :"))
+                    
+                    // âœ… ì „ì²´ ë¸”ë¡ì„ í•˜ë‚˜ì˜ ë¡œê·¸ë¡œ ì²˜ë¦¬
+                    var logItem = ProcessEventLogBlock(contentWithoutTimestamp, timestamp, lineNumber);
+                    if (logItem != null)
                     {
-                        var imageListResult = ProcessImageListBlock(lines, i, lineNumber);
-                        if (imageListResult.Item1 != null)
-                        {
-                            imageListResult.Item1.ExtractEventFields(imageListResult.Item1.Content);
-                            result.Add(imageListResult.Item1);
-                            i = imageListResult.Item2; // ´ÙÀ½ Ã³¸®ÇÒ ¶óÀÎÀ¸·Î ÀÌµ¿
-                            lineNumber++;
-                            continue;
-                        }
-                    }
-
-                    // If a standalone MSGID or PROCID line appears (e.g. <MSGID=9000>), capture it as an item
-                    if (line.Contains("<MSGID=") || line.Contains("<PROCID="))
-                    {
-                        string timestamp = ExtractTimestampFromLine(lines[i]);
-                        string msgId = "";
-                        try
-                        {
-                            var m = System.Text.RegularExpressions.Regex.Match(line, "<MSGID=(\\d+)>");
-                            if (m.Success) msgId = m.Groups[1].Value;
-                        }
-                        catch { }
-
-                        var singleItem = new LogLineItem
-                        {
-                            LineNumber = lineNumber,
-                            Timestamp = timestamp,
-                            MsgId = msgId,
-                            ProcId = "",
-                            BusinessName = "EVENT",
-                            Content = RemoveTimestampFromLine(line),
-                            LogLevel = "EVENT"
-                        };
-                        
-                        // EVENT ÇÊµå ÃßÃâ È£Ãâ
-                        singleItem.ExtractEventFields(RemoveTimestampFromLine(line));
-                        
-                        result.Add(singleItem);
-                        lineNumber++;
-                        continue;
-                    }
-
-                    // ZPL ºí·Ï Ã³¸®: ^XA ... ^XZ ¸¦ ÇÏ³ªÀÇ Ç×¸ñÀ¸·Î
-                    if (line.Contains("^XA"))
-                    {
-                        var zplResult = ProcessZplBlock(lines, i, lineNumber);
-                        if (zplResult.Item1 != null)
-                        {
-                            // EVENT ÇÊµå ÃßÃâ È£Ãâ
-                            zplResult.Item1.ExtractEventFields(zplResult.Item1.Content);
-                            result.Add(zplResult.Item1);
-                            i = zplResult.Item2; // move index
-                            lineNumber++;
-                            continue;
-                        }
-                    }
-
-                    // DataSend / DataReceive ´ÜÀÏ ¶óÀÎ Ã³¸®
-                    var drMatch = System.Text.RegularExpressions.Regex.Match(line, @"\b(DataReceive|DataSend)\b", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-                    if (drMatch.Success)
-                    {
-                        var dataItem = ProcessDataTransferLine(line, lineNumber, drMatch.Groups[1].Value);
-                        if (dataItem != null)
-                        {
-                            // EVENT ÇÊµå ÃßÃâ È£Ãâ
-                            dataItem.ExtractEventFields(dataItem.Content);
-                            result.Add(dataItem);
-                            lineNumber++;
-                            continue;
-                        }
-                    }
-
-                    // Ãß°¡ ÆĞÅÏ: 'Send to Data' °°Àº ¹®±¸¸¦ DataSend·Î Ã³¸®
-                    if (line.IndexOf("send to data", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        line.IndexOf("tcp client send to data", StringComparison.OrdinalIgnoreCase) >= 0)
-                    {
-                        var dataItem = ProcessDataTransferLine(line, lineNumber, "DataSend");
-                        if (dataItem != null)
-                        {
-                            // EVENT ÇÊµå ÃßÃâ È£Ãâ
-                            dataItem.ExtractEventFields(dataItem.Content);
-                            result.Add(dataItem);
-                            lineNumber++;
-                            continue;
-                        }
-                    }
-
-                    // SENDDATA/RECVDATA ºí·Ï Ã³¸® (°¡Àå Áß¿äÇÑ ºÎºĞ) - ÆĞÅÏÀ» ´õ À¯¿¬ÇÏ°Ô
-                    if (line.Contains("[SENDDATA]") || line.Contains("[RECVDATA]") ||
-                        (line.Contains("SENDDATA") && line.Contains("DYNAMIC.EVENT.REQUEST")) ||
-                        (line.Contains("RECVDATA") && line.Contains("DYNAMIC.EVENT.RESPONSE")) ||
-                        line.Contains("DYNAMIC.EVENT.REQUEST") || line.Contains("DYNAMIC.EVENT.RESPONSE") ||
-                        // handle REPORT blocks and generic RECV/SEND markers
-                        line.Contains("DYNAMIC.EVENT.REPORT") || line.StartsWith("[RECV]", StringComparison.OrdinalIgnoreCase) || line.StartsWith("[SEND]", StringComparison.OrdinalIgnoreCase))
-                     {
-                         string blockType = line.Contains("RECVDATA") || line.Contains("RESPONSE") ? "RECVDATA" : "SENDDATA";
-                         // _workLogService.AddLog($"{blockType} ÆĞÅÏ ¹ß°ß: ¶óÀÎ {i+1}", WorkLogType.Info);
-                         // _workLogService.AddLog($"¹ß°ßµÈ ¶óÀÎ: {line}", WorkLogType.Info);
-                         // ºí·Ï Ã³¸® °á°ú
-                         var blockResult = ProcessEventDataBlock(lines, i, lineNumber, blockType);
-                         if (blockResult.Item1 != null)
-                         {
-                             // EVENT ÇÊµå ÃßÃâ È£Ãâ - ÀüÃ¼ ºí·Ï ³»¿ëÀ¸·Î ÃßÃâ
-                             blockResult.Item1.ExtractEventFields(blockResult.Item1.Content);
-                             result.Add(blockResult.Item1);
-                             i = blockResult.Item2; // ´ÙÀ½ Ã³¸®ÇÒ ¶óÀÎ ÀÎµ¦½ºÀ¸·Î ÀÌµ¿
-                             lineNumber++;
-                             continue;
-                         }
-                     }
-                     // ÀÌ¹Ì SENDDATA/RECVDATA ºí·Ï¿¡ Æ÷ÇÔµÈ ¶óÀÎµéÀº °Ç³Ê¶Ù±â
-                    if (IsPartOfEventDataBlock(line))
-                    {
-                        continue;
-                    }
-                    // ±âÅ¸ EVENT ·Î±×´Â ±âº» Ã³¸®
-                    var defaultItem = CreateDefaultEventLogItem(line, lineNumber);
-                    if (defaultItem != null)
-                    {
-                        // EVENT ÇÊµå ÃßÃâ È£Ãâ
-                        defaultItem.ExtractEventFields(defaultItem.Content);
-                        result.Add(defaultItem);
+                        logItem.ExtractEventFields(logItem.Content);
+                        result.Add(logItem);
                         lineNumber++;
                     }
                 }
-                // _workLogService.AddLog($"? EVENT ·Î±× ÆÄ½Ì ¿Ï·á: {result.Count}°³ ¾ÆÀÌÅÛ »ı¼º", WorkLogType.Success);
+                
                 return result;
             }
             catch (Exception ex)
             {
-                // _workLogService.AddLog($"? EVENT ·Î±× ÆÄ½Ì ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"EVENT log parsing error: {ex.Message}", WorkLogType.Error);
                 return result;
             }
         }
 
         /// <summary>
-        /// SENDDATA/RECVDATA ºí·ÏÀ» ÇÏ³ªÀÇ LogLineItemÀ¸·Î Ã³¸®
+        /// ë‹¨ì¼ EVENT ë¡œê·¸ ë¸”ë¡ì„ ì²˜ë¦¬í•˜ì—¬ LogLineItemìœ¼ë¡œ ë³€í™˜
+        /// </summary>
+        private LogLineItem ProcessEventLogBlock(string content, string timestamp, int lineNumber)
+        {
+            try
+            {
+                // ê¸°ë³¸ê°’ ì„¤ì •
+                string msgId = "";
+                string procId = "";
+                string businessName = "EVENT";
+                
+                // âœ… ZPL ë°ì´í„° íŒ¨í„´ ìš°ì„  í™•ì¸ (^XA í¬í•¨)
+                if (content.Contains("^XA", StringComparison.OrdinalIgnoreCase))
+                {
+                    msgId = "ZPL";
+                    businessName = "ZPL";
+                    
+                    return new LogLineItem
+                    {
+                        LineNumber = lineNumber,
+                        Timestamp = timestamp,
+                        MsgId = msgId,
+                        ProcId = procId,
+                        BusinessName = businessName,
+                        Content = content,
+                        LogLevel = "EVENT"
+                    };
+                }
+                
+                // SENDDATA/RECVDATA ë¸”ë¡ì¸ì§€ í™•ì¸
+                if (content.Contains("[SENDDATA]") || content.Contains("[RECVDATA]"))
+                {
+                    string blockType = content.Contains("[RECVDATA]") ? "RECVDATA" : "SENDDATA";
+                    
+                    // ë¸”ë¡ì—ì„œ MsgId, ProcId ì¶”ì¶œ (íŒ¨í„´: DYNAMIC.EVENT.REQUEST: 9000)
+                    var dynamicPattern = @"DYNAMIC\.EVENT\.(REQUEST|RESPONSE)\s*[:\-]?\s*(\d+)";
+                    var dynamicMatch = System.Text.RegularExpressions.Regex.Match(content, dynamicPattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                    if (dynamicMatch.Success)
+                    {
+                        msgId = dynamicMatch.Groups[2].Value;
+                        businessName = $"PROC_{msgId}";
+                    }
+                }
+                else
+                {
+                    // ì¼ë°˜ ë¡œê·¸ ì•„ì´í…œìœ¼ë¡œ ì²˜ë¦¬
+                    var defaultItem = CreateDefaultEventLogItem(content, lineNumber);
+                    if (defaultItem != null)
+                    {
+                        msgId = defaultItem.MsgId;
+                        procId = defaultItem.ProcId;
+                        businessName = defaultItem.BusinessName;
+                        content = defaultItem.Content;
+                    }
+                }
+                
+                return new LogLineItem
+                {
+                    LineNumber = lineNumber,
+                    Timestamp = timestamp,
+                    MsgId = msgId,
+                    ProcId = procId,
+                    BusinessName = businessName,
+                    Content = content,
+                    LogLevel = "EVENT"
+                };
+            }
+            catch (Exception ex)
+            {
+                _workLogService.AddLog($"EVENT ë¡œê·¸ ë¸”ë¡ ì²˜ë¦¬ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// SENDDATA/RECVDATA ë¸”ë¡ì„ í•˜ë‚˜ì˜ LogLineItemìœ¼ë¡œ ì²˜ë¦¬
         /// </summary>
         private (LogLineItem?, int) ProcessEventDataBlock(string[] lines, int startIndex, int lineNumber, string blockType)
         {
@@ -633,57 +611,57 @@ namespace FACTOVA_LogAnalysis.Services
             {
                 string startLine = lines[startIndex];
                 string timestamp = ExtractTimestampFromLine(startLine);
-                // _workLogService.AddLog($"{blockType} ºí·Ï Ã³¸® ½ÃÀÛ: {startLine.Substring(0, Math.Min(startLine.Length, 100))}...", WorkLogType.Info);
-                // ÀüÃ¼ ºí·Ï ¼öÁı
+                // _workLogService.AddLog($"{blockType} ë¸”ë¡ ì²˜ë¦¬ ì‹œì‘: {startLine.Substring(0, Math.Min(startLine.Length, 100))}...", WorkLogType.Info);
+                // ì „ì²´ ë¸”ë¡ ìˆ˜ì§‘
                 var contentBuilder = new StringBuilder();
                 contentBuilder.AppendLine(startLine);
                 int i = startIndex + 1;
                 int braceCount = 0;
                 bool blockEnded = false;
-                // ½ÃÀÛ ¶óÀÎ¿¡¼­ Áß°ıÈ£ °³¼ö °è»ê
+                // ì‹œì‘ ë¼ì¸ì—ì„œ ì¤‘ê´„í˜¸ ê°œìˆ˜ ê³„ì‚°
                 foreach (char c in startLine)
                 {
                     if (c == '{') braceCount++;
                     else if (c == '}') braceCount--;
                 }
-                // _workLogService.AddLog($"½ÃÀÛ ¶óÀÎ Áß°ıÈ£ °³¼ö: {braceCount}", WorkLogType.Info);
-                // Áß°ıÈ£°¡ ½ÃÀÛ ¶óÀÎ¿¡ ¾ø´Ù¸é 1·Î ¼³Á¤
+                // _workLogService.AddLog($"ì‹œì‘ ë¼ì¸ ì¤‘ê´„í˜¸ ê°œìˆ˜: {braceCount}", WorkLogType.Info);
+                // ì¤‘ê´„í˜¸ê°€ ì‹œì‘ ë¼ì¸ì— ì—†ë‹¤ë©´ 1ë¡œ ì„¤ì •
                 if (braceCount == 0 && (startLine.Contains("DYNAMIC.EVENT.REQUEST") || startLine.Contains("DYNAMIC.EVENT.RESPONSE")))
                 {
                     braceCount = 1;
-                    // _workLogService.AddLog("Áß°ıÈ£ Ä«¿îÆ®¸¦ 1·Î ÃÊ±âÈ­", WorkLogType.Info);
+                    // _workLogService.AddLog("ì¤‘ê´„í˜¸ ì¹´ìš´íŠ¸ë¥¼ 1ë¡œ ì´ˆê¸°í™”", WorkLogType.Info);
                 }
                 while (i < lines.Length && !blockEnded)
                 {
                     string nextLine = lines[i];
                     contentBuilder.AppendLine(nextLine);
-                    // Áß°ıÈ£ °³¼ö·Î ºí·Ï ³¡ °¨Áö
+                    // ì¤‘ê´„í˜¸ ê°œìˆ˜ë¡œ ë¸”ë¡ ë ê°ì§€
                     foreach (char c in nextLine)
                     {
                         if (c == '{') braceCount++;
                         else if (c == '}') braceCount--;
                     }
-                    // µğ¹ö±ë: ¸î °³ ¶óÀÎÀº ·Î±×·Î Ãâ·¢
+                    // ë””ë²„ê¹…: ëª‡ ê°œ ë¼ì¸ì€ ë¡œê·¸ë¡œ ì¶œë™
                     // if (i - startIndex < 10)
                     // {
-                    //     _workLogService.AddLog($"¶óÀÎ {i - startIndex + 1}: {nextLine.Trim()} (Áß°ıÈ£: {braceCount})", WorkLogType.Info);
+                    //     _workLogService.AddLog($"ë¼ì¸ {i - startIndex + 1}: {nextLine.Trim()} (ì¤‘ê´„í˜¸: {braceCount})", WorkLogType.Info);
                     // }
                     if (braceCount <= 0)
                     {
                         blockEnded = true;
-                        // _workLogService.AddLog($"ºí·Ï Á¾·á °¨Áö: Áß°ıÈ£ °³¼ö {braceCount}", WorkLogType.Info);
+                        // _workLogService.AddLog($"ë¸”ë¡ ì¢…ë£Œ ê°ì§€: ì¤‘ê´„í˜¸ ê°œìˆ˜ {braceCount}", WorkLogType.Info);
                     }
                     i++;
-                    // ¹«ÇÑ ·çÇÁ ¹æÁö: 100¶óÀÎ ÀÌ»óÀÌ¸é °­Á¦ Á¾·á
+                    // ë¬´í•œ ë£¨í”„ ë°©ì§€: 100ë¼ì¸ ì´ìƒì´ë©´ ê°•ì œ ì¢…ë£Œ
                     if (i - startIndex > 100)
                     {
-                        // _workLogService.AddLog("ºí·ÏÀÌ ³Ê¹« ±æ¾î¼­ °­Á¦ Á¾·á", WorkLogType.Warning);
+                        // _workLogService.AddLog("ë¸”ë¡ì´ ë„ˆë¬´ ê¸¸ì–´ì„œ ê°•ì œ ì¢…ë£Œ", WorkLogType.Warning);
                         blockEnded = true;
                     }
                 }
                 string fullContent = contentBuilder.ToString();
-                // _workLogService.AddLog($"? {blockType} ºí·Ï ¿Ï·á: {i - startIndex}°³ ¶óÀÎ, ÃÑ {fullContent.Length}ÀÚ", WorkLogType.Info);
-                // µ¥ÀÌÅÍ ÃßÃâ
+                // _workLogService.AddLog($"? {blockType} ë¸”ë¡ ì™„ë£Œ: {i - startIndex}ê°œ ë¼ì¸, ì´ {fullContent.Length}ì", WorkLogType.Info);
+                // ë°ì´í„° ì¶”ì¶œ
                 string msgId = ExtractMsgIdFromContent(fullContent);
                 string procId = ExtractProcIdFromContent(fullContent);
                 string itemContent = ExtractItemContent(fullContent);
@@ -698,18 +676,18 @@ namespace FACTOVA_LogAnalysis.Services
                     Content = itemContent,
                     LogLevel = "EVENT"
                 };
-                // _workLogService.AddLog($"? {blockType} ¾ÆÀÌÅÛ »ı¼º: MsgId={msgId}, ProcId={procId}", WorkLogType.Success);
-                return (eventItem, i - 1); // ´ÙÀ½ Ã³¸®ÇÒ ÀÎµ¦½º ¹İÈ¯
+                // _workLogService.AddLog($"? {blockType} ì•„ì´í…œ ìƒì„±: MsgId={msgId}, ProcId={procId}", WorkLogType.Success);
+                return (eventItem, i - 1); // ë‹¤ìŒ ì²˜ë¦¬í•  ì¸ë±ìŠ¤ ë°˜í™˜
             }
             catch (Exception ex)
             {
-                // _workLogService.AddLog($"? {blockType} ºí·Ï Ã³¸® ¿À·ù: {ex.Message}", WorkLogType.Error);
+                // _workLogService.AddLog($"? {blockType} ë¸”ë¡ ì²˜ë¦¬ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
                 return (null, startIndex);
             }
         }
 
         /// <summary>
-        /// ZPL (^XA ... ^XZ) ºí·ÏÀ» ÇÏ³ªÀÇ LogLineItemÀ¸·Î Ã³¸®
+        /// ZPL (^XA ... ^XZ) ë¸”ë¡ì„ í•˜ë‚˜ì˜ LogLineItemìœ¼ë¡œ ì²˜ë¦¬
         /// </summary>
         private (LogLineItem?, int) ProcessZplBlock(string[] lines, int startIndex, int lineNumber)
         {
@@ -753,7 +731,7 @@ namespace FACTOVA_LogAnalysis.Services
         }
 
         /// <summary>
-        /// DataSend / DataReceive ´ÜÀÏ ¶óÀÎÀ» Ã³¸®ÇÏ¿© LogLineItem »ı¼º
+        /// DataSend / DataReceive ë‹¨ì¼ ë¼ì¸ì„ ì²˜ë¦¬í•˜ì—¬ LogLineItem ìƒì„±
         /// </summary>
         private LogLineItem? ProcessDataTransferLine(string line, int lineNumber, string type)
         {
@@ -761,26 +739,26 @@ namespace FACTOVA_LogAnalysis.Services
             {
                 string timestamp = ExtractTimestampFromLine(line);
 
-                // MsgId Á¤±ÔÈ­
+                // MsgId ì •ê·œí™”
                 string normalizedType = string.Equals(type, "DataReceive", StringComparison.OrdinalIgnoreCase) ? "DataReceive" :
                                          string.Equals(type, "DataSend", StringComparison.OrdinalIgnoreCase) ? "DataSend" : type;
 
                 string payload = string.Empty;
 
-                // Ã£±â ±âÁØ: keyword À§Ä¡ ÀÌÈÄ¿¡¼­ ÆäÀÌ·Îµå¸¦ Ã£À½
+                // ì°¾ê¸° ê¸°ì¤€: keyword ìœ„ì¹˜ ì´í›„ì—ì„œ í˜ì´ë¡œë“œë¥¼ ì°¾ìŒ
                 var keyMatch = System.Text.RegularExpressions.Regex.Match(line, @"\b(DataSend|DataReceive)\b", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
                 if (keyMatch.Success)
                 {
                     int searchStart = keyMatch.Index + keyMatch.Length;
                     string tail = line.Substring(searchStart);
 
-                    // 1) ÆÄÀÌÇÁ Çü½Ä: DataSend|PAYLOAD
+                    // 1) íŒŒì´í”„ í˜•ì‹: DataSend|PAYLOAD
                     var mPipe = System.Text.RegularExpressions.Regex.Match(tail, @"\|\s*([A-Za-z0-9]{6,})");
                     if (mPipe.Success)
                     {
                         payload = mPipe.Groups[1].Value;
 
-                        // ÆÄÀÌÇÁ Çü½ÄÀÏ ¶§´Â IP°¡ ¶óÀÎ ¾ÕºÎºĞ¿¡ [x.x.x.x] ÇüÅÂ·Î ÀÖÀ» ¼ö ÀÖÀ½ ? °°ÀÌ º¸¿©ÁÖ±â
+                        // íŒŒì´í”„ í˜•ì‹ì¼ ë•ŒëŠ” IPê°€ ë¼ì¸ ì•ë¶€ë¶„ì— [x.x.x.x] í˜•íƒœë¡œ ìˆì„ ìˆ˜ ìˆìŒ ? ê°™ì´ ë³´ì—¬ì£¼ê¸°
                         var ipMatch = System.Text.RegularExpressions.Regex.Match(line, @"\[\d{1,3}(?:\.\d{1,3}){3}\]");
                         if (ipMatch.Success)
                         {
@@ -789,7 +767,7 @@ namespace FACTOVA_LogAnalysis.Services
                     }
                     else
                     {
-                        // 2) '- : PAYLOAD' ¶Ç´Â '- :PAYLOAD'
+                        // 2) '- : PAYLOAD' ë˜ëŠ” '- :PAYLOAD'
                         var mDash = System.Text.RegularExpressions.Regex.Match(tail, @"-\s*:\s*([A-Za-z0-9]{6,})");
                         if (mDash.Success)
                         {
@@ -797,7 +775,7 @@ namespace FACTOVA_LogAnalysis.Services
                         }
                         else
                         {
-                            // 3) ':' µÚÀÇ ±ä ¾ËÆÄ³Ñ
+                            // 3) ':' ë’¤ì˜ ê¸´ ì•ŒíŒŒë„˜
                             var mColon = System.Text.RegularExpressions.Regex.Match(tail, @":\s*([A-Za-z0-9]{6,})");
                             if (mColon.Success)
                             {
@@ -805,11 +783,11 @@ namespace FACTOVA_LogAnalysis.Services
                             }
                             else
                             {
-                                // 4) Å°¿öµå ÀÌÈÄ¿¡ ³ª¿À´Â °¡Àå ±ä ¾ËÆÄ³Ñ ÅäÅ«(±æÀÌ >= 6)
+                                // 4) í‚¤ì›Œë“œ ì´í›„ì— ë‚˜ì˜¤ëŠ” ê°€ì¥ ê¸´ ì•ŒíŒŒë„˜ í† í°(ê¸¸ì´ >= 6)
                                 var mmAll = System.Text.RegularExpressions.Regex.Matches(tail, @"([A-Za-z0-9]{6,})");
                                 if (mmAll.Count > 0)
                                 {
-                                    // °¡Àå ±ä ÅäÅ« ¼±ÅÃ
+                                    // ê°€ì¥ ê¸´ í† í° ì„ íƒ
                                     string best = "";
                                     foreach (System.Text.RegularExpressions.Match mm in mmAll)
                                     {
@@ -822,7 +800,7 @@ namespace FACTOVA_LogAnalysis.Services
                     }
                 }
 
-                // Ãß°¡: Å°¿öµå°¡ ¾ø´õ¶óµµ '[IP] : PAYLOAD' ÇüÅÂ·Î IP+µ¥ÀÌÅÍ°¡ ¸í½ÃµÈ °æ¿ì ¿ì¼± ÃßÃâ
+                // ì¶”ê°€: í‚¤ì›Œë“œê°€ ì—†ë”ë¼ë„ '[IP] : PAYLOAD' í˜•íƒœë¡œ IP+ë°ì´í„°ê°€ ëª…ì‹œëœ ê²½ìš° ìš°ì„  ì¶”ì¶œ
                 if (string.IsNullOrEmpty(payload))
                 {
                     var ipPayload = System.Text.RegularExpressions.Regex.Match(line, @"\[(\d{1,3}(?:\.\d{1,3}){3})\]\s*:?\s*([A-Za-z0-9]{6,})");
@@ -834,7 +812,7 @@ namespace FACTOVA_LogAnalysis.Services
                     }
                 }
 
-                // ¸¶Áö¸· º¸Á¤: ¸¸¾à À§¿¡¼­ ¸øÃ£¾Ò°í ¶óÀÎ ÀüÃ¼¿¡¼­ ±ä ÅäÅ«ÀÌ ÀÖÀ¸¸é ±×°ÍÀ» »ç¿ë
+                // ë§ˆì§€ë§‰ ë³´ì •: ë§Œì•½ ìœ„ì—ì„œ ëª»ì°¾ì•˜ê³  ë¼ì¸ ì „ì²´ì—ì„œ ê¸´ í† í°ì´ ìˆìœ¼ë©´ ê·¸ê²ƒì„ ì‚¬ìš©
                 if (string.IsNullOrEmpty(payload))
                 {
                     var any = System.Text.RegularExpressions.Regex.Match(line, @"([A-Za-z0-9]{8,})");
@@ -861,7 +839,7 @@ namespace FACTOVA_LogAnalysis.Services
         }
 
         /// <summary>
-        /// SENDDATA/RECVDATA ºí·Ï¿¡ Æ÷ÇÔµÈ ¶óÀÎÀÎÁö È®ÀÎ
+        /// SENDDATA/RECVDATA ë¸”ë¡ì— í¬í•¨ëœ ë¼ì¸ì¸ì§€ í™•ì¸
         /// </summary>
         private bool IsPartOfEventDataBlock(string line)
         {
@@ -879,7 +857,7 @@ namespace FACTOVA_LogAnalysis.Services
         }
 
         /// <summary>
-        /// ±âº» EVENT ·Î±× ¾ÆÀÌÅÛ »ı¼º
+        /// ê¸°ë³¸ EVENT ë¡œê·¸ ì•„ì´í…œ ìƒì„±
         /// </summary>
         private LogLineItem? CreateDefaultEventLogItem(string line, int lineNumber)
         {
@@ -888,32 +866,32 @@ namespace FACTOVA_LogAnalysis.Services
                 string timestamp = ExtractTimestampFromLine(line);
                 string content = RemoveTimestampFromLine(line);
                 
-                // Content¿¡ ":"¸¸ ÀÖÀ¸¸é Á¦¿Ü
+                // Contentì— ":"ë§Œ ìˆìœ¼ë©´ ì œì™¸
                 if (string.IsNullOrWhiteSpace(content) || content.Trim() == ":")
                 {
                     return null;
                 }
                 
-                // ÀÚµ¿ MsgID ÇÒ´ç ¹× Content Á¤¸®
+                // ìë™ MsgID í• ë‹¹ ë° Content ì •ë¦¬
                 string msgId = "";
                 string cleanedContent = content;
                 
-                // USBLampOnOff ÆĞÅÏ
+                // USBLampOnOff íŒ¨í„´
                 if (content.Contains("USBLampOnOff", StringComparison.OrdinalIgnoreCase))
                 {
                     msgId = "USBLamp";
                 }
-                // Click ÆĞÅÏ
+                // Click íŒ¨í„´
                 else if (content.Contains("Click", StringComparison.OrdinalIgnoreCase))
                 {
                     msgId = "Click";
                 }
-                // Scanner ÆĞÅÏ
+                // Scanner íŒ¨í„´
                 else if (content.Contains("FrameOperation_ScannerData_ReceivedEvent", StringComparison.OrdinalIgnoreCase))
                 {
                     msgId = "SCAN";
                     
-                    // Scanner µ¥ÀÌÅÍ ÃßÃâ: [COM3 /5I2S009S4H140] -> COM3 / /5I2S009S4H140
+                    // Scanner ë°ì´í„° ì¶”ì¶œ: [COM3 /5I2S009S4H140] -> COM3 / /5I2S009S4H140
                     var scannerMatch = System.Text.RegularExpressions.Regex.Match(content, @".*-\s*\[([^\]]+)\]");
                     if (scannerMatch.Success)
                     {
@@ -939,7 +917,7 @@ namespace FACTOVA_LogAnalysis.Services
         }
 
         /// <summary>
-        /// EVENT ³»¿ë¿¡¼­ ITEM ÃßÃâÇÏ°í °£°áÇÏ°Ô Æ÷¸Ë
+        /// EVENT ë‚´ìš©ì—ì„œ ITEM ì¶”ì¶œí•˜ê³  ê°„ê²°í•˜ê²Œ í¬ë§·
         /// </summary>
         private string ExtractItemContent(string content)
         {
@@ -947,7 +925,7 @@ namespace FACTOVA_LogAnalysis.Services
             {
                 var items = new List<string>();
 
-                // SENDDATA/RECVDATA ºí·Ï ÆÄ½Ì ¹× Ç¥½Ã
+                // SENDDATA/RECVDATA ë¸”ë¡ íŒŒì‹± ë° í‘œì‹œ
                 var blockPattern = @"\[(SENDDATA|RECVDATA)\][\s\S]*?\}";
                 var blockMatches = System.Text.RegularExpressions.Regex.Matches(content, blockPattern);
                 foreach (System.Text.RegularExpressions.Match blockMatch in blockMatches)
@@ -955,7 +933,7 @@ namespace FACTOVA_LogAnalysis.Services
                     string blockType = blockMatch.Groups[1].Value;
                     items.Add($"[{blockType}]");
 
-                    // ITEM ÃßÃâ: [¹øÈ£, ¹øÈ£={<NAME=...> <VALUE=...>}] Çü½Ä
+                    // ITEM ì¶”ì¶œ: [ë²ˆí˜¸, ë²ˆí˜¸={<NAME=...> <VALUE=...>}] í˜•ì‹
                     var itemPattern = @"\[(\d+),\s*\d+=\{([^}]*)\}\]";
                     var matches = System.Text.RegularExpressions.Regex.Matches(blockMatch.Value, itemPattern);
                     int itemNum = 1;
@@ -973,7 +951,7 @@ namespace FACTOVA_LogAnalysis.Services
                     }
                 }
 
-                // ±âÁ¸ ITEM ÃßÃâ ·ÎÁ÷ (ÆĞÅÏ1, ÆĞÅÏ2, NAME-VALUE)
+                // ê¸°ì¡´ ITEM ì¶”ì¶œ ë¡œì§ (íŒ¨í„´1, íŒ¨í„´2, NAME-VALUE)
                 var itemPattern1 = @"\[(\d+),\s*\d+=\{([^}]*)\}\]";
                 var matches1 = System.Text.RegularExpressions.Regex.Matches(content, itemPattern1);
                 foreach (System.Text.RegularExpressions.Match match in matches1)
@@ -1018,13 +996,13 @@ namespace FACTOVA_LogAnalysis.Services
         }
 
         /// <summary>
-        /// ITEM µ¥ÀÌÅÍ¸¦ Æ÷¸ËÆÃÇÏ´Â ÇïÆÛ ¸Ş¼­µå
+        /// ITEM ë°ì´í„°ë¥¼ í¬ë§·íŒ…í•˜ëŠ” í—¬í¼ ë©”ì„œë“œ
         /// </summary>
         private string FormatItemData(string itemIndex, string itemData)
         {
             try
             {
-                // NAME°ú VALUE ÃßÃâ
+                // NAMEê³¼ VALUE ì¶”ì¶œ
                 var nameMatch = System.Text.RegularExpressions.Regex.Match(itemData, @"<NAME=([^>]+)>");
                 var valueMatch = System.Text.RegularExpressions.Regex.Match(itemData, @"<VALUE=([^>]*)>");
                 
@@ -1039,7 +1017,7 @@ namespace FACTOVA_LogAnalysis.Services
                     return $"[{itemIndex}] {name} = {value}";
                 }
                 
-                // NAME ÆĞÅÏÀÌ ¾øÀ¸¸é ÀüÃ¼ µ¥ÀÌÅÍ¸¦ Á¤¸®ÇØ¼­ »ç¿ë
+                // NAME íŒ¨í„´ì´ ì—†ìœ¼ë©´ ì „ì²´ ë°ì´í„°ë¥¼ ì •ë¦¬í•´ì„œ ì‚¬ìš©
                 string cleanData = itemData
                     .Replace("<NAME=", "")
                     .Replace("<VALUE=", "=")
@@ -1050,13 +1028,13 @@ namespace FACTOVA_LogAnalysis.Services
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ITEM µ¥ÀÌÅÍ Æ÷¸Ë ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ITEM ë°ì´í„° í¬ë§· ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
                 return $"[{itemIndex}] {itemData}";
             }
         }
 
         /// <summary>
-        /// EVENT ³»¿ë¿¡¼­ MSGID ÃßÃâ
+        /// EVENT ë‚´ìš©ì—ì„œ MSGID ì¶”ì¶œ
         /// </summary>
         private string ExtractMsgIdFromContent(string content)
         {
@@ -1065,42 +1043,42 @@ namespace FACTOVA_LogAnalysis.Services
                 if (string.IsNullOrWhiteSpace(content))
                     return "";
 
-                // 1) ±âÁ¸ ÅÂ±× Çü½Ä ¿ì¼±
+                // 1) ê¸°ì¡´ íƒœê·¸ í˜•ì‹ ìš°ì„ 
                 var match = System.Text.RegularExpressions.Regex.Match(content, @"<MSGID=(\d+)>");
                 if (match.Success)
                 {
                     return match.Groups[1].Value;
                 }
 
-                // 2) DYNAMIC_EVENT_DATA È¤Àº DYNAMIC.EVENT.DATA °°Àº ÆĞÅÏ¿¡¼­ ¼ıÀÚ ÃßÃâ
+                // 2) DYNAMIC_EVENT_DATA í˜¹ì€ DYNAMIC.EVENT.DATA ê°™ì€ íŒ¨í„´ì—ì„œ ìˆ«ì ì¶”ì¶œ
                 var dynMatch = System.Text.RegularExpressions.Regex.Match(content, @"DYNAMIC[_\.\s]?EVENT(?:_DATA|\.DATA|\sDATA)?\s*[:\-]?\s*(\d{3,5})", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
                 if (dynMatch.Success)
                 {
                     return dynMatch.Groups[1].Value;
                 }
 
-                // 3) 'DYNAMIC_EVENT_DATA 1300' °°Àº ¾ğ´õ½ºÄÚ¾î Çü½Ä
+                // 3) 'DYNAMIC_EVENT_DATA 1300' ê°™ì€ ì–¸ë”ìŠ¤ì½”ì–´ í˜•ì‹
                 var dyn2 = System.Text.RegularExpressions.Regex.Match(content, @"DYNAMIC_EVENT_DATA\s*(\d{3,5})", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
                 if (dyn2.Success)
                 {
                     return dyn2.Groups[1].Value;
                 }
 
-                // 4) Äİ·ĞÀ¸·Î ±¸ºĞµÈ ÇüÅÂ¿¡¼­ ¼ıÀÚ ÃßÃâ '... : 1300 :'
+                // 4) ì½œë¡ ìœ¼ë¡œ êµ¬ë¶„ëœ í˜•íƒœì—ì„œ ìˆ«ì ì¶”ì¶œ '... : 1300 :'
                 var colonMatch = System.Text.RegularExpressions.Regex.Match(content, @":\s*(\d{3,5})\s*:");
                 if (colonMatch.Success)
                 {
                     return colonMatch.Groups[1].Value;
                 }
 
-                // 5) ºí·Ï ³»ºÎ¿¡ µ¶¸³ÀûÀÎ ¼ıÀÚ ¶óÀÎÀÌ ÀÖ´Â °æ¿ì (¿¹: newline ÈÄ ¹Ù·Î 1100)
+                // 5) ë¸”ë¡ ë‚´ë¶€ì— ë…ë¦½ì ì¸ ìˆ«ì ë¼ì¸ì´ ìˆëŠ” ê²½ìš° (ì˜ˆ: newline í›„ ë°”ë¡œ 1100)
                 var lineMatch = System.Text.RegularExpressions.Regex.Match(content, @"(?m)^\s*(\d{3,5})\s*$");
                 if (lineMatch.Success)
                 {
                     return lineMatch.Groups[1].Value;
                 }
 
-                // 6) ÀÓÀÇÀÇ À§Ä¡¿¡ ÀÖ´Â ±ä ¼ıÀÚ ÅäÅ«(¿¹: 9000, 1300 µî)
+                // 6) ì„ì˜ì˜ ìœ„ì¹˜ì— ìˆëŠ” ê¸´ ìˆ«ì í† í°(ì˜ˆ: 9000, 1300 ë“±)
                 var any = System.Text.RegularExpressions.Regex.Match(content, @"\b(\d{3,5})\b");
                 if (any.Success)
                 {
@@ -1116,7 +1094,7 @@ namespace FACTOVA_LogAnalysis.Services
         }
 
         /// <summary>
-        /// EVENT ³»¿ë¿¡¼­ PROCID ÃßÃâ
+        /// EVENT ë‚´ìš©ì—ì„œ PROCID ì¶”ì¶œ
         /// </summary>
         private string ExtractProcIdFromContent(string content)
         {
@@ -1126,7 +1104,7 @@ namespace FACTOVA_LogAnalysis.Services
                 if (match.Success)
                 {
                     string procId = match.Groups[1].Value;
-                    //_workLogService.AddLog($"PROCID ÃßÃâ: {procId}", WorkLogType.Info);
+                    //_workLogService.AddLog($"PROCID ì¶”ì¶œ: {procId}", WorkLogType.Info);
                     return procId;
                 }
                 return "";
@@ -1138,8 +1116,8 @@ namespace FACTOVA_LogAnalysis.Services
         }
 
         /// <summary>
-        /// Å¸ÀÓ½ºÅÆÇÁ Çü½Ä º¯È¯
-        /// ?? ¹Ğ¸®ÃÊ Æ÷ÇÔ ½Ã º¸Á¸: HH:mm:ss.fff
+        /// íƒ€ì„ìŠ¤íƒ¬í”„ í˜•ì‹ ë³€í™˜
+        /// ?? ë°€ë¦¬ì´ˆ í¬í•¨ ì‹œ ë³´ì¡´: HH:mm:ss.fff
         /// </summary>
         private string FormatTimestamp(string timestamp)
         {
@@ -1148,7 +1126,7 @@ namespace FACTOVA_LogAnalysis.Services
 
             try
             {
-                // ¹Ğ¸®ÃÊ Æ÷ÇÔ Çü½Ä: dd-MM-yyyy HH:mm:ss.fff
+                // ë°€ë¦¬ì´ˆ í¬í•¨ í˜•ì‹: dd-MM-yyyy HH:mm:ss.fff
                 if (DateTime.TryParseExact(timestamp, "dd-MM-yyyy HH:mm:ss.fff",
                     System.Globalization.CultureInfo.InvariantCulture,
                     System.Globalization.DateTimeStyles.None, out DateTime parsedWithMs))
@@ -1156,7 +1134,7 @@ namespace FACTOVA_LogAnalysis.Services
                     return parsedWithMs.ToString("HH:mm:ss.fff");
                 }
 
-                // ¹Ğ¸®ÃÊ ¾ø´Â Çü½Ä: dd-MM-yyyy HH:mm:ss
+                // ë°€ë¦¬ì´ˆ ì—†ëŠ” í˜•ì‹: dd-MM-yyyy HH:mm:ss
                 if (DateTime.TryParseExact(timestamp, "dd-MM-yyyy HH:mm:ss",
                     System.Globalization.CultureInfo.InvariantCulture,
                     System.Globalization.DateTimeStyles.None, out DateTime parsedDate))
@@ -1164,17 +1142,17 @@ namespace FACTOVA_LogAnalysis.Services
                     return parsedDate.ToString("HH:mm:ss");
                 }
 
-                // ÀÏ¹İÀûÀÎ ÆÄ½Ì ½Ãµµ
+                // ì¼ë°˜ì ì¸ íŒŒì‹± ì‹œë„
                 if (DateTime.TryParse(timestamp, out DateTime parsedDate2))
                 {
-                    // ¹Ğ¸®ÃÊ°¡ Æ÷ÇÔµÇ¾î ÀÖÀ¸¸é º¸Á¸
+                    // ë°€ë¦¬ì´ˆê°€ í¬í•¨ë˜ì–´ ìˆìœ¼ë©´ ë³´ì¡´
                     if (timestamp.Contains("."))
                         return parsedDate2.ToString("HH:mm:ss.fff");
                     else
                         return parsedDate2.ToString("HH:mm:ss");
                 }
 
-                // ½ÇÆĞÇÏ¸é ¹®ÀÚ¿­¿¡¼­ HH:mm:ss ¶Ç´Â HH:mm:ss.fff ÆĞÅÏ ÃßÃâ
+                // ì‹¤íŒ¨í•˜ë©´ ë¬¸ìì—´ì—ì„œ HH:mm:ss ë˜ëŠ” HH:mm:ss.fff íŒ¨í„´ ì¶”ì¶œ
                 var mWithMs = System.Text.RegularExpressions.Regex.Match(timestamp, @"(\d{2}:\d{2}:\d{2}\.\d{3})");
                 if (mWithMs.Success)
                     return mWithMs.Groups[1].Value;
@@ -1192,14 +1170,14 @@ namespace FACTOVA_LogAnalysis.Services
         }
 
         /// <summary>
-        /// ¶óÀÎ¿¡¼­ Å¸ÀÓ½ºÅÆÇÁ ÃßÃâ
-        /// ?? Áö¿ø Çü½Ä: [dd-MM-yyyy HH:mm:ss] ¶Ç´Â [dd-MM-yyyy HH:mm:ss.fff]
+        /// ë¼ì¸ì—ì„œ íƒ€ì„ìŠ¤íƒ¬í”„ ì¶”ì¶œ
+        /// ?? ì§€ì› í˜•ì‹: [dd-MM-yyyy HH:mm:ss] ë˜ëŠ” [dd-MM-yyyy HH:mm:ss.fff]
         /// </summary>
         private string ExtractTimestampFromLine(string line)
         {
             try
             {
-                // ¹Ğ¸®ÃÊ Æ÷ÇÔ ¿©ºÎ¸¦ ¸ğµÎ Ã³¸®
+                // ë°€ë¦¬ì´ˆ í¬í•¨ ì—¬ë¶€ë¥¼ ëª¨ë‘ ì²˜ë¦¬
                 var match = System.Text.RegularExpressions.Regex.Match(line, @"\[(\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}(?:\.\d{3})?)\]");
                 if (match.Success)
                 {
@@ -1215,14 +1193,14 @@ namespace FACTOVA_LogAnalysis.Services
         }
 
         /// <summary>
-        /// ¶óÀÎ¿¡¼­ Å¸ÀÓ½ºÅÆÇÁ Á¦°Å
-        /// ?? Áö¿ø Çü½Ä: [dd-MM-yyyy HH:mm:ss] ¶Ç´Â [dd-MM-yyyy HH:mm:ss.fff]
+        /// ë¼ì¸ì—ì„œ íƒ€ì„ìŠ¤íƒ¬í”„ ì œê±°
+        /// ?? ì§€ì› í˜•ì‹: [dd-MM-yyyy HH:mm:ss] ë˜ëŠ” [dd-MM-yyyy HH:mm:ss.fff]
         /// </summary>
         private string RemoveTimestampFromLine(string line)
         {
             try
             {
-                // ¹Ğ¸®ÃÊ Æ÷ÇÔ ¿©ºÎ¸¦ ¸ğµÎ Ã³¸®
+                // ë°€ë¦¬ì´ˆ í¬í•¨ ì—¬ë¶€ë¥¼ ëª¨ë‘ ì²˜ë¦¬
                 var match = System.Text.RegularExpressions.Regex.Match(line, @"\[\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}(?:\.\d{3})?\]\s*(.*)");
                 if (match.Success)
                 {
@@ -1237,7 +1215,7 @@ namespace FACTOVA_LogAnalysis.Services
         }
 
         /// <summary>
-        /// ´Ü¼ø ¶óÀÎ¿¡¼­ ºñÁî´Ï½º¸í ÃßÃâ
+        /// ë‹¨ìˆœ ë¼ì¸ì—ì„œ ë¹„ì¦ˆë‹ˆìŠ¤ëª… ì¶”ì¶œ
         /// </summary>
         private string ExtractBusinessNameFromSimpleLine(string line, string logType)
         {
@@ -1270,7 +1248,7 @@ namespace FACTOVA_LogAnalysis.Services
         }
 
         /// <summary>
-        /// ImageList : ºí·Ï Ã³¸® (ONBOARD FLASH±îÁö)
+        /// ImageList : ë¸”ë¡ ì²˜ë¦¬ (ONBOARD FLASHê¹Œì§€)
         /// </summary>
         private (LogLineItem?, int) ProcessImageListBlock(string[] lines, int startIndex, int lineNumber)
         {
@@ -1285,30 +1263,30 @@ namespace FACTOVA_LogAnalysis.Services
                 int i = startIndex + 1;
                 bool blockEnded = false;
                 
-                // ONBOARD FLASH¸¦ Ã£À» ¶§±îÁö °è¼Ó ÀĞ±â
+                // ONBOARD FLASHë¥¼ ì°¾ì„ ë•Œê¹Œì§€ ê³„ì† ì½ê¸°
                 while (i < lines.Length && !blockEnded)
                 {
                     string nextLine = lines[i];
                     string cleanedLine = RemoveTimestampFromLine(nextLine);
                     
-                    // ÇöÀç ¶óÀÎÀ» ¸ÕÀú Ãß°¡
+                    // í˜„ì¬ ë¼ì¸ì„ ë¨¼ì € ì¶”ê°€
                     contentBuilder.AppendLine(cleanedLine);
                     
-                    // ONBOARD FLASH¸¦ Ã£À¸¸é ºí·Ï Á¾·á
+                    // ONBOARD FLASHë¥¼ ì°¾ìœ¼ë©´ ë¸”ë¡ ì¢…ë£Œ
                     if (cleanedLine.Contains("ONBOARD FLASH", StringComparison.OrdinalIgnoreCase))
                     {
                         blockEnded = true;
-                        // ´ÙÀ½ Ã³¸®ÇÒ ÀÎµ¦½º´Â ÇöÀç ¶óÀÎ ´ÙÀ½
+                        // ë‹¤ìŒ ì²˜ë¦¬í•  ì¸ë±ìŠ¤ëŠ” í˜„ì¬ ë¼ì¸ ë‹¤ìŒ
                         i++;
                         break;
                     }
                     
                     i++;
                     
-                    // ¹«ÇÑ ·çÇÁ ¹æÁö: 100¶óÀÎ ÀÌ»óÀÌ¸é °­Á¦ Á¾·á
+                    // ë¬´í•œ ë£¨í”„ ë°©ì§€: 100ë¼ì¸ ì´ìƒì´ë©´ ê°•ì œ ì¢…ë£Œ
                     if (i - startIndex > 100)
                     {
-                        _workLogService.AddLog($"?? ImageList ºí·ÏÀÌ ³Ê¹« ±æ¾î¼­ °­Á¦ Á¾·á: {i - startIndex}¶óÀÎ", WorkLogType.Warning);
+                        _workLogService.AddLog($"?? ImageList ë¸”ë¡ì´ ë„ˆë¬´ ê¸¸ì–´ì„œ ê°•ì œ ì¢…ë£Œ: {i - startIndex}ë¼ì¸", WorkLogType.Warning);
                         blockEnded = true;
                     }
                 }
@@ -1326,13 +1304,13 @@ namespace FACTOVA_LogAnalysis.Services
                     LogLevel = "EVENT"
                 };
                 
-                _workLogService.AddLog($"? ImageList ºí·Ï Ã³¸® ¿Ï·á: {i - startIndex}¶óÀÎ, ´ÙÀ½ ÀÎµ¦½º: {i}", WorkLogType.Info);
+                _workLogService.AddLog($"? ImageList ë¸”ë¡ ì²˜ë¦¬ ì™„ë£Œ: {i - startIndex}ë¼ì¸, ë‹¤ìŒ ì¸ë±ìŠ¤: {i}", WorkLogType.Info);
                 
-                return (imageListItem, i - 1); // ´ÙÀ½ Ã³¸®ÇÒ ÀÎµ¦½º ¹İÈ¯ (0-basedÀÌ¹Ç·Î -1)
+                return (imageListItem, i - 1); // ë‹¤ìŒ ì²˜ë¦¬í•  ì¸ë±ìŠ¤ ë°˜í™˜ (0-basedì´ë¯€ë¡œ -1)
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ImageList ºí·Ï Ã³¸® ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ImageList ë¸”ë¡ ì²˜ë¦¬ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
                 return (null, startIndex);
             }
         }
