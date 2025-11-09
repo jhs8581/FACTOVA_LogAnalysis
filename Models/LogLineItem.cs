@@ -1,4 +1,4 @@
-using System.ComponentModel;
+ï»¿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -8,29 +8,35 @@ using System.IO;
 namespace FACTOVA_LogAnalysis.Models
 {
     /// <summary>
-    /// DataGrid¿ë ·Î±× ¶óÀÎ ¾ÆÀÌÅÛ (Excel È£È¯ °¡´É ¹× Ãß°¡ ¼Ó¼º)
+    /// DataGridìš© ë¡œê·¸ ë¼ì¸ ì•„ì´í…œ (Excel í˜¸í™˜ ê°€ëŠ¥ ë° ì¶”ê°€ ì†ì„±)
     /// </summary>
     public class LogLineItem : INotifyPropertyChanged
     {
+        // âœ… Static Compiled Regex for BARCODE/LOT extraction (ì„±ëŠ¥ ìµœì í™”)
+        private static readonly Regex BarcodeNoRegex = new Regex(@"<BARCODE_NO[^>]*>([^<]+)</BARCODE_NO>", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        private static readonly Regex BarcodeValueRegex = new Regex(@"<BARCODE_VALUE[^>]*>([^<]+)</BARCODE_VALUE>", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        private static readonly Regex LotIdRegex = new Regex(@"<LOT_ID[^>]*>([^<]+)</LOT_ID>", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        private static readonly Regex LotId2Regex = new Regex(@"<LOTID[^>]*>([^<]+)</LOTID>", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
         private bool _isHighlighted;
         private System.Windows.Media.Brush _textColor = System.Windows.Media.Brushes.Black;
 
         public int LineNumber { get; set; }
-        public string Content { get; set; } = ""; // Á¤Á¦µÈ ½ÇÁ¦ Content (NewDataSetµµ Æ÷ÇÔ)
+        public string Content { get; set; } = ""; // ì •ì œëœ ì‹¤ì œ Content (NewDataSetë„ í¬í•¨)
         
         /// <summary>
-        /// ·Î±× Å¸ÀÔ (DATA, EVENT, DEBUG, EXCEPTION)
+        /// ë¡œê·¸ íƒ€ì… (DATA, EVENT, DEBUG, EXCEPTION)
         /// </summary>
         public string LogLevel { get; set; } = "";
 
         public string Timestamp { get; set; } = "";
-        public string BusinessName { get; set; } = ""; // ºñÁî´Ï½º¸í
-        public string ExecTime { get; set; } = ""; // ½ÇÇà½Ã°£
-        public string TxnId { get; set; } = ""; // Æ®·£Àè¼Ç ID
-        public string MsgId { get; set; } = ""; // MSGID Ãß°¡
-        public string ProcId { get; set; } = ""; // PROCID Ãß°¡
+        public string BusinessName { get; set; } = ""; // ë¹„ì¦ˆë‹ˆìŠ¤ëª…
+        public string ExecTime { get; set; } = ""; // ì‹¤í–‰ì‹œê°„
+        public string TxnId { get; set; } = ""; // íŠ¸ëœì­ì…˜ ID
+        public string MsgId { get; set; } = ""; // MSGID ì¶”ê°€
+        public string ProcId { get; set; } = ""; // PROCID ì¶”ê°€
 
-        // EVENT Àü¿ë »õ·Î¿î ÄÃ·³µé
+        // EVENT ì „ìš© ìƒˆë¡œìš´ ì»¬ëŸ¼ë“¤
         public string BCR_ID { get; set; } = "";
         public string RETURN_CODE { get; set; } = "";
         public string MSG_NO { get; set; } = "";
@@ -39,9 +45,14 @@ namespace FACTOVA_LogAnalysis.Models
         public string LINEPASS { get; set; } = "";
         public string ERROR_CODE { get; set; } = "";
         public string ERROR_CODE_DESC { get; set; } = "";
+        
+        /// <summary>
+        /// BARCODE_NO, BARCODE_VALUE, LOT_ID, LOTID ì¤‘ ì²« ë²ˆì§¸ ê°’
+        /// </summary>
+        public string BARCODE_LOT { get; set; } = "";
 
         /// <summary>
-        /// ¿¡·¯ ¼³¸í (EXCEPTION ·Î±× Àü¿ë)
+        /// ì—ëŸ¬ ì„¤ëª… (EXCEPTION ë¡œê·¸ ì „ìš©)
         /// </summary>
         public string ErrorDescription { get; set; } = "";
 
@@ -67,11 +78,11 @@ namespace FACTOVA_LogAnalysis.Models
             } 
         }
 
-        // º¹»ç¿ë ÅØ½ºÆ® (Content¸¸, Line Á¦¿Ü)
+        // ë³µì‚¬ìš© í…ìŠ¤íŠ¸ (Contentë§Œ, Line ì œì™¸)
         public string CopyText => Content;
         
         /// <summary>
-        /// ±âº» »ı¼ºÀÚ (¼Ó¼º ÃÊ±âÈ­¸¸)
+        /// ê¸°ë³¸ ìƒì„±ì (ì†ì„± ì´ˆê¸°í™”ë§Œ)
         /// </summary>
         public LogLineItem()
         {
@@ -79,7 +90,7 @@ namespace FACTOVA_LogAnalysis.Models
         }
         
         /// <summary>
-        /// ±âº» »ı¼ºÀÚ (ÆÄ½Ì Ã³¸®)
+        /// ê¸°ë³¸ ìƒì„±ì (íŒŒì‹± ì²˜ë¦¬)
         /// </summary>
         public LogLineItem(int lineNumber, string content)
         {
@@ -89,31 +100,34 @@ namespace FACTOVA_LogAnalysis.Models
             {
                 string originalContent = content;
                 
-                // Á¤º¸ ÃßÃâ ÀÛ¾÷ (¼ø¼­Áß¿ä)
+                // ì •ë³´ ì¶”ì¶œ ì‘ì—… (ìˆœì„œì¤‘ìš”)
                 ExtractLogLevel(originalContent);
                 ExtractTimestamp(originalContent);
                 ExtractBusinessName(originalContent);
                 ExtractExecTime(originalContent);
                 ExtractTxnId(originalContent);
-                ExtractMsgId(originalContent);  // MsgId ÃßÃâ Ãß°¡
-                ExtractProcId(originalContent); // ProcId ÃßÃâ Ãß°¡
+                ExtractMsgId(originalContent);  // MsgId ì¶”ì¶œ ì¶”ê°€
+                ExtractProcId(originalContent); // ProcId ì¶”ì¶œ ì¶”ê°€
                 
-                // EVENT ·Î±×ÀÎ °æ¿ì Ãß°¡ Á¤º¸ ÃßÃâ
+                // EVENT ë¡œê·¸ì¸ ê²½ìš° ì¶”ê°€ í•„ë“œ ì¶”ì¶œ
                 if (LogLevel == "EVENT" || originalContent.Contains("EVENT"))
                 {
                     ExtractEventFields(originalContent);
                 }
                 
-                // Content Á¤Á¦ (Áßº¹ Á¤º¸ Á¦°Å)
+                // BARCODE/LOT ì¶”ì¶œ (DATA, EVENT ëª¨ë‘ ì ìš©)
+                ExtractBarcodeLot(originalContent);
+                
+                // Content ì •ë¦¬ (ì¤‘ë³µ ì •ë³´ ì œê±°)
                 Content = CleanAndFormatContent(originalContent);
             }
             
-            // ±âº» »ö»ó ¼³Á¤
+            // ê¸°ë³¸ ìƒ‰ìƒ ì„¤ì •
             SetDefaultColor();
         }
 
         /// <summary>
-        /// ¹Ì¸® ÆÄ½ÌµÈ Á¤º¸ »ı¼ºÀÚ (ÆÄ½Ì »ı·«)
+        /// ë¯¸ë¦¬ íŒŒì‹±ëœ ì •ë³´ ìƒì„±ì (íŒŒì‹± ìƒëµ)
         /// </summary>
         public LogLineItem(int lineNumber, string timestamp, string businessName, string execTime, string txnId, string content)
         {
@@ -123,23 +137,26 @@ namespace FACTOVA_LogAnalysis.Models
             ExecTime = FormatExecTime(execTime);
             TxnId = txnId;
             Content = FormatXmlContent(content);
-            LogLevel = "INFO"; // ±âº»°ª
+            LogLevel = "DATA"; // ê¸°ë³¸ê°’
             
-            // ±âº» »ö»ó ¼³Á¤
+            // BARCODE/LOT ì¶”ì¶œ (ì›ë³¸ content ì‚¬ìš©)
+            ExtractBarcodeLot(content);
+            
+            // ê¸°ë³¸ ìƒ‰ìƒ ì„¤ì •
             SetDefaultColor();
         }
 
         /// <summary>
-        /// EVENT ·Î±×¿¡¼­ Ãß°¡ ÇÊµåµé ÃßÃâ
+        /// EVENT ë¡œê·¸ì—ì„œ ì¶”ê°€ í•„ë“œë“¤ ì¶”ì¶œ
         /// </summary>
         public void ExtractEventFields(string content)
         {
             try
             {
-                // MSG_NO ÃßÃâ - ¿ì¼±ÀûÀ¸·Î Ã³¸® ÁøÇà
+                // MSG_NO ì¶”ì¶œ - ìš°ì„ ì ìœ¼ë¡œ ì²˜ë¦¬ ì§„í–‰
                 ExtractMsgNo(content);
                 
-                // ´Ù¸¥ ÇÊµåµéµµ ³ªÁß¿¡ Ãß°¡ ¿¹Á¤
+                // ë‹¤ë¥¸ í•„ë“œë“¤ë„ ë‚˜ì¤‘ì— ì¶”ê°€ ì˜ˆì •
                 ExtractBcrId(content);
                 ExtractReturnCode(content);
                 ExtractWorkType(content);
@@ -147,6 +164,7 @@ namespace FACTOVA_LogAnalysis.Models
                 ExtractLinePass(content);
                 ExtractErrorCode(content);
                 ExtractErrorCodeDesc(content);
+                ExtractBarcodeLot(content);
             }
             catch (Exception ex)
             {
@@ -155,13 +173,13 @@ namespace FACTOVA_LogAnalysis.Models
         }
 
         /// <summary>
-        /// MSG_NO ÃßÃâ - Content¿¡¼­ MSG_NO ÆĞÅÏÀ» Ã£¾Æ¼­ ÃßÃâ
+        /// MSG_NO ì¶”ì¶œ - Contentì—ì„œ MSG_NO íŒ¨í„´ì„ ì°¾ì•„ì„œ ì¶”ì¶œ
         /// </summary>
         private void ExtractMsgNo(string content)
         {
             try
             {
-                // 1. XML ÅÂ±×¿¡¼­ MSG_NO ÃßÃâ: <MSG_NO>12345</MSG_NO>
+                // 1. XML íƒœê·¸ì—ì„œ MSG_NO ì¶”ì¶œ: <MSG_NO>12345</MSG_NO>
                 var xmlMsgNoMatch = Regex.Match(content, @"<MSG_NO[^>]*>([^<]*)</MSG_NO>", RegexOptions.IgnoreCase);
                 if (xmlMsgNoMatch.Success)
                 {
@@ -169,7 +187,7 @@ namespace FACTOVA_LogAnalysis.Models
                     return;
                 }
 
-                // 2. Å°-°ª ½Ö¿¡¼­ MSG_NO ÃßÃâ: MSG_NO: 12345, MSG_NO=12345
+                // 2. í‚¤-ê°’ ìŒì—ì„œ MSG_NO ì¶”ì¶œ: MSG_NO: 12345, MSG_NO=12345
                 var keyValueMatch = Regex.Match(content, @"MSG_NO\s*[:=]\s*([A-Z0-9\-_]+)", RegexOptions.IgnoreCase);
                 if (keyValueMatch.Success)
                 {
@@ -177,7 +195,7 @@ namespace FACTOVA_LogAnalysis.Models
                     return;
                 }
 
-                // 3. µû¿ÈÇ¥³ª °ıÈ£·Î °¨½ÎÁø MSG_NO: "MSG_NO":"12345", (MSG_NO:12345)
+                // 3. ë”°ì˜´í‘œë‚˜ ê´„í˜¸ë¡œ ê°ì‹¸ì§„ MSG_NO: "MSG_NO":"12345", (MSG_NO:12345)
                 var quotedMatch = Regex.Match(content, @"[""'\(]?MSG_NO[""'\)]?\s*[:=]\s*[""']?([A-Z0-9\-_]+)[""']?", RegexOptions.IgnoreCase);
                 if (quotedMatch.Success)
                 {
@@ -185,15 +203,15 @@ namespace FACTOVA_LogAnalysis.Models
                     return;
                 }
 
-                // 4. JSON ½ºÅ¸ÀÏ: {"MSG_NO":"12345"}
-                var jsonMatch = Regex.Match(content, @"""MSG_NO""\s*:\s*""([^""]+)""", RegexOptions.IgnoreCase);
+                // 4. JSON ìŠ¤íƒ€ì¼: {"MSG_NO":"12345"}
+                var jsonMatch = Regex.Match(content, @"""MSG_NO""\s*:\s*""([^""]+""", RegexOptions.IgnoreCase);
                 if (jsonMatch.Success)
                 {
                     MSG_NO = jsonMatch.Groups[1].Value.Trim();
                     return;
                 }
 
-                // 5. ´Ü¼ø MSG_NO µÚ¿¡ ¿À´Â ¼ıÀÚ/¹®ÀÚ: MSG_NO 12345
+                // 5. ë‹¨ìˆœ MSG_NO ë’¤ì— ì˜¤ëŠ” ìˆ«ì/ë¬¸ì: MSG_NO 12345
                 var simpleMatch = Regex.Match(content, @"MSG_NO\s+([A-Z0-9\-_]+)", RegexOptions.IgnoreCase);
                 if (simpleMatch.Success)
                 {
@@ -253,39 +271,95 @@ namespace FACTOVA_LogAnalysis.Models
         }
 
         /// <summary>
-        /// Content¿¡¼­ Áßº¹ Á¤º¸¸¦ Á¦°ÅÇÏ°í XMLÀ» Á¤¸®ÇÔ
+        /// BARCODE_NO, BARCODE_VALUE, LOT_ID, LOTID ì¤‘ ì²« ë²ˆì§¸ ê°’ ì¶”ì¶œ - ìµœì í™” ë²„ì „
+        /// </summary>
+        private void ExtractBarcodeLot(string content)
+        {
+            try
+            {
+                // 1. <BARCODE_NO>VALUE</BARCODE_NO> í˜•ì‹ (ê°œí–‰ ë° ê³µë°± í¬í•¨)
+                var barcodeNoMatch = BarcodeNoRegex.Match(content);
+                if (barcodeNoMatch.Success)
+                {
+                    string value = barcodeNoMatch.Groups[1].Value.Trim();
+                    if (!string.IsNullOrWhiteSpace(value))
+                    {
+                        BARCODE_LOT = value;
+                        return;
+                    }
+                }
+
+                // 2. <BARCODE_VALUE>VALUE</BARCODE_VALUE> í˜•ì‹ (ê°œí–‰ ë° ê³µë°± í¬í•¨)
+                var barcodeValueMatch = BarcodeValueRegex.Match(content);
+                if (barcodeValueMatch.Success)
+                {
+                    string value = barcodeValueMatch.Groups[1].Value.Trim();
+                    if (!string.IsNullOrWhiteSpace(value))
+                    {
+                        BARCODE_LOT = value;
+                        return;
+                    }
+                }
+
+                // 3. <LOT_ID>VALUE</LOT_ID> í˜•ì‹ (ê°œí–‰ ë° ê³µë°± í¬í•¨)
+                var lotIdMatch = LotIdRegex.Match(content);
+                if (lotIdMatch.Success && !string.IsNullOrWhiteSpace(lotIdMatch.Groups[1].Value))
+                {
+                    BARCODE_LOT = lotIdMatch.Groups[1].Value.Trim();
+                    return;
+                }
+
+                // 4. <LOTID>VALUE</LOTID> í˜•ì‹ (ê°œí–‰ ë° ê³µë°± í¬í•¨)
+                var lotIdMatch2 = LotId2Regex.Match(content);
+                if (lotIdMatch2.Success && !string.IsNullOrWhiteSpace(lotIdMatch2.Groups[1].Value))
+                {
+                    BARCODE_LOT = lotIdMatch2.Groups[1].Value.Trim();
+                    return;
+                }
+
+                BARCODE_LOT = "";
+            }
+            catch (Exception)
+            {
+                // âœ… ì˜ˆì™¸ ë°œìƒ ì‹œ ë¹ˆ ë¬¸ìì—´ ë°˜í™˜ (ë””ë²„ê·¸ ì¶œë ¥ ì œê±°)
+                BARCODE_LOT = "";
+            }
+        }
+
+        /// <summary>
+        /// Contentì—ì„œ ì¤‘ë³µ ì •ë³´ë¥¼ ì œê±°í•˜ê³  XMLì„ ì •ë¦¬í•¨
         /// </summary>
         private string CleanAndFormatContent(string originalContent)
         {
             string cleaned = originalContent;
 
-            // 1. Å¸ÀÓ½ºÅÆÇÁ Á¦°Å [10-02-2025 12:54:10]
+            // 1. íƒ€ì„ìŠ¤íƒ¬í”„ ì œê±° [10-02-2025 12:54:10]
             cleaned = Regex.Replace(cleaned, @"\[\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}\]", "").Trim();
             
-            // 2. ExecuteService():[...] ºÎºĞ Á¦°Å
+            // 2. ExecuteService():[...] ë¶€ë¶„ ì œê±°
             cleaned = Regex.Replace(cleaned, @"ExecuteService\(\)\s*:\s*\[\s*[^\]]+\s*\]", "").Trim();
             
-            // 3. exec.Time Á¤º¸ Á¦°Å
+            // 3. exec.Time ì •ë³´ ì œê±°
             cleaned = Regex.Replace(cleaned, @"exec\.Time\s*:\s*[0-9:\.]+", "").Trim();
             
-            // 4. TXN_ID Á¤º¸ Á¦°Å
+            // 4. TXN_ID ì •ë³´ ì œê±°
             cleaned = Regex.Replace(cleaned, @"TXN_ID\s*:\s*[A-Z0-9\-_]+\s*:", "").Trim();
             
-            // 5. Parameter : Á¦°Å
+            // 5. Parameter : ì œê±°
             cleaned = Regex.Replace(cleaned, @"Parameter\s*:", "").Trim();
             
-            // 6. ·Î±× ·¹º§ ÅØ½ºÆ® Á¦°Å (ERROR, WARN, INFO, DEBUG)
+            // 6. ë¡œê·¸ ë ˆë²¨ í…ìŠ¤íŠ¸ ì œê±° (ERROR, WARN, INFO, DEBUG)
             cleaned = Regex.Replace(cleaned, @"\b(ERROR|WARN|INFO|DEBUG)\b\s*:?", "").Trim();
             
-            // 7. ¿¬¼ÓµÈ °ø¹éÀ» ÇÏ³ª·Î ÅëÀÏ
+            // 7. ì—°ì†ëœ ê³µë°±ì„ í•˜ë‚˜ë¡œ í†µì¼
             cleaned = Regex.Replace(cleaned, @"\s+", " ").Trim();
             
-            // 8. NewDataSet XML Æ÷¸ËÆÃ
+            // 8. NewDataSet XML í¬ë§·íŒ…
             return FormatXmlContent(cleaned);
         }
 
         /// <summary>
-        /// XML Content¸¦ µé¿©¾²±â ÇüÅÂ·Î Æ÷¸ËÆÃ
+        /// XML Contentë¥¼ ë“¤ì—¬ì“°ê¸° í˜•íƒœë¡œ í¬ë§·íŒ…
         /// </summary>
         private string FormatXmlContent(string content)
         {
@@ -294,10 +368,10 @@ namespace FACTOVA_LogAnalysis.Models
 
             try
             {
-                // NewDataSetÀÌ Æ÷ÇÔµÈ °æ¿ì XML Æ÷¸ËÆÃ ½Ãµµ
+                // NewDataSetì´ í¬í•¨ëœ ê²½ìš° XML í¬ë§·íŒ… ì‹œë„
                 if (content.Contains("<NewDataSet>") && content.Contains("</NewDataSet>"))
                 {
-                    // XML ÆÄ½Ì ¹× Æ÷¸ËÆÃ
+                    // XML íŒŒì‹± ë° í¬ë§·íŒ…
                     var doc = XDocument.Parse(content);
                     
                     using (var stringWriter = new StringWriter())
@@ -305,7 +379,7 @@ namespace FACTOVA_LogAnalysis.Models
                         using (var xmlWriter = XmlWriter.Create(stringWriter, new XmlWriterSettings
                         {
                             Indent = true,
-                            IndentChars = "  ", // 2Ä­ µé¿©¾²±â
+                            IndentChars = "  ", // 2ì¹¸ ë“¤ì—¬ì“°ê¸°
                             NewLineChars = "\n",
                             NewLineHandling = NewLineHandling.Replace,
                             OmitXmlDeclaration = true
@@ -317,18 +391,18 @@ namespace FACTOVA_LogAnalysis.Models
                     }
                 }
                 
-                // NewDataSetÀÌ ¾Æ´Ï¸é ¿øº» ¹İÈ¯
+                // NewDataSetì´ ì•„ë‹ˆë©´ ì›ë³¸ ë°˜í™˜
                 return content;
             }
             catch (Exception)
             {
-                // XML ÆÄ½Ì ½ÇÆĞ ½Ã ¿øº» ¹İÈ¯ (ÇÑ ÁÙ·Î)
+                // XML íŒŒì‹± ì‹¤íŒ¨ ì‹œ ì›ë³¸ ë°˜í™˜ (í•œ ì¤„ë¡œ)
                 return Regex.Replace(content, @"\s+", " ").Trim();
             }
         }
 
         /// <summary>
-        /// TimeStamp¸¦ HH:mm:ss ¶Ç´Â HH:mm:ss.fff Çü½ÄÀ¸·Î º¯È¯ (¹Ğ¸®ÃÊ º¸Á¸)
+        /// TimeStampë¥¼ HH:mm:ss ë˜ëŠ” HH:mm:ss.fff í˜•ì‹ìœ¼ë¡œ ë³€í™˜ (ë°€ë¦¬ì´ˆ ë³´ì¡´)
         /// </summary>
         private string FormatTimestamp(string timestamp)
         {
@@ -337,7 +411,7 @@ namespace FACTOVA_LogAnalysis.Models
 
             try
             {
-                // ¹Ğ¸®ÃÊ Æ÷ÇÔ Çü½Ä: dd-MM-yyyy HH:mm:ss.fff
+                // ë°€ë¦¬ì´ˆ í¬í•¨ í˜•ì‹: dd-MM-yyyy HH:mm:ss.fff
                 if (DateTime.TryParseExact(timestamp, "dd-MM-yyyy HH:mm:ss.fff",
                     System.Globalization.CultureInfo.InvariantCulture,
                     System.Globalization.DateTimeStyles.None, out DateTime parsedWithMs))
@@ -345,7 +419,7 @@ namespace FACTOVA_LogAnalysis.Models
                     return parsedWithMs.ToString("HH:mm:ss.fff");
                 }
 
-                // ÀÔ·ÂÀÌ dd-MM-yyyy HH:mm:ss Çü½ÄÀÌ¸é ½Ã°£(HH:mm:ss)·Î º¯È¯
+                // ì…ë ¥ì´ dd-MM-yyyy HH:mm:ss í˜•ì‹ì´ë©´ ì‹œê°„(HH:mm:ss)ë¡œ ë³€í™˜
                 if (DateTime.TryParseExact(timestamp, "dd-MM-yyyy HH:mm:ss",
                     System.Globalization.CultureInfo.InvariantCulture,
                     System.Globalization.DateTimeStyles.None, out DateTime parsedDate))
@@ -353,28 +427,28 @@ namespace FACTOVA_LogAnalysis.Models
                     return parsedDate.ToString("HH:mm:ss");
                 }
                 
-                // ´Ù¸¥ Çü½Äµéµµ ½Ãµµ ÈÄ ½Ã°£ ºÎºĞ¸¸ ¹İÈ¯
+                // ë‹¤ë¥¸ í˜•ì‹ë“¤ë„ ì‹œë„ í›„ ì‹œê°„ ë¶€ë¶„ë§Œ ë°˜í™˜
                 if (DateTime.TryParse(timestamp, out DateTime parsedDate2))
                 {
-                    // ¹Ğ¸®ÃÊ°¡ Æ÷ÇÔµÇ¾î ÀÖÀ¸¸é º¸Á¸
+                    // ë°€ë¦¬ì´ˆê°€ í¬í•¨ë˜ì–´ ìˆìœ¼ë©´ ë³´ì¡´
                     if (timestamp.Contains("."))
                         return parsedDate2.ToString("HH:mm:ss.fff");
                     else
                         return parsedDate2.ToString("HH:mm:ss");
                 }
                 
-                // ÆÄ½Ì ½ÇÆĞ ½Ã Á¤±Ô½ÄÀ¸·Î ½Ã°£ ºÎºĞ¸¸ ÃßÃâ ½Ãµµ
-                // ¹Ğ¸®ÃÊ Æ÷ÇÔ: HH:mm:ss.fff
+                // íŒŒì‹± ì‹¤íŒ¨ ì‹œ ì •ê·œì‹ìœ¼ë¡œ ì‹œê°„ ë¶€ë¶„ë§Œ ì¶”ì¶œ ì‹œë„
+                // ë°€ë¦¬ì´ˆ í¬í•¨: HH:mm:ss.fff
                 var mWithMs = Regex.Match(timestamp, @"(\d{2}:\d{2}:\d{2}\.\d{3})");
                 if (mWithMs.Success)
                     return mWithMs.Groups[1].Value;
 
-                // ¹Ğ¸®ÃÊ ¾øÀ½: HH:mm:ss
+                // ë°€ë¦¬ì´ˆ ì—†ìŒ: HH:mm:ss
                 var m = Regex.Match(timestamp, @"(\d{2}:\d{2}:\d{2})");
                 if (m.Success)
                     return m.Groups[1].Value;
 
-                return timestamp; // º¯È¯ ½ÇÆĞ½Ã ¿øº»
+                return timestamp; // ë³€í™˜ ì‹¤íŒ¨ì‹œ ì›ë³¸
             }
             catch
             {
@@ -400,7 +474,7 @@ namespace FACTOVA_LogAnalysis.Models
 
         private void ExtractTimestamp(string content)
         {
-            // [01-01-2024 10:00:01] ¶Ç´Â [01-01-2024 10:00:01.123] ¸ÅÄª (¹Ğ¸®ÃÊ Áö¿ø)
+            // [01-01-2024 10:00:01] ë˜ëŠ” [01-01-2024 10:00:01.123] ë§¤ì¹­ (ë°€ë¦¬ì´ˆ ì§€ì›)
             var match = Regex.Match(content, @"\[(\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}(?:\.\d{3})?)\]");
             if (match.Success)
             {
@@ -412,7 +486,7 @@ namespace FACTOVA_LogAnalysis.Models
         {
             try
             {
-                // 1. ExecuteService() : [ ¼­ºñ½º¸í ] Çü½Ä¿¡¼­ ºñÁî´Ï½º¸í ÃßÃâ (ÃÖ¿ì¼±)
+                // 1. ExecuteService() : [ ì„œë¹„ìŠ¤ëª… ] í˜•ì‹ì—ì„œ ë¹„ì¦ˆë‹ˆìŠ¤ëª… ì¶”ì¶œ (ìµœìš°ì„ )
                 var executeServiceMatch = Regex.Match(content, @"ExecuteService\(\)\s*:\s*\[\s*([^\]]+)\s*\]", RegexOptions.IgnoreCase);
                 if (executeServiceMatch.Success)
                 {
@@ -420,7 +494,7 @@ namespace FACTOVA_LogAnalysis.Models
                     return;
                 }
 
-                // 2. BR_XXX ÇüÅÂÀÇ ºñÁî´Ï½º¸í ÃßÃâ (ÀÏ¹İÀûÀÎ ÆĞÅÏ)
+                // 2. BR_XXX í˜•íƒœì˜ ë¹„ì¦ˆë‹ˆìŠ¤ëª… ì¶”.extract
                 var brBusinessMatch = Regex.Match(content, @"\b(BR_[A-Za-z0-9_]+)\b", RegexOptions.IgnoreCase);
                 if (brBusinessMatch.Success)
                 {
@@ -428,7 +502,7 @@ namespace FACTOVA_LogAnalysis.Models
                     return;
                 }
 
-                // 3. ExecuteService¿Í °ü·ÃµÈ ºñÁî´Ï½º¸í ÆĞÅÏµé
+                // 3. ExecuteServiceì— í¬í•¨ëœ ë¹„ì¦ˆë‹ˆìŠ¤ëª… íŒ¨í„´ë“¤
                 var executeServicePatterns = new[]
                 {
                     @"ExecuteService\(\)\s*:\s*([A-Za-z0-9_]+)", // ExecuteService(): BusinessName
@@ -447,16 +521,16 @@ namespace FACTOVA_LogAnalysis.Models
                     }
                 }
 
-                // 4. EXCEPTION ·Î±×¿¡¼­ ÀÏ¹İÀûÀÎ ºñÁî´Ï½º¸í ÆĞÅÏµé
+                // 4. EXCEPTION ë¡œê·¸ì—ì„œ ì¼ë°˜ì ì¸ ë¹„ì¦ˆë‹ˆìŠ¤ëª… íŒ¨í„´ë“¤
                 var exceptionPatterns = new[]
                 {
                     @"Business[:\s]+([A-Za-z0-9_]+)", // Business: XXX
-                    @"ºñÁî´Ï½º[:\s]+([A-Za-z0-9_]+)", // ºñÁî´Ï½º: XXX
+                    @"ë¹„ì¦ˆë‹ˆìŠ¤[:\s]+([A-Za-z0-9_]+)", // ë¹„ì¦ˆë‹ˆìŠ¤: XXX
                     @"Service[:\s]+([A-Za-z0-9_]+)", // Service: XXX
                     @"Method[:\s]+([A-Za-z0-9_]+)", // Method: XXX
                     @"Function[:\s]+([A-Za-z0-9_]+)", // Function: XXX
-                    @"\b([A-Z][A-Za-z0-9]*(?:Business|Service|Method|Function))\b", // XXXBusiness, XXXService µî
-                    @"\b([A-Z]{2,}_[A-Za-z0-9_]+)\b" // ´ë¹®ÀÚ·Î ½ÃÀÛÇÏ´Â ¾ğ´õ½ºÄÚ¾î Æ÷ÇÔ (¿¹: SFC_XXX, MES_XXX)
+                    @"\b([A-Z][A-Za-z0-9]*(?:Business|Service|Method|Function))\b", // XXXBusiness, XXXService ë“±
+                    @"\b([A-Z]{2,}_[A-Za-z0-9_]+)\b" // ëŒ€ë¬¸ìë¡œ ì‹œì‘í•˜ëŠ” ì–¸ë”ìŠ¤ì½”ì–´ í¬í•¨ (ì˜ˆ: SFC_XXX, MES_XXX)
                 };
 
                 foreach (var pattern in exceptionPatterns)
@@ -465,7 +539,7 @@ namespace FACTOVA_LogAnalysis.Models
                     if (match.Success)
                     {
                         var candidate = match.Groups[1].Value.Trim();
-                        // ³Ê¹« Âª°Å³ª ¼ıÀÚ¸¸ ÀÖ´Â °æ¿ì Á¦¿Ü
+                        // ë„ˆë¬´ ì§§ê±°ë‚˜ ìˆ«ìë§Œ ìˆëŠ” ê²½ìš° ì œì™¸
                         if (candidate.Length >= 3 && !Regex.IsMatch(candidate, @"^\d+$"))
                         {
                             BusinessName = candidate;
@@ -474,7 +548,7 @@ namespace FACTOVA_LogAnalysis.Models
                     }
                 }
 
-                // 5. XML Çü½Ä¿¡¼­ ºñÁî´Ï½º¸í ÃßÃâ ½Ãµµ
+                // 5. XML í˜•ì‹ì—ì„œ ë¹„ì¦ˆë‹ˆìŠ¤ëª… ì¶”ì¶œ ì‹œë„
                 if (content.Contains("<") && content.Contains(">"))
                 {
                     var xmlBusinessMatch = Regex.Match(content, @"<(\w+)>.*?</\1>", RegexOptions.IgnoreCase);
@@ -489,7 +563,7 @@ namespace FACTOVA_LogAnalysis.Models
                     }
                 }
 
-                // 6. ±âÅ¸ ÀÏ¹İÀûÀÎ ½Äº°ÀÚ ÆĞÅÏ
+                // 6. ê¸°íƒ€ ì¼ë°˜ì ì¸ ì‹ë³„ì íŒ¨í„´
                 var generalPatterns = new[]
                 {
                     @"\b([A-Z][A-Za-z0-9]{2,}(?:EIF|IF|Service|Business|Method|Function|Manager|Handler|Controller))\b",
@@ -506,7 +580,7 @@ namespace FACTOVA_LogAnalysis.Models
                     }
                 }
 
-                // ¸ÅÄªµÇ´Â Ç×¸ñÀÌ ¾øÀ» ¶§ ºó ¹®ÀÚ¿­
+                // ë§¤ì¹­ë˜ëŠ” í•­ëª©ì´ ì—†ì„ ë•Œ ë¹ˆ ë¬¸ìì—´
                 BusinessName = "";
             }
             catch
@@ -519,7 +593,7 @@ namespace FACTOVA_LogAnalysis.Models
         {
             try
             {
-                // exec.Time: 00:00:00.1234567 Çü½Ä Ã³¸® ¡æ ÃÊ.¼Ò¼öÁ¡ Ç¥Çö
+                // exec.Time: 00:00:00.1234567 í˜•ì‹ ì²˜ë¦¬ â†’ ì´ˆ.ì†Œìˆ˜ì  í‘œí˜„
                 var execTimeMatch = Regex.Match(content, @"exec\.Time\s*:\s*([0-9:\.]+)", RegexOptions.IgnoreCase);
                 if (execTimeMatch.Success)
                 {
@@ -527,7 +601,7 @@ namespace FACTOVA_LogAnalysis.Models
                     return;
                 }
 
-                // ExecTime: 1.234s Çü½Ä (s Á¢¹Ì»ç Ã³¸®)
+                // ExecTime: 1.234s í˜•ì‹ (s ì ‘ë¯¸ì‚¬ ì²˜ë¦¬)
                 var execTimeMatch2 = Regex.Match(content, @"ExecTime[:\s]*([0-9]+\.?[0-9]*)", RegexOptions.IgnoreCase);
                 if (execTimeMatch2.Success)
                 {
@@ -535,8 +609,8 @@ namespace FACTOVA_LogAnalysis.Models
                     return;
                 }
  
-                // ½ÇÇà½Ã°£: 1.234ÃÊ Çü½Ä
-                var koreanTimeMatch = Regex.Match(content, @"½ÇÇà½Ã°£[:\s]*([0-9]+\.?[0-9]*)\s*ÃÊ", RegexOptions.IgnoreCase);
+                // ì‹¤í–‰ì‹œê°„: 1.234ì´ˆ í˜•ì‹
+                var koreanTimeMatch = Regex.Match(content, @"ì‹¤í–‰ì‹œê°„[:\s]*([0-9]+\.?[0-9]*)\s*ì´ˆ", RegexOptions.IgnoreCase);
                 if (koreanTimeMatch.Success)
                 {
                     ExecTime = FormatExecTime(koreanTimeMatch.Groups[1].Value);
@@ -555,7 +629,7 @@ namespace FACTOVA_LogAnalysis.Models
         {
             try
             {
-                // TXN_ID: XXXXXXXXX : Çü½Ä (Äİ·Ğ Æ÷ÇÔ)
+                // TXN_ID: XXXXXXXXX : í˜•ì‹ (ì½œë¡  í¬í•¨)
                 var txnIdMatch = Regex.Match(content, @"TXN_ID[:\s]*([A-Z0-9\-_]+)\s*:", RegexOptions.IgnoreCase);
                 if (txnIdMatch.Success)
                 {
@@ -563,7 +637,7 @@ namespace FACTOVA_LogAnalysis.Models
                     return;
                 }
 
-                // TXN_ID: XXXXXXXXX Çü½Ä (Äİ·Ğ ¹ÌÆ÷ÇÔ)
+                // TXN_ID: XXXXXXXXX í˜•ì‹ (ì½œë¡  ë¯¸í¬í•¨)
                 var txnIdMatch2 = Regex.Match(content, @"TXN_ID[:\s]*([A-Z0-9\-_]+)", RegexOptions.IgnoreCase);
                 if (txnIdMatch2.Success)
                 {
@@ -571,7 +645,7 @@ namespace FACTOVA_LogAnalysis.Models
                     return;
                 }
 
-                // Transaction ID: XXXXXXXXX Çü½Ä
+                // Transaction ID: XXXXXXXXX í˜•ì‹
                 var transactionMatch = Regex.Match(content, @"Transaction\s+ID[:\s]*([A-Z0-9\-_]+)", RegexOptions.IgnoreCase);
                 if (transactionMatch.Success)
                 {
@@ -579,7 +653,7 @@ namespace FACTOVA_LogAnalysis.Models
                     return;
                 }
 
-                // TXNID: XXXXXXXXX Çü½Ä
+                // TXNID: XXXXXXXXX í˜•ì‹
                 var txnIdMatch3 = Regex.Match(content, @"TXNID[:\s]*([A-Z0-9\-_]+)", RegexOptions.IgnoreCase);
                 if (txnIdMatch3.Success)
                 {
@@ -599,7 +673,7 @@ namespace FACTOVA_LogAnalysis.Models
         {
             try
             {
-                // MSGID: XXXXXXXXX Çü½Ä
+                // MSGID: XXXXXXXXX í˜•ì‹
                 var msgIdMatch = Regex.Match(content, @"MSGID[:\s]*([A-Z0-9\-_]+)", RegexOptions.IgnoreCase);
                 if (msgIdMatch.Success)
                 {
@@ -607,7 +681,7 @@ namespace FACTOVA_LogAnalysis.Models
                     return;
                 }
 
-                // MsgId: XXXXXXXXX Çü½Ä
+                // MsgId: XXXXXXXXX í˜•ì‹
                 var msgIdMatch2 = Regex.Match(content, @"MsgId[:\s]*([A-Z0-9\-_]+)", RegexOptions.IgnoreCase);
                 if (msgIdMatch2.Success)
                 {
@@ -615,7 +689,7 @@ namespace FACTOVA_LogAnalysis.Models
                     return;
                 }
 
-                // MSG_ID: XXXXXXXXX Çü½Ä
+                // MSG_ID: XXXXXXXXX í˜•ì‹
                 var msgIdMatch3 = Regex.Match(content, @"MSG_ID[:\s]*([A-Z0-9\-_]+)", RegexOptions.IgnoreCase);
                 if (msgIdMatch3.Success)
                 {
@@ -623,7 +697,7 @@ namespace FACTOVA_LogAnalysis.Models
                     return;
                 }
 
-                // Message ID: XXXXXXXXX Çü½Ä
+                // Message ID: XXXXXXXXX í˜•ì‹
                 var messageIdMatch = Regex.Match(content, @"Message\s+ID[:\s]*([A-Z0-9\-_]+)", RegexOptions.IgnoreCase);
                 if (messageIdMatch.Success)
                 {
@@ -643,7 +717,7 @@ namespace FACTOVA_LogAnalysis.Models
         {
             try
             {
-                // PROCID: XXXXXXXXX Çü½Ä
+                // PROCID: XXXXXXXXX í˜•ì‹
                 var procIdMatch = Regex.Match(content, @"PROCID[:\s]*([A-Z0-9\-_]+)", RegexOptions.IgnoreCase);
                 if (procIdMatch.Success)
                 {
@@ -651,7 +725,7 @@ namespace FACTOVA_LogAnalysis.Models
                     return;
                 }
 
-                // ProcId: XXXXXXXXX Çü½Ä
+                // ProcId: XXXXXXXXX í˜•ì‹
                 var procIdMatch2 = Regex.Match(content, @"ProcId[:\s]*([A-Z0-9\-_]+)", RegexOptions.IgnoreCase);
                 if (procIdMatch2.Success)
                 {
@@ -659,7 +733,7 @@ namespace FACTOVA_LogAnalysis.Models
                     return;
                 }
 
-                // PROC_ID: XXXXXXXXX Çü½Ä
+                // PROC_ID: XXXXXXXXX í˜•ì‹
                 var procIdMatch3 = Regex.Match(content, @"PROC_ID[:\s]*([A-Z0-9\-_]+)", RegexOptions.IgnoreCase);
                 if (procIdMatch3.Success)
                 {
@@ -667,7 +741,7 @@ namespace FACTOVA_LogAnalysis.Models
                     return;
                 }
 
-                // Process ID: XXXXXXXXX Çü½Ä
+                // Process ID: XXXXXXXXX í˜•ì‹
                 var processIdMatch = Regex.Match(content, @"Process\s+ID[:\s]*([A-Z0-9\-_]+)", RegexOptions.IgnoreCase);
                 if (processIdMatch.Success)
                 {
@@ -712,8 +786,8 @@ namespace FACTOVA_LogAnalysis.Models
         }
 
         /// <summary>
-        /// Ç¥ÁØ ÅëÀÏÈ­¸¦ À§ÇÑ execTime ¿ø·¡ Çü½Ä seconds.fraction ÇüÅÂ·Î º¯È¯
-        /// ¿¹: "00:00:00.123" -> "00.123", "00:00:05.123456" -> "05.123456", "1.234s" -> "1.234"
+        /// í‘œì¤€ í†µì¼í™”ë¥¼ ìœ„í•œ execTime ì›ë˜ í˜•ì‹ seconds.fraction í˜•íƒœë¡œ ë³€í™˜
+        /// ì˜ˆ: "00:00:00.123" -> "00.123", "00:00:05.123456" -> "05.123456", "1.234s" -> "1.234"
         /// </summary>
         private string FormatExecTime(string? raw)
         {

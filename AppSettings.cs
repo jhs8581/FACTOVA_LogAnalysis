@@ -1,20 +1,20 @@
-using System;
+ï»¿using System;
 using System.IO;
 
 /// <summary>
-/// ¾ÖÇÃ¸®ÄÉÀÌ¼Ç ¼³Á¤À» °ü¸®ÇÏ´Â Å¬·¡½º
+/// ì• í”Œë¦¬ì¼€ì´ì…˜ ì„¤ì •ì„ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
 /// </summary>
 public class AppSettings
 {
     public string LogFolderPath { get; set; } = "";
     
-    // Text Tab GridSplitter À§Ä¡
+    // Text Tab GridSplitter ìœ„ì¹˜
     public double LeftColumnWidth { get; set; } = 1.0;
     public double RightColumnWidth { get; set; } = 1.0;
     public double TopRowHeight { get; set; } = 1.0;
     public double BottomRowHeight { get; set; } = 1.0;
     
-    // DataGrid Tab GridSplitter À§Ä¡
+    // DataGrid Tab GridSplitter ìœ„ì¹˜
     public double DataLeftColumnWidth { get; set; } = 1.0;
     public double DataRightColumnWidth { get; set; } = 1.0;
     public double DataTopRowHeight { get; set; } = 1.0;
@@ -23,7 +23,7 @@ public class AppSettings
     // Font sizes
     public double TextFontSize { get; set; } = 14.0;
     public double DataGridFontSize { get; set; } = 11.0;
-    public double UnifiedLogFontSize { get; set; } = 11.0; // ÅëÇÕ·Î±× ÆùÆ® »çÀÌÁî
+    public double UnifiedLogFontSize { get; set; } = 11.0; // í†µí•©ë¡œê·¸ í°íŠ¸ ì‚¬ì´ì¦ˆ
 
     // Persist view mode: true = 4-panel, false = tab view
     public bool IsFourPanelMode { get; set; } = true;
@@ -34,7 +34,7 @@ public class AppSettings
     public bool IsTextFourPanelMode { get; set; } = true;
     public int TextTabIndex { get; set; } = 0;
 
-    // Load Options Ã¼Å©¹Ú½º »óÅÂ
+    // Load Options ì²´í¬ë°•ìŠ¤ ìƒíƒœ
     public bool LoadTextChecked { get; set; } = true;
     public bool LoadDataGridChecked { get; set; } = true;
     public bool LoadExecTimeChecked { get; set; } = false;
@@ -59,7 +59,7 @@ public class AppSettings
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"¼³Á¤ ÀúÀå ½ÇÆĞ: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"ì„¤ì • ì €ì¥ ì‹¤íŒ¨: {ex.Message}");
         }
     }
 
@@ -76,7 +76,7 @@ public class AppSettings
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"¼³Á¤ ·Îµå ½ÇÆĞ: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"ì„¤ì • ë¡œë“œ ì‹¤íŒ¨: {ex.Message}");
         }
 
         return new AppSettings();

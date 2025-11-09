@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using FACTOVA_LogAnalysis.Models;
@@ -21,6 +22,39 @@ namespace FACTOVA_LogAnalysis.Services
 
         private readonly LogFileManager _logFileManager;
         private readonly WorkLogService _workLogService;
+
+        // ✅ 성능 최적화: Compiled Regex를 static으로 캐싱
+        private static readonly Regex TimestampRegex = new Regex(
+            @"\[(\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}(?:\.\d{3})?)\]",
+            RegexOptions.Compiled);
+
+        private static readonly Regex MsgIdRegex = new Regex(
+            @"<MSGID=(\d+)>",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        private static readonly Regex ProcIdRegex = new Regex(
+            @"<PROCID=([^>]*)>",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        private static readonly Regex ItemPatternRegex = new Regex(
+            @"\[(\d+),\s*\d+=\{[^}]*<NAME=([^>]+)>[^}]*<VALUE=([^>]*)>[^}]*\}\]",
+            RegexOptions.Compiled | RegexOptions.Singleline);
+
+        private static readonly Regex NameValuePatternRegex = new Regex(
+            @"<NAME=([^>]+)>\s*<VALUE=([^>]*)>",
+            RegexOptions.Compiled);
+
+        private static readonly Regex TimestampLineRegex = new Regex(
+            @"\[\d{2}-\d{2}-\d{4} (\d{2}):(\d{2}):(\d{2})(?:\.(\d{3}))?\]",
+            RegexOptions.Compiled);
+
+        private static readonly Regex TimestampExtractRegex = new Regex(
+            @"\[(\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}(?:\.\d{3})?)\]",
+            RegexOptions.Compiled);
+
+        private static readonly Regex TimestampRemoveRegex = new Regex(
+            @"\[\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}(?:\.\d{3})?\]\s*(.*)",
+            RegexOptions.Compiled);
 
         #endregion
 
@@ -44,26 +78,9 @@ namespace FACTOVA_LogAnalysis.Services
             WpfTextBox dataLineTextBox, WpfTextBox eventLineTextBox, WpfTextBox debugLineTextBox, WpfTextBox exceptionLineTextBox,
             TimeSpan fromTime = default, TimeSpan toTime = default)
         {
-            _workLogService.AddLog("=== Loading log files ===", WorkLogType.Info);
-            _workLogService.AddLog($"Selected date: {selectedDate:yyyy-MM-dd}", WorkLogType.Info);
-            
-            // 시간 범위 로그 출력
-            if (fromTime != default || toTime != default)
-            {
-                _workLogService.AddLog($"Time range: {fromTime:hh\\:mm} ~ {toTime:hh\\:mm}", WorkLogType.Info);
-            }
-            
-            if (!string.IsNullOrWhiteSpace(searchText))
-            {
-                _workLogService.AddLog($"Search text: '{searchText}'", WorkLogType.Info);
-                _workLogService.AddLog($"Search mode: {searchMode}", WorkLogType.Info);
-            }
-            
             string year = selectedDate.ToString("yyyy");
             string month = selectedDate.Month.ToString();
             string dateString = selectedDate.ToString("MMddyyyy");
-            
-            _workLogService.AddLog($"Log folder: {_logFileManager.LogFolderPath}", WorkLogType.Info);
 
             var logFiles = new Dictionary<string, (string fileName, WpfTextBox textBox, WpfTextBox lineNumberBox, Func<string, string> cleaner)>
             {
@@ -73,7 +90,6 @@ namespace FACTOVA_LogAnalysis.Services
                 ["EXCEPTION"] = ($"LGE GMES_EXCEPTION_{dateString}.log", exceptionTextBox, exceptionLineTextBox, content => content)
             };
 
-            int processedCount = 0;
             foreach (var kvp in logFiles)
             {
                 string logType = kvp.Key;
@@ -82,12 +98,8 @@ namespace FACTOVA_LogAnalysis.Services
                 WpfTextBox lineNumberBox = kvp.Value.lineNumberBox;
                 Func<string, string> cleaner = kvp.Value.cleaner;
 
-                _workLogService.AddLog($"[{++processedCount}/{logFiles.Count}] Processing {logType} log...", WorkLogType.Info);
-                // For text view, always load full content regardless of from/to time filter
                 await LoadSingleLogFileToTextBox(logType, fileName, textBox, lineNumberBox, cleaner, searchText, searchMode, year, month, default, default);
             }
-            
-            _workLogService.AddLog("=== Log files loading completed ===", WorkLogType.Success);
         }
 
         /// <summary>
@@ -105,7 +117,6 @@ namespace FACTOVA_LogAnalysis.Services
                 {
                     string content = await _logFileManager.ReadLogFileAsync(filePath);
                     
-                    // 시간 범위 필터링 적용
                     if (fromTime != default || toTime != default)
                     {
                         content = FilterLogByTimeRange(content, fromTime, toTime);
@@ -113,13 +124,10 @@ namespace FACTOVA_LogAnalysis.Services
                         {
                             textBox.Text = $"No {logType} logs found in time range {fromTime:hh\\:mm} ~ {toTime:hh\\:mm}";
                             lineNumberBox.Text = "1";
-                            _workLogService.AddLog($"{logType}: No logs in time range", WorkLogType.Warning);
                             return;
                         }
-                        _workLogService.AddLog($"{logType}: Time range filtering applied", WorkLogType.Info);
                     }
                     
-                    // 검색어 있는 경우 필터링
                     if (!string.IsNullOrWhiteSpace(searchText))
                     {
                         if (content.Contains(searchText, StringComparison.OrdinalIgnoreCase))
@@ -134,34 +142,20 @@ namespace FACTOVA_LogAnalysis.Services
                         }
                     }
                     
-                    // 로그 내용 정리
                     string cleanedContent = cleaner(content);
-                    
-                    // 텍스트박스에 설정
                     textBox.Text = cleanedContent;
-                    
-                    // 줄 번호 생성
                     GenerateLineNumbers(cleanedContent, lineNumberBox);
-                    
-                    int lineCount = cleanedContent.Split('\n').Length;
-                    string timeRangeInfo = (fromTime != default || toTime != default) 
-                        ? $" (Time: {fromTime:hh\\:mm}~{toTime:hh\\:mm})" 
-                        : "";
-                    
-                    _workLogService.AddLog($"{logType} log loaded successfully ({lineCount} lines){timeRangeInfo}", WorkLogType.Success);
                 }
                 else
                 {
                     textBox.Text = $"{logType} log file not found.";
                     lineNumberBox.Text = "1";
-                    _workLogService.AddLog($"{logType} log file not found: {filePath}", WorkLogType.Warning);
                 }
             }
             catch (Exception ex)
             {
                 textBox.Text = $"Error reading {logType} log file: {ex.Message}";
                 lineNumberBox.Text = "1";
-                _workLogService.AddLog($"Error loading {logType} log: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -181,25 +175,20 @@ namespace FACTOVA_LogAnalysis.Services
                 
                 if (!File.Exists(filePath))
                 {
-                    _workLogService.AddLog($"{logType} 파일을 찾을 수 없음: {filePath}", WorkLogType.Warning);
                     return new List<LogLineItem>();
                 }
 
-                _workLogService.AddLog($"{logType} 파일 로드 중: {fileName}", WorkLogType.Info);
                 string content = await _logFileManager.ReadLogFileAsync(filePath);
                 
-                // 시간 범위 필터링
                 if (fromTime != default || toTime != default)
                 {
                     content = FilterLogByTimeRange(content, fromTime, toTime);
                     if (string.IsNullOrEmpty(content))
                     {
-                        _workLogService.AddLog($"{logType}: 지정된 시간 범위에 로그가 없음", WorkLogType.Warning);
                         return new List<LogLineItem>();
                     }
                 }
                 
-                // 검색어 필터링
                 if (!string.IsNullOrWhiteSpace(searchText))
                 {
                     if (content.Contains(searchText, StringComparison.OrdinalIgnoreCase))
@@ -208,12 +197,10 @@ namespace FACTOVA_LogAnalysis.Services
                     }
                     else
                     {
-                        _workLogService.AddLog($"'{searchText}'를 {logType}에서 찾을 수 없음", WorkLogType.Warning);
                         return new List<LogLineItem>();
                     }
                 }
                 
-                // 로그 정리
                 string cleanedContent = logType switch
                 {
                     "DATA" => _logFileManager.CleanDataLogs(content),
@@ -221,40 +208,29 @@ namespace FACTOVA_LogAnalysis.Services
                     _ => content
                 };
                 
-                // LogLineItem으로 변환
                 List<LogLineItem> result;
                 if (logType == "DATA")
                 {
-                    // DATA 로그는 ExecuteService 관련 파싱
                     result = LogDataGridHelper.ConvertToLogLines(cleanedContent);
                 }
                 else if (logType == "EXCEPTION")
                 {
-                    // EXCEPTION 로그는 ExecuteServiceSync 관련 파싱
                     result = LogDataGridHelper.ConvertExceptionLogLines(cleanedContent);
                 }
                 else
                 {
-                    // EVENT, DEBUG는 단순 라인별 파싱
                     result = ConvertSimpleLogLines(cleanedContent, logType);
                 }
                 
-                // 로그 레벨 설정
                 foreach (var item in result)
                 {
                     item.LogLevel = logType;
                 }
                 
-                string timeInfo = (fromTime != default || toTime != default) 
-                    ? $" (시간범위: {fromTime:hh\\:mm}~{toTime:hh\\:mm})" 
-                    : "";
-                _workLogService.AddLog($"? {logType}: {result.Count}개 행 파sing 완료{timeInfo}", WorkLogType.Success);
-                
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _workLogService.AddLog($"? {logType} 로드 오류: {ex.Message}", WorkLogType.Error);
                 return new List<LogLineItem>();
             }
         }
@@ -266,8 +242,6 @@ namespace FACTOVA_LogAnalysis.Services
         {
             var result = new Dictionary<string, List<LogLineItem>>();
             var logTypes = new[] { "DATA", "EVENT", "DEBUG", "EXCEPTION" };
-            
-            _workLogService.AddLog("모든 DataGrid 데이터 병렬 로드 시작", WorkLogType.Info);
             
             var tasks = logTypes.Select(async logType => 
             {
@@ -282,9 +256,6 @@ namespace FACTOVA_LogAnalysis.Services
                 result[item.LogType] = item.Data;
             }
             
-            var totalCount = result.Values.Sum(list => list.Count);
-            _workLogService.AddLog($"? 모든 DataGrid 데이터 로드 완료: 총 {totalCount}개 행", WorkLogType.Success);
-            
             return result;
         }
 
@@ -297,17 +268,13 @@ namespace FACTOVA_LogAnalysis.Services
         {
             try
             {
-                _workLogService.AddLog($"자동 로드 시작: {selectedDate:yyyy-MM-dd}, 검색어: '{searchText}'", WorkLogType.Info);
-                
                 await LoadIndividualLogFiles(selectedDate, searchText, searchMode,
                     dataTextBox, eventTextBox, debugTextBox, exceptionTextBox,
                     dataLineTextBox, eventLineTextBox, debugLineTextBox, exceptionLineTextBox);
-                
-                _workLogService.AddLog("? 자동 로드 완료", WorkLogType.Success);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _workLogService.AddLog($"? 자동 로드 오류: {ex.Message}", WorkLogType.Error);
+                // Silent fail
             }
         }
 
@@ -316,8 +283,7 @@ namespace FACTOVA_LogAnalysis.Services
         #region Private Methods
 
         /// <summary>
-        /// 시간 범위로 로그 내용 필터링
-        /// ?? 타임스탬프 형식: [dd-MM-yyyy HH:mm:ss] 또는 [dd-MM-yyyy HH:mm:ss.fff] (밀리초 지원)
+        /// 시간 범위로 로그 내용 필터링 - 최적화
         /// </summary>
         private string FilterLogByTimeRange(string content, TimeSpan fromTime, TimeSpan toTime)
         {
@@ -327,14 +293,13 @@ namespace FACTOVA_LogAnalysis.Services
             try
             {
                 var lines = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                var filteredLines = new List<string>();
-                bool lastLineWasInRange = false; // 마지막 라인이 범위 안에 있었는지 추적
+                var filteredLines = new List<string>(lines.Length / 2);
+                bool lastLineWasInRange = false;
 
                 foreach (string line in lines)
                 {
                     if (string.IsNullOrWhiteSpace(line))
                     {
-                        // 빈 라인은 이전 라인이 범위 안에 있었을 때만 포함
                         if (lastLineWasInRange)
                         {
                             filteredLines.Add(line);
@@ -342,29 +307,22 @@ namespace FACTOVA_LogAnalysis.Services
                         continue;
                     }
 
-                    // 타임스탬프 추출: 2가지 형식 지원
-                    // 1) 구형: [dd-MM-yyyy HH:mm:ss]
-                    // 2) 신형: [dd-MM-yyyy HH:mm:ss.fff] (밀리초 포함)
-                    var timeMatch = System.Text.RegularExpressions.Regex.Match(line, @"\[\d{2}-\d{2}-\d{4} (\d{2}):(\d{2}):(\d{2})(?:\.(\d{3}))?\]");
+                    var timeMatch = TimestampLineRegex.Match(line);
                     
                     if (timeMatch.Success)
                     {
-                        // 타임스탬프가 있는 라인
                         int hours = int.Parse(timeMatch.Groups[1].Value);
                         int minutes = int.Parse(timeMatch.Groups[2].Value);
                         int seconds = int.Parse(timeMatch.Groups[3].Value);
                         
-                        // 밀리초 처리 (있으면 포함, 없으면 0)
                         int milliseconds = 0;
                         if (timeMatch.Groups[4].Success)
                         {
                             milliseconds = int.Parse(timeMatch.Groups[4].Value);
                         }
                         
-                        // 밀리초까지 포함한 정확한 시간 생성
                         var logTime = new TimeSpan(0, hours, minutes, seconds, milliseconds);
 
-                        // 시간 범위 체크 (밀리초 단위까지 정확히 비교)
                         if (logTime >= fromTime && logTime <= toTime)
                         {
                             filteredLines.Add(line);
@@ -377,8 +335,6 @@ namespace FACTOVA_LogAnalysis.Services
                     }
                     else
                     {
-                        // 타임스탬프가 없는 라인 (연속 로그 라인)
-                        // 이전 라인이 범위 안에 있었을 때만 포함
                         if (lastLineWasInRange)
                         {
                             filteredLines.Add(line);
@@ -386,16 +342,11 @@ namespace FACTOVA_LogAnalysis.Services
                     }
                 }
 
-                string result = string.Join("\n", filteredLines);
-                
-                _workLogService.AddLog($"Time filtering: {lines.Length} -> {filteredLines.Count} lines (range: {fromTime:hh\\:mm\\:ss}~{toTime:hh\\:mm\\:ss})", WorkLogType.Info);
-                
-                return result;
+                return string.Join("\n", filteredLines);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _workLogService.AddLog($"Time filtering error: {ex.Message}", WorkLogType.Error);
-                return content; // 오류 시 원본 반환
+                return content;
             }
         }
 
@@ -405,7 +356,7 @@ namespace FACTOVA_LogAnalysis.Services
         private void GenerateLineNumbers(string content, WpfTextBox lineNumberBox)
         {
             var lines = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-            var lineNumbers = new StringBuilder();
+            var lineNumbers = new StringBuilder(lines.Length * 4);
             
             for (int i = 1; i <= lines.Length; i++)
             {
@@ -422,7 +373,6 @@ namespace FACTOVA_LogAnalysis.Services
         {
             if (logType == "EVENT")
             {
-                // EVENT 로그는 특별 처리 - 개선된 파서 사용
                 return ConvertEventLogLines(content);
             }
             
@@ -441,13 +391,8 @@ namespace FACTOVA_LogAnalysis.Services
                     if (string.IsNullOrWhiteSpace(line))
                         continue;
                     
-                    // 타임스탬프 추출
                     string timestamp = ExtractTimestampFromLine(line);
-                    
-                    // 비즈니스명 추출
                     string businessName = ExtractBusinessNameFromSimpleLine(line, logType);
-                    
-                    // 내용 (타임스탬프 제거)
                     string cleanContent = RemoveTimestampFromLine(line);
                     
                     var logItem = new LogLineItem(i + 1, timestamp, businessName, "", "", cleanContent)
@@ -460,16 +405,14 @@ namespace FACTOVA_LogAnalysis.Services
                 
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _workLogService.AddLog($"? {logType} 단순 파싱 오류: {ex.Message}", WorkLogType.Error);
                 return result;
             }
         }
 
         /// <summary>
-        /// EVENT 로그를 정교하게 처리하여 LogLineItem으로 변환 (SENDDATA 등의 블록 포함)
-        /// ✅ 타임스탬프 기준으로 블록 단위로 파싱
+        /// EVENT 로그를 정교하게 처리하여 LogLineItem으로 변환 - 최적화
         /// </summary>
         private List<LogLineItem> ConvertEventLogLines(string content)
         {
@@ -479,40 +422,34 @@ namespace FACTOVA_LogAnalysis.Services
             
             try
             {
-                // ✅ 전체 로그를 타임스탬프 기준으로 블록 분리
-                var timestampPattern = @"\[(\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}(?:\.\d{3})?)\]";
-                var matches = System.Text.RegularExpressions.Regex.Matches(content, timestampPattern);
+                // ✅ Static Regex 사용
+                var matches = TimestampRegex.Matches(content);
                 
                 if (matches.Count == 0)
                 {
-                    _workLogService.AddLog("EVENT 로그에 타임스탬프가 없습니다.", WorkLogType.Warning);
                     return result;
                 }
                 
                 int lineNumber = 1;
-                
+				
                 for (int i = 0; i < matches.Count; i++)
                 {
                     var match = matches[i];
                     string timestamp = FormatTimestamp(match.Groups[1].Value);
                     
-                    // 현재 타임스탬프부터 다음 타임스탬프 전까지의 내용 추출
                     int startIndex = match.Index;
                     int endIndex = (i + 1 < matches.Count) ? matches[i + 1].Index : content.Length;
                     
                     string blockContent = content.Substring(startIndex, endIndex - startIndex).Trim();
-                    
-                    // 타임스탬프 제거한 실제 내용
                     string contentWithoutTimestamp = blockContent.Substring(match.Length).Trim();
                     
                     if (string.IsNullOrWhiteSpace(contentWithoutTimestamp))
                         continue;
                     
-                    // ✅ 전체 블록을 하나의 로그로 처리
                     var logItem = ProcessEventLogBlock(contentWithoutTimestamp, timestamp, lineNumber);
                     if (logItem != null)
                     {
-                        logItem.ExtractEventFields(logItem.Content);
+                        // ✅ ExtractEventFields 제거 - 이미 파싱 완료
                         result.Add(logItem);
                         lineNumber++;
                     }
@@ -520,67 +457,96 @@ namespace FACTOVA_LogAnalysis.Services
                 
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _workLogService.AddLog($"EVENT log parsing error: {ex.Message}", WorkLogType.Error);
                 return result;
             }
         }
 
         /// <summary>
-        /// 단일 EVENT 로그 블록을 처리하여 LogLineItem으로 변환
+        /// 단일 EVENT 로그 블록을 처리하여 LogLineItem으로 변환 - 최적화
         /// </summary>
         private LogLineItem ProcessEventLogBlock(string content, string timestamp, int lineNumber)
         {
             try
             {
-                // 기본값 설정
                 string msgId = "";
                 string procId = "";
                 string businessName = "EVENT";
+                string displayContent = content;
                 
-                // ✅ ZPL 데이터 패턴 우선 확인 (^XA 포함)
-                if (content.Contains("^XA", StringComparison.OrdinalIgnoreCase))
+                // ✅ ReadOnlySpan 활용으로 성능 개선
+                ReadOnlySpan<char> contentSpan = content.AsSpan();
+                
+                // ZPL 체크
+                if (contentSpan.IndexOf("^XA".AsSpan(), StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    msgId = "ZPL";
-                    businessName = "ZPL";
-                    
                     return new LogLineItem
                     {
                         LineNumber = lineNumber,
                         Timestamp = timestamp,
-                        MsgId = msgId,
-                        ProcId = procId,
-                        BusinessName = businessName,
+                        MsgId = "ZPL",
+                        ProcId = "",
+                        BusinessName = "ZPL",
                         Content = content,
                         LogLevel = "EVENT"
                     };
                 }
                 
-                // SENDDATA/RECVDATA 블록인지 확인
-                if (content.Contains("[SENDDATA]") || content.Contains("[RECVDATA]"))
+                // SENDDATA/RECVDATA/RECV 체크
+                bool hasSendData = contentSpan.IndexOf("[SENDDATA]".AsSpan()) >= 0;
+                bool hasRecvData = contentSpan.IndexOf("[RECVDATA]".AsSpan()) >= 0;
+                bool hasRecv = contentSpan.IndexOf("[RECV]".AsSpan()) >= 0;
+                
+                if (hasSendData || hasRecvData || hasRecv)
                 {
-                    string blockType = content.Contains("[RECVDATA]") ? "RECVDATA" : "SENDDATA";
+                    string blockType = hasRecvData ? "RECVDATA" : (hasSendData ? "SENDDATA" : "RECV");
                     
-                    // 블록에서 MsgId, ProcId 추출 (패턴: DYNAMIC.EVENT.REQUEST: 9000)
-                    var dynamicPattern = @"DYNAMIC\.EVENT\.(REQUEST|RESPONSE)\s*[:\-]?\s*(\d+)";
-                    var dynamicMatch = System.Text.RegularExpressions.Regex.Match(content, dynamicPattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-                    if (dynamicMatch.Success)
+                    // ✅ Static Regex 사용
+                    var msgIdMatch = MsgIdRegex.Match(content);
+                    if (msgIdMatch.Success)
                     {
-                        msgId = dynamicMatch.Groups[2].Value;
+                        msgId = msgIdMatch.Groups[1].Value;
+                    }
+                    
+                    var procIdMatch = ProcIdRegex.Match(content);
+                    if (procIdMatch.Success)
+                    {
+                        procId = procIdMatch.Groups[1].Value.Trim();
+                        if (!string.IsNullOrEmpty(procId))
+                        {
+                            businessName = procId;
+                        }
+                    }
+                    
+                    if (!string.IsNullOrEmpty(msgId) && !string.IsNullOrEmpty(procId))
+                    {
+                        businessName = $"{procId}_{msgId}";
+                    }
+                    else if (!string.IsNullOrEmpty(msgId))
+                    {
                         businessName = $"PROC_{msgId}";
+                    }
+                    else if (string.IsNullOrEmpty(businessName) || businessName == "EVENT")
+                    {
+                        businessName = blockType;
+                    }
+                    
+                    string itemContent = ExtractItemContent(content);
+                    if (!string.IsNullOrEmpty(itemContent))
+                    {
+                        displayContent = $"[{blockType}]\n{itemContent}";
                     }
                 }
                 else
                 {
-                    // 일반 로그 아이템으로 처리
                     var defaultItem = CreateDefaultEventLogItem(content, lineNumber);
                     if (defaultItem != null)
                     {
                         msgId = defaultItem.MsgId;
                         procId = defaultItem.ProcId;
                         businessName = defaultItem.BusinessName;
-                        content = defaultItem.Content;
+                        displayContent = defaultItem.Content;
                     }
                 }
                 
@@ -591,13 +557,12 @@ namespace FACTOVA_LogAnalysis.Services
                     MsgId = msgId,
                     ProcId = procId,
                     BusinessName = businessName,
-                    Content = content,
+                    Content = displayContent,
                     LogLevel = "EVENT"
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _workLogService.AddLog($"EVENT 로그 블록 처리 오류: {ex.Message}", WorkLogType.Error);
                 return null;
             }
         }
@@ -611,61 +576,59 @@ namespace FACTOVA_LogAnalysis.Services
             {
                 string startLine = lines[startIndex];
                 string timestamp = ExtractTimestampFromLine(startLine);
-                // _workLogService.AddLog($"{blockType} 블록 처리 시작: {startLine.Substring(0, Math.Min(startLine.Length, 100))}...", WorkLogType.Info);
-                // 전체 블록 수집
+                
                 var contentBuilder = new StringBuilder();
                 contentBuilder.AppendLine(startLine);
                 int i = startIndex + 1;
                 int braceCount = 0;
                 bool blockEnded = false;
-                // 시작 라인에서 중괄호 개수 계산
+                
                 foreach (char c in startLine)
                 {
                     if (c == '{') braceCount++;
                     else if (c == '}') braceCount--;
                 }
-                // _workLogService.AddLog($"시작 라인 중괄호 개수: {braceCount}", WorkLogType.Info);
-                // 중괄호가 시작 라인에 없다면 1로 설정
+                
                 if (braceCount == 0 && (startLine.Contains("DYNAMIC.EVENT.REQUEST") || startLine.Contains("DYNAMIC.EVENT.RESPONSE")))
                 {
                     braceCount = 1;
-                    // _workLogService.AddLog("중괄호 카운트를 1로 초기화", WorkLogType.Info);
                 }
+                
                 while (i < lines.Length && !blockEnded)
                 {
                     string nextLine = lines[i];
                     contentBuilder.AppendLine(nextLine);
-                    // 중괄호 개수로 블록 끝 감지
+                    
                     foreach (char c in nextLine)
                     {
                         if (c == '{') braceCount++;
                         else if (c == '}') braceCount--;
                     }
-                    // 디버깅: 몇 개 라인은 로그로 출랙
-                    // if (i - startIndex < 10)
-                    // {
-                    //     _workLogService.AddLog($"라인 {i - startIndex + 1}: {nextLine.Trim()} (중괄호: {braceCount})", WorkLogType.Info);
-                    // }
+                    
                     if (braceCount <= 0)
                     {
                         blockEnded = true;
-                        // _workLogService.AddLog($"블록 종료 감지: 중괄호 개수 {braceCount}", WorkLogType.Info);
                     }
                     i++;
-                    // 무한 루프 방지: 100라인 이상이면 강제 종료
+                    
                     if (i - startIndex > 100)
                     {
-                        // _workLogService.AddLog("블록이 너무 길어서 강제 종료", WorkLogType.Warning);
                         blockEnded = true;
                     }
                 }
+                
                 string fullContent = contentBuilder.ToString();
-                // _workLogService.AddLog($"? {blockType} 블록 완료: {i - startIndex}개 라인, 총 {fullContent.Length}자", WorkLogType.Info);
-                // 데이터 추출
-                string msgId = ExtractMsgIdFromContent(fullContent);
-                string procId = ExtractProcIdFromContent(fullContent);
+                
+                // ✅ Static Regex 사용
+                var msgIdMatch = MsgIdRegex.Match(fullContent);
+                string msgId = msgIdMatch.Success ? msgIdMatch.Groups[1].Value : "";
+                
+                var procIdMatch = ProcIdRegex.Match(fullContent);
+                string procId = procIdMatch.Success ? procIdMatch.Groups[1].Value : "";
+                
                 string itemContent = ExtractItemContent(fullContent);
                 string businessName = !string.IsNullOrEmpty(procId) ? $"PROC_{procId}" : $"{blockType}_EVENT";
+                
                 var eventItem = new LogLineItem
                 {
                     LineNumber = lineNumber,
@@ -676,12 +639,11 @@ namespace FACTOVA_LogAnalysis.Services
                     Content = itemContent,
                     LogLevel = "EVENT"
                 };
-                // _workLogService.AddLog($"? {blockType} 아이템 생성: MsgId={msgId}, ProcId={procId}", WorkLogType.Success);
-                return (eventItem, i - 1); // 다음 처리할 인덱스 반환
+                
+                return (eventItem, i - 1);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // _workLogService.AddLog($"? {blockType} 블록 처리 오류: {ex.Message}", WorkLogType.Error);
                 return (null, startIndex);
             }
         }
@@ -866,33 +828,30 @@ namespace FACTOVA_LogAnalysis.Services
                 string timestamp = ExtractTimestampFromLine(line);
                 string content = RemoveTimestampFromLine(line);
                 
-                // Content에 ":"만 있으면 제외
                 if (string.IsNullOrWhiteSpace(content) || content.Trim() == ":")
                 {
                     return null;
                 }
                 
-                // 자동 MsgID 할당 및 Content 정리
                 string msgId = "";
                 string cleanedContent = content;
                 
-                // USBLampOnOff 패턴
-                if (content.Contains("USBLampOnOff", StringComparison.OrdinalIgnoreCase))
+                // ✅ ReadOnlySpan 활용
+                ReadOnlySpan<char> contentSpan = content.AsSpan();
+                
+                if (contentSpan.IndexOf("USBLampOnOff".AsSpan(), StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     msgId = "USBLamp";
                 }
-                // Click 패턴
-                else if (content.Contains("Click", StringComparison.OrdinalIgnoreCase))
+                else if (contentSpan.IndexOf("Click".AsSpan(), StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     msgId = "Click";
                 }
-                // Scanner 패턴
-                else if (content.Contains("FrameOperation_ScannerData_ReceivedEvent", StringComparison.OrdinalIgnoreCase))
+                else if (contentSpan.IndexOf("FrameOperation_ScannerData_ReceivedEvent".AsSpan(), StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     msgId = "SCAN";
                     
-                    // Scanner 데이터 추출: [COM3 /5I2S009S4H140] -> COM3 / /5I2S009S4H140
-                    var scannerMatch = System.Text.RegularExpressions.Regex.Match(content, @".*-\s*\[([^\]]+)\]");
+                    var scannerMatch = Regex.Match(content, @".*-\s*\[([^\]]+)\]");
                     if (scannerMatch.Success)
                     {
                         cleanedContent = scannerMatch.Groups[1].Value.Replace("/", " / ").Replace("  ", " ").Trim();
@@ -917,7 +876,7 @@ namespace FACTOVA_LogAnalysis.Services
         }
 
         /// <summary>
-        /// EVENT 내용에서 ITEM 추출하고 간결하게 포맷
+        /// EVENT 내용에서 ITEM 추출하고 간결하게 포맷 - 최적화
         /// </summary>
         private string ExtractItemContent(string content)
         {
@@ -925,68 +884,51 @@ namespace FACTOVA_LogAnalysis.Services
             {
                 var items = new List<string>();
 
-                // SENDDATA/RECVDATA 블록 파싱 및 표시
-                var blockPattern = @"\[(SENDDATA|RECVDATA)\][\s\S]*?\}";
-                var blockMatches = System.Text.RegularExpressions.Regex.Matches(content, blockPattern);
-                foreach (System.Text.RegularExpressions.Match blockMatch in blockMatches)
+                // ✅ Static Regex 사용
+                var matches = ItemPatternRegex.Matches(content);
+                
+                if (matches.Count > 0)
                 {
-                    string blockType = blockMatch.Groups[1].Value;
-                    items.Add($"[{blockType}]");
-
-                    // ITEM 추출: [번호, 번호={<NAME=...> <VALUE=...>}] 형식
-                    var itemPattern = @"\[(\d+),\s*\d+=\{([^}]*)\}\]";
-                    var matches = System.Text.RegularExpressions.Regex.Matches(blockMatch.Value, itemPattern);
-                    int itemNum = 1;
-                    foreach (System.Text.RegularExpressions.Match match in matches)
+                    foreach (Match match in matches)
                     {
-                        string itemIndex = itemNum.ToString();
-                        string itemData = match.Groups[2].Value.Trim();
-                        var nameMatch = System.Text.RegularExpressions.Regex.Match(itemData, @"<NAME=([^>]+)>");
-                        var valueMatch = System.Text.RegularExpressions.Regex.Match(itemData, @"<VALUE=([^>]*)>");
-                        string name = nameMatch.Success ? nameMatch.Groups[1].Value : $"ITEM_{itemIndex}";
-                        string value = valueMatch.Success ? valueMatch.Groups[1].Value : "(empty)";
-                        if (string.IsNullOrEmpty(value)) value = "(empty)";
-                        items.Add($"[{itemIndex}] {name} = {value}");
-                        itemNum++;
+                        string itemIndex = match.Groups[1].Value;
+                        string name = match.Groups[2].Value.Trim();
+                        string value = match.Groups[3].Value.Trim();
+                        
+                        if (string.IsNullOrEmpty(value))
+                        {
+                            value = "(empty)";
+                        }
+                        
+                        items.Add($"[{itemIndex}] {name} : {value}");
                     }
                 }
-
-                // 기존 ITEM 추출 로직 (패턴1, 패턴2, NAME-VALUE)
-                var itemPattern1 = @"\[(\d+),\s*\d+=\{([^}]*)\}\]";
-                var matches1 = System.Text.RegularExpressions.Regex.Matches(content, itemPattern1);
-                foreach (System.Text.RegularExpressions.Match match in matches1)
+                
+                if (items.Count == 0)
                 {
-                    string itemIndex = match.Groups[1].Value;
-                    string itemData = match.Groups[2].Value.Trim();
-                    string formattedItem = FormatItemData(itemIndex, itemData);
-                    if (!string.IsNullOrEmpty(formattedItem))
+                    var nameValueMatches = NameValuePatternRegex.Matches(content);
+                    
+                    int index = 1;
+                    foreach (Match match in nameValueMatches)
                     {
-                        items.Add(formattedItem);
+                        string name = match.Groups[1].Value.Trim();
+                        string value = match.Groups[2].Value.Trim();
+                        
+                        if (string.IsNullOrEmpty(value))
+                        {
+                            value = "(empty)";
+                        }
+                        
+                        items.Add($"[{index}] {name} : {value}");
+                        index++;
                     }
                 }
-                var itemPattern2 = @"ITEM\[(\d+)\]\s*=\s*(.+)";
-                var matches2 = System.Text.RegularExpressions.Regex.Matches(content, itemPattern2);
-                foreach (System.Text.RegularExpressions.Match match in matches2)
-                {
-                    string itemIndex = match.Groups[1].Value;
-                    string itemData = match.Groups[2].Value.Trim();
-                    items.Add($"[{itemIndex}] {itemData}");
-                }
-                var nameValuePattern = @"<NAME=([^>]+)>\s*<VALUE=([^>]*)>";
-                var nameValueMatches = System.Text.RegularExpressions.Regex.Matches(content, nameValuePattern);
-                int index = 1;
-                foreach (System.Text.RegularExpressions.Match match in nameValueMatches)
-                {
-                    string name = match.Groups[1].Value;
-                    string value = match.Groups[2].Value;
-                    if (string.IsNullOrEmpty(value)) value = "(empty)";
-                    items.Add($"[{index}] {name} = {value}");
-                    index++;
-                }
+                
                 if (items.Count > 0)
                 {
                     return string.Join("\n", items);
                 }
+                
                 return "";
             }
             catch (Exception)
@@ -996,128 +938,7 @@ namespace FACTOVA_LogAnalysis.Services
         }
 
         /// <summary>
-        /// ITEM 데이터를 포맷팅하는 헬퍼 메서드
-        /// </summary>
-        private string FormatItemData(string itemIndex, string itemData)
-        {
-            try
-            {
-                // NAME과 VALUE 추출
-                var nameMatch = System.Text.RegularExpressions.Regex.Match(itemData, @"<NAME=([^>]+)>");
-                var valueMatch = System.Text.RegularExpressions.Regex.Match(itemData, @"<VALUE=([^>]*)>");
-                
-                if (nameMatch.Success)
-                {
-                    string name = nameMatch.Groups[1].Value;
-                    string value = valueMatch.Success ? valueMatch.Groups[1].Value : "(empty)";
-                    
-                    if (string.IsNullOrEmpty(value))
-                        value = "(empty)";
-                    
-                    return $"[{itemIndex}] {name} = {value}";
-                }
-                
-                // NAME 패턴이 없으면 전체 데이터를 정리해서 사용
-                string cleanData = itemData
-                    .Replace("<NAME=", "")
-                    .Replace("<VALUE=", "=")
-                    .Replace(">", "")
-                    .Trim();
-                    
-                return $"[{itemIndex}] {cleanData}";
-            }
-            catch (Exception ex)
-            {
-                _workLogService.AddLog($"? ITEM 데이터 포맷 오류: {ex.Message}", WorkLogType.Error);
-                return $"[{itemIndex}] {itemData}";
-            }
-        }
-
-        /// <summary>
-        /// EVENT 내용에서 MSGID 추출
-        /// </summary>
-        private string ExtractMsgIdFromContent(string content)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(content))
-                    return "";
-
-                // 1) 기존 태그 형식 우선
-                var match = System.Text.RegularExpressions.Regex.Match(content, @"<MSGID=(\d+)>");
-                if (match.Success)
-                {
-                    return match.Groups[1].Value;
-                }
-
-                // 2) DYNAMIC_EVENT_DATA 혹은 DYNAMIC.EVENT.DATA 같은 패턴에서 숫자 추출
-                var dynMatch = System.Text.RegularExpressions.Regex.Match(content, @"DYNAMIC[_\.\s]?EVENT(?:_DATA|\.DATA|\sDATA)?\s*[:\-]?\s*(\d{3,5})", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-                if (dynMatch.Success)
-                {
-                    return dynMatch.Groups[1].Value;
-                }
-
-                // 3) 'DYNAMIC_EVENT_DATA 1300' 같은 언더스코어 형식
-                var dyn2 = System.Text.RegularExpressions.Regex.Match(content, @"DYNAMIC_EVENT_DATA\s*(\d{3,5})", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-                if (dyn2.Success)
-                {
-                    return dyn2.Groups[1].Value;
-                }
-
-                // 4) 콜론으로 구분된 형태에서 숫자 추출 '... : 1300 :'
-                var colonMatch = System.Text.RegularExpressions.Regex.Match(content, @":\s*(\d{3,5})\s*:");
-                if (colonMatch.Success)
-                {
-                    return colonMatch.Groups[1].Value;
-                }
-
-                // 5) 블록 내부에 독립적인 숫자 라인이 있는 경우 (예: newline 후 바로 1100)
-                var lineMatch = System.Text.RegularExpressions.Regex.Match(content, @"(?m)^\s*(\d{3,5})\s*$");
-                if (lineMatch.Success)
-                {
-                    return lineMatch.Groups[1].Value;
-                }
-
-                // 6) 임의의 위치에 있는 긴 숫자 토큰(예: 9000, 1300 등)
-                var any = System.Text.RegularExpressions.Regex.Match(content, @"\b(\d{3,5})\b");
-                if (any.Success)
-                {
-                    return any.Groups[1].Value;
-                }
-
-                return "";
-            }
-            catch
-            {
-                return "";
-            }
-        }
-
-        /// <summary>
-        /// EVENT 내용에서 PROCID 추출
-        /// </summary>
-        private string ExtractProcIdFromContent(string content)
-        {
-            try
-            {
-                var match = System.Text.RegularExpressions.Regex.Match(content, @"<PROCID=([^>]+)>");
-                if (match.Success)
-                {
-                    string procId = match.Groups[1].Value;
-                    //_workLogService.AddLog($"PROCID 추출: {procId}", WorkLogType.Info);
-                    return procId;
-                }
-                return "";
-            }
-            catch
-            {
-                return "";
-            }
-        }
-
-        /// <summary>
         /// 타임스탬프 형식 변환
-        /// ?? 밀리초 포함 시 보존: HH:mm:ss.fff
         /// </summary>
         private string FormatTimestamp(string timestamp)
         {
@@ -1126,7 +947,6 @@ namespace FACTOVA_LogAnalysis.Services
 
             try
             {
-                // 밀리초 포함 형식: dd-MM-yyyy HH:mm:ss.fff
                 if (DateTime.TryParseExact(timestamp, "dd-MM-yyyy HH:mm:ss.fff",
                     System.Globalization.CultureInfo.InvariantCulture,
                     System.Globalization.DateTimeStyles.None, out DateTime parsedWithMs))
@@ -1134,7 +954,6 @@ namespace FACTOVA_LogAnalysis.Services
                     return parsedWithMs.ToString("HH:mm:ss.fff");
                 }
 
-                // 밀리초 없는 형식: dd-MM-yyyy HH:mm:ss
                 if (DateTime.TryParseExact(timestamp, "dd-MM-yyyy HH:mm:ss",
                     System.Globalization.CultureInfo.InvariantCulture,
                     System.Globalization.DateTimeStyles.None, out DateTime parsedDate))
@@ -1142,22 +961,19 @@ namespace FACTOVA_LogAnalysis.Services
                     return parsedDate.ToString("HH:mm:ss");
                 }
 
-                // 일반적인 파싱 시도
                 if (DateTime.TryParse(timestamp, out DateTime parsedDate2))
                 {
-                    // 밀리초가 포함되어 있으면 보존
                     if (timestamp.Contains("."))
                         return parsedDate2.ToString("HH:mm:ss.fff");
                     else
                         return parsedDate2.ToString("HH:mm:ss");
                 }
 
-                // 실패하면 문자열에서 HH:mm:ss 또는 HH:mm:ss.fff 패턴 추출
-                var mWithMs = System.Text.RegularExpressions.Regex.Match(timestamp, @"(\d{2}:\d{2}:\d{2}\.\d{3})");
+                var mWithMs = Regex.Match(timestamp, @"(\d{2}:\d{2}:\d{2}\.\d{3})");
                 if (mWithMs.Success)
                     return mWithMs.Groups[1].Value;
 
-                var m = System.Text.RegularExpressions.Regex.Match(timestamp, @"(\d{2}:\d{2}:\d{2})");
+                var m = Regex.Match(timestamp, @"(\d{2}:\d{2}:\d{2})");
                 if (m.Success)
                     return m.Groups[1].Value;
 
@@ -1177,8 +993,7 @@ namespace FACTOVA_LogAnalysis.Services
         {
             try
             {
-                // 밀리초 포함 여부를 모두 처리
-                var match = System.Text.RegularExpressions.Regex.Match(line, @"\[(\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}(?:\.\d{3})?)\]");
+                var match = TimestampExtractRegex.Match(line);
                 if (match.Success)
                 {
                     string originalTimestamp = match.Groups[1].Value;
@@ -1200,8 +1015,7 @@ namespace FACTOVA_LogAnalysis.Services
         {
             try
             {
-                // 밀리초 포함 여부를 모두 처리
-                var match = System.Text.RegularExpressions.Regex.Match(line, @"\[\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}(?:\.\d{3})?\]\s*(.*)");
+                var match = TimestampRemoveRegex.Match(line);
                 if (match.Success)
                 {
                     return match.Groups[1].Value.Trim();
@@ -1244,74 +1058,6 @@ namespace FACTOVA_LogAnalysis.Services
             catch
             {
                 return logType;
-            }
-        }
-
-        /// <summary>
-        /// ImageList : 블록 처리 (ONBOARD FLASH까지)
-        /// </summary>
-        private (LogLineItem?, int) ProcessImageListBlock(string[] lines, int startIndex, int lineNumber)
-        {
-            try
-            {
-                string startLine = lines[startIndex];
-                string timestamp = ExtractTimestampFromLine(startLine);
-                
-                var contentBuilder = new StringBuilder();
-                contentBuilder.AppendLine(RemoveTimestampFromLine(startLine));
-                
-                int i = startIndex + 1;
-                bool blockEnded = false;
-                
-                // ONBOARD FLASH를 찾을 때까지 계속 읽기
-                while (i < lines.Length && !blockEnded)
-                {
-                    string nextLine = lines[i];
-                    string cleanedLine = RemoveTimestampFromLine(nextLine);
-                    
-                    // 현재 라인을 먼저 추가
-                    contentBuilder.AppendLine(cleanedLine);
-                    
-                    // ONBOARD FLASH를 찾으면 블록 종료
-                    if (cleanedLine.Contains("ONBOARD FLASH", StringComparison.OrdinalIgnoreCase))
-                    {
-                        blockEnded = true;
-                        // 다음 처리할 인덱스는 현재 라인 다음
-                        i++;
-                        break;
-                    }
-                    
-                    i++;
-                    
-                    // 무한 루프 방지: 100라인 이상이면 강제 종료
-                    if (i - startIndex > 100)
-                    {
-                        _workLogService.AddLog($"?? ImageList 블록이 너무 길어서 강제 종료: {i - startIndex}라인", WorkLogType.Warning);
-                        blockEnded = true;
-                    }
-                }
-                
-                string fullContent = contentBuilder.ToString().TrimEnd();
-                
-                var imageListItem = new LogLineItem
-                {
-                    LineNumber = lineNumber,
-                    Timestamp = FormatTimestamp(timestamp),
-                    MsgId = "ImageList",
-                    ProcId = "",
-                    BusinessName = "ImageList",
-                    Content = fullContent,
-                    LogLevel = "EVENT"
-                };
-                
-                _workLogService.AddLog($"? ImageList 블록 처리 완료: {i - startIndex}라인, 다음 인덱스: {i}", WorkLogType.Info);
-                
-                return (imageListItem, i - 1); // 다음 처리할 인덱스 반환 (0-based이므로 -1)
-            }
-            catch (Exception ex)
-            {
-                _workLogService.AddLog($"? ImageList 블록 처리 오류: {ex.Message}", WorkLogType.Error);
-                return (null, startIndex);
             }
         }
 

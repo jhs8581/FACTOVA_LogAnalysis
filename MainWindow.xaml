@@ -198,7 +198,7 @@
                                             <ComboBoxItem Content="검색어 이후" Tag="After" ToolTip="Show all logs after first match"/>
                                         </ComboBox>
                                         <!-- Moved main Submit button here so it's next to search controls -->
-                                        <Button Name="SubmitButton" Content="🚀 불러오기" Width="120" Margin="8,0,0,0" 
+                                        <Button Name="SubmitButton" Content="🚀 불러오고 시각화" Width="140" Margin="8,0,0,0" 
                                             Click="SubmitButton_Click" Background="LightGreen" Foreground="DarkGreen" FontWeight="SemiBold"
                                             ToolTip="Load logs according to selected options"/>
                                         <!-- 진행 시간 표시 (테스트용으로 항상 보이게) -->
@@ -297,9 +297,11 @@
                                     <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="3"
                                       HorizontalAlignment="Stretch"
                                       VerticalAlignment="Stretch"
-                                      Background="LightGray"
+                                      Width="5"
+                                      Background="#FF6B6B6B"
                                       ShowsPreview="True"
-                                      ResizeBehavior="PreviousAndNext"/>
+                                      ResizeBehavior="PreviousAndNext"
+                                      Cursor="SizeWE"/>
 
                                     <!-- EVENT Section -->
                                     <GroupBox Grid.Column="2" Grid.Row="0" Margin="5" Name="EventGroupBox">
@@ -343,9 +345,11 @@
                                     <GridSplitter Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
                                       HorizontalAlignment="Stretch"
                                       VerticalAlignment="Stretch"
-                                      Background="LightGray"
+                                      Height="5"
+                                      Background="#FF6B6B6B"
                                       ShowsPreview="True"
-                                      ResizeBehavior="PreviousAndNext"/>
+                                      ResizeBehavior="PreviousAndNext"
+                                      Cursor="SizeNS"/>
 
                                     <!-- DEBUG Section -->
                                     <GroupBox Grid.Column="0" Grid.Row="2" Margin="5" Name="DebugGroupBox">
@@ -384,6 +388,16 @@
                                          Background="White"/>
                                         </Grid>
                                     </GroupBox>
+
+                                    <!-- Horizontal GridSplitter between DEBUG and EXCEPTION -->
+                                    <GridSplitter Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      Height="5"
+                                      Background="#FF6B6B6B"
+                                      ShowsPreview="True"
+                                      ResizeBehavior="PreviousAndNext"
+                                      Cursor="SizeNS"/>
 
                                     <!-- EXCEPTION Section -->
                                     <GroupBox Grid.Column="2" Grid.Row="2" Margin="5" Name="ExceptionGroupBox">
@@ -593,12 +607,13 @@
 
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Line" Binding="{Binding LineNumber}" Width="50" IsReadOnly="True"/>
-                                                <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="Auto" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="Business" Binding="{Binding BusinessName}" Width="200" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="ExecTime" Binding="{Binding ExecTime}" Width="Auto" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="TxnId" Binding="{Binding TxnId}" Width="150" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="*" IsReadOnly="False" 
-                                                                    CellStyle="{StaticResource ContentCellStyle}"/>
+                                                <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="70" IsReadOnly="False"/>
+                                                <DataGridTextColumn Header="Business" Binding="{Binding BusinessName}" Width="250" IsReadOnly="False"/>
+                                                <DataGridTextColumn Header="BARCODE/LOT" Binding="{Binding BARCODE_LOT}" Width="150" IsReadOnly="False"/>
+                                                <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="500" IsReadOnly="False" CellStyle="{StaticResource ContentCellStyle}"/>
+                                                <DataGridTextColumn Header="ExecTime" Binding="{Binding ExecTime}" Width="90" IsReadOnly="False"/>
+                                                <DataGridTextColumn Header="TxnId" Binding="{Binding TxnId}" Width="200" IsReadOnly="False"/>
+                                                
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </GroupBox>
@@ -607,9 +622,11 @@
                                     <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="3"
                                       HorizontalAlignment="Stretch"
                                       VerticalAlignment="Stretch"
-                                      Background="LightGray"
+                                      Width="5"
+                                      Background="#FF6B6B6B"
                                       ShowsPreview="True"
-                                      ResizeBehavior="PreviousAndNext"/>
+                                      ResizeBehavior="PreviousAndNext"
+                                      Cursor="SizeWE"/>
 
                                     <!-- EVENT DataGrid -->
                                     <GroupBox Grid.Column="2" Grid.Row="0" Margin="5" Name="EventGroupBox_FourPanel">
@@ -665,20 +682,12 @@
                                       ScrollViewer.VerticalScrollBarVisibility="Auto">
 
                                             <DataGrid.Columns>
-                                                <DataGridTextColumn Header="Line" Binding="{Binding LineNumber}" Width="60" IsReadOnly="True"/>
-                                                <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="100" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="MsgId" Binding="{Binding MsgId}" Width="100" IsReadOnly="False"/>
+                                                <DataGridTextColumn Header="Line" Binding="{Binding LineNumber}" Width="50" IsReadOnly="True"/>
+                                                <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="70" IsReadOnly="False"/>
+                                                <DataGridTextColumn Header="MsgId" Binding="{Binding MsgId}" Width="80" IsReadOnly="False"/>
+                                                <DataGridTextColumn Header="BARCODE/LOT" Binding="{Binding BARCODE_LOT}" Width="150" IsReadOnly="False"/>
                                                 <DataGridTextColumn Header="ProcId" Binding="{Binding ProcId}" Width="100" IsReadOnly="False" Visibility="Collapsed"/>
-                                                <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="300" IsReadOnly="False" 
-                                                                    CellStyle="{StaticResource ContentCellStyle}"/>
-                                                <DataGridTextColumn Header="BCR_ID" Binding="{Binding BCR_ID}" Width="Auto" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="RETURN_CODE" Binding="{Binding RETURN_CODE}" Width="100" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="MSG_NO" Binding="{Binding MSG_NO}" Width="100" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="WORK_TYPE" Binding="{Binding WORK_TYPE}" Width="100" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="LINESTOP" Binding="{Binding LINESTOP}" Width="100" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="LINEPASS" Binding="{Binding LINEPASS}" Width="100" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="ERROR_CODE" Binding="{Binding ERROR_CODE}" Width="100" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="ERROR_CODE_DESC" Binding="{Binding ERROR_CODE_DESC}" Width="150" IsReadOnly="False"/>
+                                                <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="500" IsReadOnly="False" CellStyle="{StaticResource ContentCellStyle}"/>
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </GroupBox>
@@ -687,9 +696,11 @@
                                     <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="3"
                                       HorizontalAlignment="Stretch"
                                       VerticalAlignment="Stretch"
-                                      Background="LightGray"
+                                      Width="5"
+                                      Background="#FF6B6B6B"
                                       ShowsPreview="True"
-                                      ResizeBehavior="PreviousAndNext"/>
+                                      ResizeBehavior="PreviousAndNext"
+                                      Cursor="SizeWE"/>
 
                                     <!-- DEBUG DataGrid -->
                                     <GroupBox Grid.Column="0" Grid.Row="2" Margin="5" Name="DebugGroupBox_FourPanel">
@@ -727,12 +738,21 @@
 
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Line" Binding="{Binding LineNumber}" Width="50" IsReadOnly="True"/>
-                                                <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="120" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="*" IsReadOnly="False" 
-                                                                    CellStyle="{StaticResource ContentCellStyle}"/>
+                                                <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="70" IsReadOnly="False"/>
+                                                <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="800" IsReadOnly="False" CellStyle="{StaticResource ContentCellStyle}"/>
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </GroupBox>
+
+                                    <!-- Horizontal GridSplitter between top and bottom rows -->
+                                    <GridSplitter Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      Height="5"
+                                      Background="#FF6B6B6B"
+                                      ShowsPreview="True"
+                                      ResizeBehavior="PreviousAndNext"
+                                      Cursor="SizeNS"/>
 
                                     <!-- EXCEPTION DataGrid -->
                                     <GroupBox Grid.Column="2" Grid.Row="2" Margin="5" Name="ExceptionGroupBox_FourPanel">
@@ -789,11 +809,10 @@
 
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Line" Binding="{Binding LineNumber}" Width="50" IsReadOnly="True"/>
-                                                <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="Auto" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="Business" Binding="{Binding BusinessName}" Width="Auto" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="500" IsReadOnly="False" 
-                                                                    CellStyle="{StaticResource ContentCellStyle}"/>
-                                                <DataGridTextColumn Header="Error Description" Binding="{Binding ErrorDescription}" Width="Auto" IsReadOnly="False"/>
+                                                <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="70" IsReadOnly="False"/>
+                                                <DataGridTextColumn Header="Business" Binding="{Binding BusinessName}" Width="250" IsReadOnly="False"/>
+                                                <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="500" IsReadOnly="False" CellStyle="{StaticResource ContentCellStyle}"/>
+                                                <DataGridTextColumn Header="Error Description" Binding="{Binding ErrorDescription}" Width="300" IsReadOnly="False"/>
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </GroupBox>
@@ -940,14 +959,13 @@
                               ScrollViewer.VerticalScrollBarVisibility="Auto">
 
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="120" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="70" IsReadOnly="False"/>
                                         <DataGridTextColumn Header="LogType" Binding="{Binding LogLevel}" Width="90" IsReadOnly="False"/>
-                                        <DataGridTextColumn Header="Business" Binding="{Binding BusinessName}" Width="200" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="Business" Binding="{Binding BusinessName}" Width="250" IsReadOnly="False"/>
                                         <DataGridTextColumn Header="MsgId" Binding="{Binding MsgId}" Width="80" IsReadOnly="False"/>
                                         <DataGridTextColumn Header="ExecTime" Binding="{Binding ExecTime}" Width="90" IsReadOnly="False"/>
-                                        <DataGridTextColumn Header="TxnId" Binding="{Binding TxnId}" Width="140" IsReadOnly="False"/>
-                                        <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="*" IsReadOnly="False" 
-                                                            CellStyle="{StaticResource ContentCellStyle}"/>
+                                        <DataGridTextColumn Header="TxnId" Binding="{Binding TxnId}" Width="200" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="500" IsReadOnly="False" CellStyle="{StaticResource ContentCellStyle}"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Grid>
@@ -1008,57 +1026,7 @@
                             </Grid>
                         </TabItem>
 
-                        <!-- Tab 4: 작업로그 (Work Log) -->
-                        <TabItem Header="📋 작업로그" Name="WorkLogTab">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-
-                                <!-- Work Log Toolbar -->
-                                <Border Grid.Row="0" Background="AliceBlue" BorderBrush="SteelBlue" BorderThickness="0,0,0,1" Padding="8,6">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button Name="ClearWorkLogButton" Content="🧹 초기화" Width="80" Height="26" Margin="0,0,6,0" Click="ClearWorkLogButton_Click" ToolTip="Clear work log"/>
-                                        <Button Name="SaveWorkLogButton" Content="💾 저장" Width="70" Height="26" Margin="0,0,10,0" Click="SaveWorkLogButton_Click" ToolTip="Save work log to file"/>
-                                        <Separator Margin="10,0"/>
-                                        <CheckBox Name="AutoScrollCheckBox" Content="자동 스크롤" VerticalAlignment="Center" IsChecked="True" ToolTip="Auto-scroll to latest log entry"/>
-                                        <Separator Margin="10,0"/>
-                                        <TextBlock Name="WorkLogStatusText" Text="Ready" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="DarkBlue"/>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Work Log Content -->
-                                <Grid Grid.Row="1" Margin="5">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="50"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <TextBox Grid.Column="0" Name="workLogLineNumberTextBox" 
-                                 IsReadOnly="True" 
-                                 VerticalScrollBarVisibility="Hidden" 
-                                 HorizontalScrollBarVisibility="Hidden" 
-                                 Background="LightGray" 
-                                 FontFamily="Consolas" 
-                                 FontSize="12" 
-                                 Padding="5,0" 
-                                 TextAlignment="Right"
-                                 BorderThickness="0,0,1,0"
-                                 BorderBrush="Gray"/>
-
-                                    <RichTextBox Grid.Column="1" Name="workLogTextBox"
-                                     IsReadOnly="True"
-                                     VerticalScrollBarVisibility="Visible"
-                                     HorizontalScrollBarVisibility="Auto"
-                                     FontFamily="Consolas"
-                                     FontSize="12"
-                                     Background="White"/>
-                                </Grid>
-                            </Grid>
-                        </TabItem>
-
-                        <!-- Tab 5: 빨간 비즈니스 관리 -->
+                        <!-- Tab: 빨간 비즈니스 관리 -->
                         <TabItem Header="🔴 빨간 비즈니스" Name="RedBusinessTab">
                             <Grid>
                                 <Grid.RowDefinitions>
@@ -1096,7 +1064,7 @@
                             </Grid>
                         </TabItem>
 
-                        <!-- Tab 6: exec.Time 분석 -->
+                        <!-- Tab: exec.Time 분석 -->
                         <TabItem Header="⏱️ exec.Time" Name="ExecTimeTab">
                             <Grid>
                                 <Grid.RowDefinitions>
@@ -1139,12 +1107,11 @@
 
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Line" Binding="{Binding LineNumber}" Width="50" IsReadOnly="True"/>
-                                        <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="Auto" IsReadOnly="False"/>
-                                        <DataGridTextColumn Header="Business" Binding="{Binding BusinessName}" Width="200" IsReadOnly="False"/>
-                                        <DataGridTextColumn Header="ExecTime" Binding="{Binding ExecTime}" Width="Auto" IsReadOnly="False"/>
-                                        <DataGridTextColumn Header="TxnId" Binding="{Binding TxnId}" Width="150" IsReadOnly="False"/>
-                                        <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="*" IsReadOnly="False" 
-                                                            CellStyle="{StaticResource ContentCellStyle}"/>
+                                        <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="70" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="Business" Binding="{Binding BusinessName}" Width="250" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="ExecTime" Binding="{Binding ExecTime}" Width="90" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="TxnId" Binding="{Binding TxnId}" Width="200" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="500" IsReadOnly="False" CellStyle="{StaticResource ContentCellStyle}"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Grid>
