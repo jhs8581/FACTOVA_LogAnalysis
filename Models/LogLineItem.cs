@@ -17,6 +17,10 @@ namespace FACTOVA_LogAnalysis.Models
         private static readonly Regex BarcodeValueRegex = new Regex(@"<BARCODE_VALUE[^>]*>([^<]+)</BARCODE_VALUE>", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private static readonly Regex LotIdRegex = new Regex(@"<LOT_ID[^>]*>([^<]+)</LOT_ID>", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private static readonly Regex LotId2Regex = new Regex(@"<LOTID[^>]*>([^<]+)</LOTID>", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        // ✅ BCR_ID 추출용 Regex 추가
+        private static readonly Regex BcrIdRegex = new Regex(@"<BCR_ID[^>]*>([^<]+)</BCR_ID>", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        // ✅ SPS_BOX_ID 추출용 Regex 추가
+        private static readonly Regex SpsBoxIdRegex = new Regex(@"<SPS_BOX_ID[^>]*>([^<]+)</SPS_BOX_ID>", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
         private bool _isHighlighted;
         private System.Windows.Media.Brush _textColor = System.Windows.Media.Brushes.Black;
@@ -271,7 +275,7 @@ namespace FACTOVA_LogAnalysis.Models
         }
 
         /// <summary>
-        /// BARCODE_NO, BARCODE_VALUE, LOT_ID, LOTID 중 첫 번째 값 추출 - 최적화 버전
+        /// BARCODE_NO, BARCODE_VALUE, BCR_ID, SPS_BOX_ID, LOT_ID, LOTID 중 첫 번째 값 추출 - 최적화 버전
         /// </summary>
         private void ExtractBarcodeLot(string content)
         {
@@ -301,7 +305,31 @@ namespace FACTOVA_LogAnalysis.Models
                     }
                 }
 
-                // 3. <LOT_ID>VALUE</LOT_ID> 형식 (개행 및 공백 포함)
+                // 3. <BCR_ID>VALUE</BCR_ID> 형식 (개행 및 공백 포함)
+                var bcrIdMatch = BcrIdRegex.Match(content);
+                if (bcrIdMatch.Success)
+                {
+                    string value = bcrIdMatch.Groups[1].Value.Trim();
+                    if (!string.IsNullOrWhiteSpace(value))
+                    {
+                        BARCODE_LOT = value;
+                        return;
+                    }
+                }
+
+                // 4. <SPS_BOX_ID>VALUE</SPS_BOX_ID> 형식 (개행 및 공백 포함) - 추가
+                var spsBoxIdMatch = SpsBoxIdRegex.Match(content);
+                if (spsBoxIdMatch.Success)
+                {
+                    string value = spsBoxIdMatch.Groups[1].Value.Trim();
+                    if (!string.IsNullOrWhiteSpace(value))
+                    {
+                        BARCODE_LOT = value;
+                        return;
+                    }
+                }
+
+                // 5. <LOT_ID>VALUE</LOT_ID> 형식 (개행 및 공백 포함)
                 var lotIdMatch = LotIdRegex.Match(content);
                 if (lotIdMatch.Success && !string.IsNullOrWhiteSpace(lotIdMatch.Groups[1].Value))
                 {
@@ -309,7 +337,7 @@ namespace FACTOVA_LogAnalysis.Models
                     return;
                 }
 
-                // 4. <LOTID>VALUE</LOTID> 형식 (개행 및 공백 포함)
+                // 6. <LOTID>VALUE</LOTID> 형식 (개행 및 공백 포함)
                 var lotIdMatch2 = LotId2Regex.Match(content);
                 if (lotIdMatch2.Success && !string.IsNullOrWhiteSpace(lotIdMatch2.Groups[1].Value))
                 {

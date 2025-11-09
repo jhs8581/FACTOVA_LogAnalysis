@@ -576,6 +576,14 @@
                                                 </ComboBox>
                                                 <Button Name="ClearDataBusinessFilterButton" Content="🔄" Width="28" Height="30" FontSize="13"
                                             Click="ClearDataBusinessFilterButton_Click" ToolTip="Clear DATA Business filter" Margin="3,0"/>
+                                                <!-- ✨ Time 필터 추가 -->
+                                                <TextBlock Text="Time:" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Margin="5,0,3,0"/>
+                                                <TextBox Name="DataTimeFilterTextBox" Width="80" Height="32" FontSize="14" 
+                                             ToolTip="Time 필터 (예: 14:30)" 
+                                             TextChanged="DataTimeFilterTextBox_TextChanged" Padding="8,5" VerticalContentAlignment="Center"
+                                             Margin="0,0,5,0"/>
+                                                <Button Name="ClearDataTimeFilterButton" Content="🔄" Width="28" Height="30" FontSize="13"
+                                            Click="ClearDataTimeFilterButton_Click" ToolTip="Clear DATA Time filter" Margin="3,0"/>
                                                 <TextBlock Text="Content:" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Margin="5,0,3,0"/>
                                                 <TextBox Name="DataContentFilterTextBox" Width="150" Height="32" FontSize="14" 
                                              ToolTip="Filter DATA logs by content keywords" 
@@ -652,6 +660,14 @@
                                                 </ComboBox>
                                                 <Button Name="ClearEventMsgIdFilterButton" Content="🔄" Width="28" Height="30" FontSize="13"
                                             Click="ClearEventMsgIdFilterButton_Click" ToolTip="Clear EVENT MsgId filter" Margin="3,0"/>
+                                                <!-- ✨ Time 필터 추가 -->
+                                                <TextBlock Text="Time:" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Margin="5,0,3,0"/>
+                                                <TextBox Name="EventTimeFilterTextBox" Width="80" Height="32" FontSize="14" 
+                                             ToolTip="Time 필터 (예: 14:30)" 
+                                             TextChanged="EventTimeFilterTextBox_TextChanged" Padding="8,5" VerticalContentAlignment="Center"
+                                             Margin="0,0,5,0"/>
+                                                <Button Name="ClearEventTimeFilterButton" Content="🔄" Width="28" Height="30" FontSize="13"
+                                            Click="ClearEventTimeFilterButton_Click" ToolTip="Clear EVENT Time filter" Margin="3,0"/>
                                                 <TextBlock Text="Content:" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Margin="5,0,3,0"/>
                                                 <TextBox Name="EventContentFilterTextBox" Width="150" Height="32" FontSize="14" 
                                              ToolTip="Filter EVENT logs by content keywords" 
@@ -661,6 +677,7 @@
                                             Click="ClearEventContentFilterButton_Click" ToolTip="Clear EVENT Content filter" Margin="3,0"/>
                                             </StackPanel>
                                         </GroupBox.Header>
+
                                         <DataGrid Name="eventLogDataGrid" 
                                       AutoGenerateColumns="False"
                                       GridLinesVisibility="All"
@@ -707,6 +724,14 @@
                                         <GroupBox.Header>
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="🔧 DEBUG" VerticalAlignment="Center" FontWeight="Bold" FontSize="12" Foreground="DarkOrange" Margin="0,0,10,0"/>
+                                                <!-- ✨ Time 필터 추가 -->
+                                                <TextBlock Text="Time:" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Margin="0,0,3,0"/>
+                                                <TextBox Name="DebugTimeFilterTextBox" Width="80" Height="32" FontSize="14" 
+                                         ToolTip="Time 필터 (예: 14:30)" 
+                                         TextChanged="DebugTimeFilterTextBox_TextChanged" Padding="8,5" VerticalContentAlignment="Center"
+                                         Margin="0,0,5,0"/>
+                                                <Button Name="ClearDebugTimeFilterButton" Content="🔄" Width="28" Height="30" FontSize="13"
+                                            Click="ClearDebugTimeFilterButton_Click" ToolTip="Clear DEBUG Time filter" Margin="3,0"/>
                                                 <TextBlock Text="Content:" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Margin="0,0,3,0"/>
                                                 <TextBox Name="DebugContentFilterTextBox" Width="200" Height="32" FontSize="14" 
                                              ToolTip="Filter DEBUG logs by content keywords" 
@@ -778,6 +803,14 @@
                                                 </ComboBox>
                                                 <Button Name="ClearExceptionBusinessFilterButton" Content="🔄" Width="28" Height="30" FontSize="13"
                                             Click="ClearExceptionBusinessFilterButton_Click" ToolTip="Clear EXCEPTION Business filter" Margin="3,0"/>
+                                                <!-- ✨ Time 필터 추가 -->
+                                                <TextBlock Text="Time:" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Margin="5,0,3,0"/>
+                                                <TextBox Name="ExceptionTimeFilterTextBox" Width="80" Height="32" FontSize="14" 
+                                             ToolTip="Time 필터 (예: 14:30)" 
+                                             TextChanged="ExceptionTimeFilterTextBox_TextChanged" Padding="8,5" VerticalContentAlignment="Center"
+                                             Margin="0,0,5,0"/>
+                                                <Button Name="ClearExceptionTimeFilterButton" Content="🔄" Width="28" Height="30" FontSize="13"
+                                            Click="ClearExceptionTimeFilterButton_Click" ToolTip="Clear EXCEPTION Time filter" Margin="3,0"/>
                                                 <TextBlock Text="Content:" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Margin="5,0,3,0"/>
                                                 <TextBox Name="ExceptionContentFilterTextBox" Width="150" Height="32" FontSize="14" 
                                              ToolTip="Filter EXCEPTION logs by content keywords" 

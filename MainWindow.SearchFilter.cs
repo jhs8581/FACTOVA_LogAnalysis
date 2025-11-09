@@ -155,7 +155,20 @@ namespace FACTOVA_LogAnalysis
                 foreach (var item in _eventMsgIdFilterItems) item.IsSelected = false;
                 foreach (var item in _exceptionBusinessFilterItems) item.IsSelected = false;
 
-                // 새로운 Content 필터들 초기화
+                // Time 필터들 초기화 (새로 추가)
+                var timeFilters = new[] {
+                    "DataTimeFilterTextBox", "EventTimeFilterTextBox", 
+                    "DebugTimeFilterTextBox", "DebugTimeFilterTextBox_Tab", 
+                    "ExceptionTimeFilterTextBox"
+                };
+
+                foreach (var filterName in timeFilters)
+                {
+                    var textBox = FindName(filterName) as System.Windows.Controls.TextBox;
+                    if (textBox != null) textBox.Text = "";
+                }
+
+                // Content 필터들 초기화
                 var contentFilters = new[] {
                     "DataContentFilterTextBox", "EventContentFilterTextBox", 
                     "DebugContentFilterTextBox", "DebugContentFilterTextBox_Tab", 
@@ -177,11 +190,11 @@ namespace FACTOVA_LogAnalysis
                 ApplyIndividualFilters("DEBUG");
                 ApplyIndividualFilters("EXCEPTION");
 
-                _workLogService.AddLog("?? 모든 개별 필터 초기화 완료", WorkLogType.Success);
+                _workLogService.AddLog("✅ 모든 개별 필터 초기화 완료", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? 전체 필터 초기화 오류: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"❌ 전체 필터 초기화 오류: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -405,6 +418,34 @@ namespace FACTOVA_LogAnalysis
 
         #region Individual Content Filter Handlers
 
+        // DATA Time Filter (새로 추가)
+        private void DataTimeFilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                ApplyIndividualFilters("DATA");
+            }
+            catch (Exception ex)
+            {
+                _workLogService.AddLog($"❌ DATA Time 필터 오류: {ex.Message}", WorkLogType.Error);
+            }
+        }
+
+        private void ClearDataTimeFilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var textBox = FindName("DataTimeFilterTextBox") as System.Windows.Controls.TextBox;
+                if (textBox != null) textBox.Text = "";
+                ApplyIndividualFilters("DATA");
+                _workLogService.AddLog("DATA Time 필터 초기화", WorkLogType.Success);
+            }
+            catch (Exception ex)
+            {
+                _workLogService.AddLog($"❌ DATA Time 필터 초기화 오류: {ex.Message}", WorkLogType.Error);
+            }
+        }
+
         // DATA Content Filter
         private void DataContentFilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -460,7 +501,34 @@ namespace FACTOVA_LogAnalysis
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? EVENT Content 필터 오류: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"❌ EVENT Content 필터 오류: {ex.Message}", WorkLogType.Error);
+            }
+        }
+
+        private void EventTimeFilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                ApplyIndividualFilters("EVENT");
+            }
+            catch (Exception ex)
+            {
+                _workLogService.AddLog($"❌ EVENT Time 필터 오류: {ex.Message}", WorkLogType.Error);
+            }
+        }
+
+        private void ClearEventTimeFilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var textBox = FindName("EventTimeFilterTextBox") as System.Windows.Controls.TextBox;
+                if (textBox != null) textBox.Text = "";
+                ApplyIndividualFilters("EVENT");
+                _workLogService.AddLog("EVENT Time 필터 초기화", WorkLogType.Success);
+            }
+            catch (Exception ex)
+            {
+                _workLogService.AddLog($"❌ EVENT Time 필터 초기화 오류: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -506,7 +574,36 @@ namespace FACTOVA_LogAnalysis
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? DEBUG Content 필터 오류: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"❌ DEBUG Content 필터 오류: {ex.Message}", WorkLogType.Error);
+            }
+        }
+
+        private void DebugTimeFilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                ApplyIndividualFilters("DEBUG");
+            }
+            catch (Exception ex)
+            {
+                _workLogService.AddLog($"❌ DEBUG Time 필터 오류: {ex.Message}", WorkLogType.Error);
+            }
+        }
+
+        private void ClearDebugTimeFilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var textBox = FindName("DebugTimeFilterTextBox") as System.Windows.Controls.TextBox;
+                var textBoxTab = FindName("DebugTimeFilterTextBox_Tab") as System.Windows.Controls.TextBox;
+                if (textBox != null) textBox.Text = "";
+                if (textBoxTab != null) textBoxTab.Text = "";
+                ApplyIndividualFilters("DEBUG");
+                _workLogService.AddLog("DEBUG Time 필터 초기화", WorkLogType.Success);
+            }
+            catch (Exception ex)
+            {
+                _workLogService.AddLog($"❌ DEBUG Time 필터 초기화 오류: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -514,16 +611,24 @@ namespace FACTOVA_LogAnalysis
         {
             try
             {
+                // Time 필터 초기화
+                var timeTextBox = FindName("DebugTimeFilterTextBox") as System.Windows.Controls.TextBox;
+                var timeTextBoxTab = FindName("DebugTimeFilterTextBox_Tab") as System.Windows.Controls.TextBox;
+                if (timeTextBox != null) timeTextBox.Text = "";
+                if (timeTextBoxTab != null) timeTextBoxTab.Text = "";
+
+                // Content 필터 초기화
                 var textBox = FindName("DebugContentFilterTextBox") as System.Windows.Controls.TextBox;
                 var textBoxTab = FindName("DebugContentFilterTextBox_Tab") as System.Windows.Controls.TextBox;
                 if (textBox != null) textBox.Text = "";
                 if (textBoxTab != null) textBoxTab.Text = "";
+
                 ApplyIndividualFilters("DEBUG");
-                _workLogService.AddLog("DEBUG Content 필터 초기화", WorkLogType.Success);
+                _workLogService.AddLog("DEBUG 모든 필터 초기화", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? DEBUG 필터 초기화 오류: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"❌ DEBUG 필터 초기화 오류: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -536,7 +641,34 @@ namespace FACTOVA_LogAnalysis
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? EXCEPTION Content 필터 오류: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"❌ EXCEPTION Content 필터 오류: {ex.Message}", WorkLogType.Error);
+            }
+        }
+
+        private void ExceptionTimeFilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                ApplyIndividualFilters("EXCEPTION");
+            }
+            catch (Exception ex)
+            {
+                _workLogService.AddLog($"❌ EXCEPTION Time 필터 오류: {ex.Message}", WorkLogType.Error);
+            }
+        }
+
+        private void ClearExceptionTimeFilterButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var textBox = FindName("ExceptionTimeFilterTextBox") as System.Windows.Controls.TextBox;
+                if (textBox != null) textBox.Text = "";
+                ApplyIndividualFilters("EXCEPTION");
+                _workLogService.AddLog("EXCEPTION Time 필터 초기화", WorkLogType.Success);
+            }
+            catch (Exception ex)
+            {
+                _workLogService.AddLog($"❌ EXCEPTION Time 필터 초기화 오류: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -661,6 +793,13 @@ namespace FACTOVA_LogAnalysis
                         conditions.Add(item => selectedBusinessNames.Contains(item.BusinessName ?? ""));
                     }
 
+                    // Time 필터 (새로 추가)
+                    var dataTimeFilter = (FindName("DataTimeFilterTextBox") as System.Windows.Controls.TextBox)?.Text?.Trim();
+                    if (!string.IsNullOrEmpty(dataTimeFilter))
+                    {
+                        conditions.Add(item => (item.Timestamp ?? "").IndexOf(dataTimeFilter, StringComparison.OrdinalIgnoreCase) >= 0);
+                    }
+
                     // Content 필터
                     var dataContentFilter = (FindName("DataContentFilterTextBox") as System.Windows.Controls.TextBox)?.Text?.Trim();
                     if (!string.IsNullOrEmpty(dataContentFilter))
@@ -677,6 +816,13 @@ namespace FACTOVA_LogAnalysis
                         conditions.Add(item => selectedMsgIds.Contains(item.MsgId ?? ""));
                     }
 
+                    // Time 필터 (새로 추가)
+                    var eventTimeFilter = (FindName("EventTimeFilterTextBox") as System.Windows.Controls.TextBox)?.Text?.Trim();
+                    if (!string.IsNullOrEmpty(eventTimeFilter))
+                    {
+                        conditions.Add(item => (item.Timestamp ?? "").IndexOf(eventTimeFilter, StringComparison.OrdinalIgnoreCase) >= 0);
+                    }
+
                     // Content 필터
                     var eventContentFilter = (FindName("EventContentFilterTextBox") as System.Windows.Controls.TextBox)?.Text?.Trim();
                     if (!string.IsNullOrEmpty(eventContentFilter))
@@ -686,6 +832,18 @@ namespace FACTOVA_LogAnalysis
                     break;
 
                 case "DEBUG":
+                    // Time 필터 (새로 추가)
+                    var debugTimeFilter = (FindName("DebugTimeFilterTextBox") as System.Windows.Controls.TextBox)?.Text?.Trim();
+                    // Tab 모드에서도 확인
+                    if (string.IsNullOrEmpty(debugTimeFilter))
+                    {
+                        debugTimeFilter = (FindName("DebugTimeFilterTextBox_Tab") as System.Windows.Controls.TextBox)?.Text?.Trim();
+                    }
+                    if (!string.IsNullOrEmpty(debugTimeFilter))
+                    {
+                        conditions.Add(item => (item.Timestamp ?? "").IndexOf(debugTimeFilter, StringComparison.OrdinalIgnoreCase) >= 0);
+                    }
+
                     // Content 필터
                     var debugContentFilter = (FindName("DebugContentFilterTextBox") as System.Windows.Controls.TextBox)?.Text?.Trim();
                     // Tab 모드에서도 확인
@@ -705,6 +863,13 @@ namespace FACTOVA_LogAnalysis
                     if (selectedExceptionBusinessNames.Count > 0)
                     {
                         conditions.Add(item => selectedExceptionBusinessNames.Contains(item.BusinessName ?? ""));
+                    }
+
+                    // Time 필터 (새로 추가)
+                    var exceptionTimeFilter = (FindName("ExceptionTimeFilterTextBox") as System.Windows.Controls.TextBox)?.Text?.Trim();
+                    if (!string.IsNullOrEmpty(exceptionTimeFilter))
+                    {
+                        conditions.Add(item => (item.Timestamp ?? "").IndexOf(exceptionTimeFilter, StringComparison.OrdinalIgnoreCase) >= 0);
                     }
 
                     // Content 필터
