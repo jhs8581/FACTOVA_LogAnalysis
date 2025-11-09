@@ -566,22 +566,8 @@ namespace FACTOVA_LogAnalysis
 
         private void SetupEventHandlers()
         {
-            _workLogService.LogAdded += (message, logType) => 
-            {
-                Dispatcher.BeginInvoke(() => 
-                {
-                    var workLogTextBox = FindName("workLogTextBox") as WpfRichTextBox;
-                    var workLogLineNumberTextBox = FindName("workLogLineNumberTextBox") as WpfTextBox;
-                    var WorkLogStatusText = FindName("WorkLogStatusText") as TextBlock;
-                    var AutoScrollCheckBox = FindName("AutoScrollCheckBox") as System.Windows.Controls.CheckBox;
-                    
-                    if (workLogTextBox != null && workLogLineNumberTextBox != null && WorkLogStatusText != null && AutoScrollCheckBox != null)
-                    {
-                        _workLogService.AddToRichTextBox(workLogTextBox, workLogLineNumberTextBox, 
-                            WorkLogStatusText, AutoScrollCheckBox, message, logType);
-                    }
-                });
-            };
+            // ❌ WorkLog UI가 제거되어 LogAdded 이벤트 핸들러 제거
+            // WorkLogService는 Debug 출력만 수행
             
             _searchService.StatusUpdated += (current, total) => 
             {

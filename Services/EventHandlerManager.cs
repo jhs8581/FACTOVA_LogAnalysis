@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -16,8 +16,8 @@ using WpfSaveFileDialog = Microsoft.Win32.SaveFileDialog;
 namespace FACTOVA_LogAnalysis.Services
 {
     /// <summary>
-    /// ÀÌº¥Æ® ÇÚµé·¯ °ü¸®¸¦ ´ã´çÇÏ´Â ¼­ºñ½º Å¬·¡½º
-    /// ÆÄÀÏ ÀÛ¾÷, ¿ÜºÎ ÇÁ·Î±×·¥ ½ÇÇà, ÅØ½ºÆ®¹Ú½º ÀÌº¥Æ® µîÀ» °ü¸®
+    /// ì´ë²¤íŠ¸ í•¸ë“¤ëŸ¬ ê´€ë¦¬ë¥¼ ë‹´ë‹¹í•˜ëŠ” ì„œë¹„ìŠ¤ í´ë˜ìŠ¤
+    /// íŒŒì¼ ì‘ì—…, ì™¸ë¶€ í”„ë¡œê·¸ë¨ ì‹¤í–‰, í…ìŠ¤íŠ¸ë°•ìŠ¤ ì´ë²¤íŠ¸ ë“±ì„ ê´€ë¦¬
     /// </summary>
     public class EventHandlerManager
     {
@@ -27,7 +27,7 @@ namespace FACTOVA_LogAnalysis.Services
         private readonly SearchFilterManager _searchFilterManager;
         private string _logFolderPath = "";
         
-        // È°¼º ÅØ½ºÆ®¹Ú½º ÃßÀû
+        // í™œì„± í…ìŠ¤íŠ¸ë°•ìŠ¤ ì¶”ì 
         private WpfTextBox? _activeTextBox;
 
         #endregion
@@ -57,7 +57,7 @@ namespace FACTOVA_LogAnalysis.Services
         #region Public Methods - File Operations
 
         /// <summary>
-        /// Æú´õ ¿­±â
+        /// í´ë” ì—´ê¸°
         /// </summary>
         public void OpenFolder()
         {
@@ -71,22 +71,22 @@ namespace FACTOVA_LogAnalysis.Services
                         Arguments = _logFolderPath,
                         UseShellExecute = true
                     });
-                    _workLogService.AddLog($"Æú´õ ¿­±â: {_logFolderPath}", WorkLogType.Success);
+                    _workLogService.AddLog($"í´ë” ì—´ê¸°: {_logFolderPath}", WorkLogType.Success);
                 }
                 else
                 {
-                    _workLogService.AddLog($"Æú´õ°¡ Á¸ÀçÇÏÁö ¾ÊÀ½: {_logFolderPath}", WorkLogType.Warning);
+                    _workLogService.AddLog($"í´ë”ê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŒ: {_logFolderPath}", WorkLogType.Warning);
                     WpfMessageBox.Show($"Folder does not exist: {_logFolderPath}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? Æú´õ ¿­±â ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? í´ë” ì—´ê¸° ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ¸Ş¸ğÀå ¿­±â
+        /// ë©”ëª¨ì¥ ì—´ê¸°
         /// </summary>
         public void OpenNotepad()
         {
@@ -97,54 +97,30 @@ namespace FACTOVA_LogAnalysis.Services
                     FileName = "notepad.exe",
                     UseShellExecute = true
                 });
-                _workLogService.AddLog("¸Ş¸ğÀå ¿­±â", WorkLogType.Success);
+                _workLogService.AddLog("ë©”ëª¨ì¥ ì—´ê¸°", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ¸Ş¸ğÀå ¿­±â ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ë©”ëª¨ì¥ ì—´ê¸° ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ¿öÅ©·Î±× ÀúÀå
+        /// ì›Œí¬ë¡œê·¸ ì €ì¥ (ê¸°ëŠ¥ ì œê±°ë¨ - WorkLog UI ì—†ìŒ)
         /// </summary>
         public void SaveWorkLog(WpfRichTextBox workLogTextBox)
         {
-            try
-            {
-                var dialog = new WpfSaveFileDialog
-                {
-                    Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",
-                    DefaultExt = "txt",
-                    FileName = $"WorkLog_{DateTime.Now:yyyyMMdd_HHmmss}.txt"
-                };
-
-                if (dialog.ShowDialog() == true)
-                {
-                    _workLogService.SaveLog(workLogTextBox, dialog.FileName);
-                    _workLogService.AddLog($"¿öÅ©·Î±× ÀúÀå: {dialog.FileName}", WorkLogType.Success);
-                }
-            }
-            catch (Exception ex)
-            {
-                _workLogService.AddLog($"? ¿öÅ©·Î±× ÀúÀå ¿À·ù: {ex.Message}", WorkLogType.Error);
-            }
+            // WorkLog UIê°€ ì œê±°ë˜ì–´ ë” ì´ìƒ ì‚¬ìš©ë˜ì§€ ì•ŠìŒ
+            _workLogService.AddLog("ì›Œí¬ë¡œê·¸ ì €ì¥ ê¸°ëŠ¥ì€ ì œê±°ë˜ì—ˆìŠµë‹ˆë‹¤. Debug ì¶œë ¥ì„ í™•ì¸í•˜ì„¸ìš”.", WorkLogType.Warning);
         }
 
         /// <summary>
-        /// ¿öÅ©·Î±× ÃÊ±âÈ­
+        /// ì›Œí¬ë¡œê·¸ ì´ˆê¸°í™” (ê¸°ëŠ¥ ì œê±°ë¨ - WorkLog UI ì—†ìŒ)
         /// </summary>
         public void ClearWorkLog(WpfRichTextBox workLogTextBox, WpfTextBox workLogLineNumberTextBox, TextBlock statusText)
         {
-            try
-            {
-                _workLogService.ClearLog(workLogTextBox, workLogLineNumberTextBox, statusText);
-                _workLogService.AddLog("¿öÅ©·Î±× ÃÊ±âÈ­", WorkLogType.Info);
-            }
-            catch (Exception ex)
-            {
-                _workLogService.AddLog($"? ¿öÅ©·Î±× ÃÊ±âÈ­ ¿À·ù: {ex.Message}", WorkLogType.Error);
-            }
+            // WorkLog UIê°€ ì œê±°ë˜ì–´ ë” ì´ìƒ ì‚¬ìš©ë˜ì§€ ì•ŠìŒ
+            _workLogService.AddLog("ì›Œí¬ë¡œê·¸ ì´ˆê¸°í™” ê¸°ëŠ¥ì€ ì œê±°ë˜ì—ˆìŠµë‹ˆë‹¤. Debug ì¶œë ¥ì„ í™•ì¸í•˜ì„¸ìš”.", WorkLogType.Warning);
         }
 
         #endregion
@@ -152,7 +128,7 @@ namespace FACTOVA_LogAnalysis.Services
         #region Public Methods - TextBox Events
 
         /// <summary>
-        /// ÅØ½ºÆ®¹Ú½º Å° ´Ù¿î ÀÌº¥Æ® Ã³¸®
+        /// í…ìŠ¤íŠ¸ë°•ìŠ¤ í‚¤ ë‹¤ìš´ ì´ë²¤íŠ¸ ì²˜ë¦¬
         /// </summary>
         public void HandleTextBoxKeyDown(object sender, WpfKeyEventArgs e, Window parentWindow)
         {
@@ -162,27 +138,27 @@ namespace FACTOVA_LogAnalysis.Services
                 {
                     _activeTextBox = textBox;
                     
-                    // Ctrl+F: °Ë»ö ´ÙÀÌ¾ó·Î±× ¿­±â
+                    // Ctrl+F: ê²€ìƒ‰ ë‹¤ì´ì–¼ë¡œê·¸ ì—´ê¸°
                     if (e.Key == Key.F && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
                     {
                         _searchFilterManager.OpenFindDialog(parentWindow, textBox, textBox.SelectedText);
                         e.Handled = true;
-                        _workLogService.AddLog("°Ë»ö ´ÙÀÌ¾ó·Î±× ¿­±â (Ctrl+F)", WorkLogType.Info);
+                        _workLogService.AddLog("ê²€ìƒ‰ ë‹¤ì´ì–¼ë¡œê·¸ ì—´ê¸° (Ctrl+F)", WorkLogType.Info);
                     }
-                    // Ctrl+A: ÀüÃ¼ ¼±ÅÃ
+                    // Ctrl+A: ì „ì²´ ì„ íƒ
                     else if (e.Key == Key.A && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
                     {
                         textBox.SelectAll();
                         e.Handled = true;
-                        _workLogService.AddLog("ÀüÃ¼ ÅØ½ºÆ® ¼±ÅÃ (Ctrl+A)", WorkLogType.Info);
+                        _workLogService.AddLog("ì „ì²´ í…ìŠ¤íŠ¸ ì„ íƒ (Ctrl+A)", WorkLogType.Info);
                     }
-                    // Ctrl+C: º¹»ç
+                    // Ctrl+C: ë³µì‚¬
                     else if (e.Key == Key.C && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
                     {
                         if (!string.IsNullOrEmpty(textBox.SelectedText))
                         {
                             WpfClipboard.SetText(textBox.SelectedText);
-                            _workLogService.AddLog($"ÅØ½ºÆ® º¹»ç: {textBox.SelectedText.Length}ÀÚ", WorkLogType.Info);
+                            _workLogService.AddLog($"í…ìŠ¤íŠ¸ ë³µì‚¬: {textBox.SelectedText.Length}ì", WorkLogType.Info);
                         }
                         e.Handled = true;
                     }
@@ -190,12 +166,12 @@ namespace FACTOVA_LogAnalysis.Services
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ÅØ½ºÆ®¹Ú½º Å° ÀÌº¥Æ® ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? í…ìŠ¤íŠ¸ë°•ìŠ¤ í‚¤ ì´ë²¤íŠ¸ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ÅØ½ºÆ®¹Ú½º Æ÷Ä¿½º ÀÌº¥Æ® Ã³¸®
+        /// í…ìŠ¤íŠ¸ë°•ìŠ¤ í¬ì»¤ìŠ¤ ì´ë²¤íŠ¸ ì²˜ë¦¬
         /// </summary>
         public void HandleTextBoxGotFocus(object sender)
         {
@@ -204,17 +180,17 @@ namespace FACTOVA_LogAnalysis.Services
                 if (sender is WpfTextBox textBox)
                 {
                     _activeTextBox = textBox;
-                    _workLogService.AddLog($"ÅØ½ºÆ®¹Ú½º Æ÷Ä¿½º: {textBox.Name ?? "Unknown"}", WorkLogType.Info);
+                    _workLogService.AddLog($"í…ìŠ¤íŠ¸ë°•ìŠ¤ í¬ì»¤ìŠ¤: {textBox.Name ?? "Unknown"}", WorkLogType.Info);
                 }
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ÅØ½ºÆ®¹Ú½º Æ÷Ä¿½º ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? í…ìŠ¤íŠ¸ë°•ìŠ¤ í¬ì»¤ìŠ¤ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ÅØ½ºÆ®¹Ú½º ½ºÅ©·Ñ µ¿±âÈ­ Ã³¸®
+        /// í…ìŠ¤íŠ¸ë°•ìŠ¤ ìŠ¤í¬ë¡¤ ë™ê¸°í™” ì²˜ë¦¬
         /// </summary>
         public void HandleTextBoxScrollChanged(object sender, ScrollChangedEventArgs e, Func<WpfTextBox, WpfTextBox?> getCorrespondingLineNumberTextBox)
         {
@@ -225,19 +201,19 @@ namespace FACTOVA_LogAnalysis.Services
                     var lineNumberTextBox = getCorrespondingLineNumberTextBox(textBox);
                     if (lineNumberTextBox != null)
                     {
-                        // ½ºÅ©·Ñ µ¿±âÈ­ ·ÎÁ÷
+                        // ìŠ¤í¬ë¡¤ ë™ê¸°í™” ë¡œì§
                         SynchronizeScrollViews(textBox, lineNumberTextBox, e.VerticalOffset);
                     }
                 }
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ½ºÅ©·Ñ µ¿±âÈ­ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ìŠ¤í¬ë¡¤ ë™ê¸°í™” ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ÅØ½ºÆ®¹Ú½º ÅØ½ºÆ® º¯°æ ÀÌº¥Æ® Ã³¸®
+        /// í…ìŠ¤íŠ¸ë°•ìŠ¤ í…ìŠ¤íŠ¸ ë³€ê²½ ì´ë²¤íŠ¸ ì²˜ë¦¬
         /// </summary>
         public void HandleTextBoxTextChanged(object sender, Action<string> onTextChanged)
         {
@@ -248,16 +224,16 @@ namespace FACTOVA_LogAnalysis.Services
                     string text = textBox.Text ?? "";
                     onTextChanged?.Invoke(text);
                     
-                    // ÅØ½ºÆ® ±æÀÌ¿¡ µû¸¥ ·Î±×
+                    // í…ìŠ¤íŠ¸ ê¸¸ì´ì— ë”°ë¥¸ ë¡œê·¸
                     if (text.Length > 10000)
                     {
-                        _workLogService.AddLog($"´ë¿ë·® ÅØ½ºÆ® °¨Áö: {text.Length:N0}ÀÚ", WorkLogType.Warning);
+                        _workLogService.AddLog($"ëŒ€ìš©ëŸ‰ í…ìŠ¤íŠ¸ ê°ì§€: {text.Length:N0}ì", WorkLogType.Warning);
                     }
                 }
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ÅØ½ºÆ® º¯°æ ÀÌº¥Æ® ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? í…ìŠ¤íŠ¸ ë³€ê²½ ì´ë²¤íŠ¸ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -266,7 +242,7 @@ namespace FACTOVA_LogAnalysis.Services
         #region Public Methods - Utility
 
         /// <summary>
-        /// ÅØ½ºÆ®¿¡¼­ Æ¯Á¤ ¶óÀÎÀ¸·Î ÀÌµ¿
+        /// í…ìŠ¤íŠ¸ì—ì„œ íŠ¹ì • ë¼ì¸ìœ¼ë¡œ ì´ë™
         /// </summary>
         public void GoToLineInTextBox(WpfTextBox textBox, int lineNumber)
         {
@@ -277,7 +253,7 @@ namespace FACTOVA_LogAnalysis.Services
                 var lines = textBox.Text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                 if (lineNumber > 0 && lineNumber <= lines.Length)
                 {
-                    // ÇØ´ç ¶óÀÎÀÇ ½ÃÀÛ À§Ä¡ °è»ê
+                    // í•´ë‹¹ ë¼ì¸ì˜ ì‹œì‘ ìœ„ì¹˜ ê³„ì‚°
                     int charIndex = 0;
                     for (int i = 0; i < lineNumber - 1; i++)
                     {
@@ -287,23 +263,23 @@ namespace FACTOVA_LogAnalysis.Services
                     textBox.Focus();
                     textBox.SelectionStart = charIndex;
                     textBox.SelectionLength = lines[lineNumber - 1].Length;
-                    textBox.ScrollToLine(Math.Max(0, lineNumber - 5)); // 5ÁÙ À§¿¡¼­ º¸ÀÌ°Ô
+                    textBox.ScrollToLine(Math.Max(0, lineNumber - 5)); // 5ì¤„ ìœ„ì—ì„œ ë³´ì´ê²Œ
                     
-                    _workLogService.AddLog($"¶óÀÎ {lineNumber}·Î ÀÌµ¿ ¿Ï·á", WorkLogType.Success);
+                    _workLogService.AddLog($"ë¼ì¸ {lineNumber}ë¡œ ì´ë™ ì™„ë£Œ", WorkLogType.Success);
                 }
                 else
                 {
-                    _workLogService.AddLog($"Àß¸øµÈ ¶óÀÎ ¹øÈ£: {lineNumber} (ÀüÃ¼: {lines.Length}ÁÙ)", WorkLogType.Warning);
+                    _workLogService.AddLog($"ì˜ëª»ëœ ë¼ì¸ ë²ˆí˜¸: {lineNumber} (ì „ì²´: {lines.Length}ì¤„)", WorkLogType.Warning);
                 }
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ¶óÀÎ ÀÌµ¿ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ë¼ì¸ ì´ë™ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ÅØ½ºÆ®¹Ú½º¿¡¼­ °Ë»ö
+        /// í…ìŠ¤íŠ¸ë°•ìŠ¤ì—ì„œ ê²€ìƒ‰
         /// </summary>
         public void FindInTextBox(WpfTextBox textBox, string searchText)
         {
@@ -320,25 +296,25 @@ namespace FACTOVA_LogAnalysis.Services
                     textBox.SelectionStart = index;
                     textBox.SelectionLength = searchText.Length;
                     
-                    // ÇØ´ç À§Ä¡·Î ½ºÅ©·Ñ
+                    // í•´ë‹¹ ìœ„ì¹˜ë¡œ ìŠ¤í¬ë¡¤
                     int lineNumber = content.Substring(0, index).Split('\n').Length;
                     textBox.ScrollToLine(Math.Max(0, lineNumber - 5));
                     
-                    _workLogService.AddLog($"°Ë»ö ¿Ï·á: '{searchText}' ({index}¹øÂ° ¹®ÀÚ)", WorkLogType.Success);
+                    _workLogService.AddLog($"ê²€ìƒ‰ ì™„ë£Œ: '{searchText}' ({index}ë²ˆì§¸ ë¬¸ì)", WorkLogType.Success);
                 }
                 else
                 {
-                    _workLogService.AddLog($"? °Ë»ö ½ÇÆĞ: '{searchText}'¸¦ Ã£À» ¼ö ¾øÀ½", WorkLogType.Warning);
+                    _workLogService.AddLog($"? ê²€ìƒ‰ ì‹¤íŒ¨: '{searchText}'ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŒ", WorkLogType.Warning);
                 }
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ÅØ½ºÆ® °Ë»ö ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? í…ìŠ¤íŠ¸ ê²€ìƒ‰ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// Å¬¸³º¸µå¿¡ ÅØ½ºÆ® º¹»ç
+        /// í´ë¦½ë³´ë“œì— í…ìŠ¤íŠ¸ ë³µì‚¬
         /// </summary>
         public void CopyToClipboard(string text, string description = "")
         {
@@ -348,27 +324,27 @@ namespace FACTOVA_LogAnalysis.Services
                 {
                     WpfClipboard.SetText(text);
                     string desc = string.IsNullOrEmpty(description) ? "" : $" ({description})";
-                    _workLogService.AddLog($"Å¬¸³º¸µå º¹»ç{desc}: {text.Length:N0}ÀÚ", WorkLogType.Success);
+                    _workLogService.AddLog($"í´ë¦½ë³´ë“œ ë³µì‚¬{desc}: {text.Length:N0}ì", WorkLogType.Success);
                 }
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? Å¬¸³º¸µå º¹»ç ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? í´ë¦½ë³´ë“œ ë³µì‚¬ ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// »óÅÂ Á¤º¸ ¹İÈ¯
+        /// ìƒíƒœ ì •ë³´ ë°˜í™˜
         /// </summary>
         public string GetStatusInfo()
         {
             try
             {
-                return $"È°¼º ÅØ½ºÆ®¹Ú½º: {_activeTextBox?.Name ?? "¾øÀ½"}, ·Î±× Æú´õ: {_logFolderPath}";
+                return $"í™œì„± í…ìŠ¤íŠ¸ë°•ìŠ¤: {_activeTextBox?.Name ?? "ì—†ìŒ"}, ë¡œê·¸ í´ë”: {_logFolderPath}";
             }
             catch
             {
-                return "»óÅÂ Á¤º¸ È®ÀÎ Áß...";
+                return "ìƒíƒœ ì •ë³´ í™•ì¸ ì¤‘...";
             }
         }
 
@@ -377,7 +353,7 @@ namespace FACTOVA_LogAnalysis.Services
         #region Private Methods
 
         /// <summary>
-        /// ½ºÅ©·Ñºä µ¿±âÈ­
+        /// ìŠ¤í¬ë¡¤ë·° ë™ê¸°í™”
         /// </summary>
         private void SynchronizeScrollViews(WpfTextBox sourceTextBox, WpfTextBox targetTextBox, double verticalOffset)
         {
@@ -406,7 +382,7 @@ namespace FACTOVA_LogAnalysis.Services
                     // If line-based methods fail for any reason, fall back to offset-based sync below
                 }
 
-                // ScrollViewer¸¦ Ã£¾Æ ¼öÁ÷ ¿ÀÇÁ¼ÂÀ¸·Î µ¿±âÈ­ (±âÁ¸ ¹æ½Ä)
+                // ScrollViewerë¥¼ ì°¾ì•„ ìˆ˜ì§ ì˜¤í”„ì…‹ìœ¼ë¡œ ë™ê¸°í™” (ê¸°ì¡´ ë°©ì‹)
                 var targetScrollViewer = FindScrollViewer(targetTextBox);
                 if (targetScrollViewer != null)
                 {
@@ -415,12 +391,12 @@ namespace FACTOVA_LogAnalysis.Services
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ½ºÅ©·Ñ µ¿±âÈ­ ¿À·ù: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"? ìŠ¤í¬ë¡¤ ë™ê¸°í™” ì˜¤ë¥˜: {ex.Message}", WorkLogType.Error);
             }
         }
 
         /// <summary>
-        /// ScrollViewer Ã£±â
+        /// ScrollViewer ì°¾ê¸°
         /// </summary>
         private ScrollViewer? FindScrollViewer(DependencyObject element)
         {

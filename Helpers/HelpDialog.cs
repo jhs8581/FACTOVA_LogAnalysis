@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -7,20 +7,20 @@ using WpfMedia = System.Windows.Media;
 namespace FACTOVA_LogAnalysis.Helpers
 {
     /// <summary>
-    /// FACTOVA Log Analysis ÇÁ·Î±×·¥ µµ¿ò¸» ´ÙÀÌ¾ó·Î±×
+    /// FACTOVA Log Analysis í”„ë¡œê·¸ëž¨ ë„ì›€ë§ ë‹¤ì´ì–¼ë¡œê·¸
     /// </summary>
     public class HelpDialog : Window
     {
         public HelpDialog()
         {
-            Title = "FACTOVA Log Analysis - »ç¿ë µµ¿ò¸»";
+            Title = "FACTOVA Log Analysis - ì‚¬ìš© ë„ì›€ë§";
             Width = 800;
             Height = 600;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            ResizeMode = ResizeMode.NoResize; // Å©±â Á¶Àý ºñÈ°¼ºÈ­
-            WindowStyle = WindowStyle.SingleBorderWindow; // ±âº» À©µµ¿ì ½ºÅ¸ÀÏ À¯ÁöÇÏµÇ
+            ResizeMode = ResizeMode.NoResize; // í¬ê¸° ì¡°ì ˆ ë¹„í™œì„±í™”
+            WindowStyle = WindowStyle.SingleBorderWindow; // ê¸°ë³¸ ìœˆë„ìš° ìŠ¤íƒ€ì¼ ìœ ì§€í•˜ë˜
             
-            // ½ºÅ©·Ñ °¡´ÉÇÑ RichTextBox »ý¼º
+            // ìŠ¤í¬ë¡¤ ê°€ëŠ¥í•œ RichTextBox ìƒì„±
             var scrollViewer = new ScrollViewer
             {
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
@@ -31,11 +31,11 @@ namespace FACTOVA_LogAnalysis.Helpers
             {
                 IsReadOnly = true,
                 FontSize = 14,
-                FontFamily = new WpfMedia.FontFamily("¸¼Àº °íµñ"),
+                FontFamily = new WpfMedia.FontFamily("ë§‘ì€ ê³ ë”•"),
                 Background = WpfMedia.Brushes.WhiteSmoke
             };
             
-            // µµ¿ò¸» ³»¿ë Ãß°¡
+            // ë„ì›€ë§ ë‚´ìš© ì¶”ê°€
             AddHelpContent(richTextBox);
             
             scrollViewer.Content = richTextBox;
@@ -46,8 +46,8 @@ namespace FACTOVA_LogAnalysis.Helpers
         {
             var doc = new FlowDocument();
             
-            // Á¦¸ñ
-            var titlePara = new Paragraph(new Run("\U0001F4DA FACTOVA Log Analysis »ç¿ë °¡ÀÌµå"))
+            // ì œëª©
+            var titlePara = new Paragraph(new Run("\U0001F4DA FACTOVA Log Analysis ì‚¬ìš© ê°€ì´ë“œ"))
             {
                 FontSize = 24,
                 FontWeight = FontWeights.Bold,
@@ -58,82 +58,78 @@ namespace FACTOVA_LogAnalysis.Helpers
             
             doc.Blocks.Add(new Paragraph(new Run("===========================================================================")));
             
-            // 1. ÇÁ·Î±×·¥ °³¿ä
-            AddSection(doc, "\U0001F4CC ÇÁ·Î±×·¥ °³¿ä", 
-                "FACTOVA Log Analysis´Â SFC (Shop Floor Control) ½Ã½ºÅÛÀÇ ·Î±×¸¦ ºÐ¼®ÇÏ´Â µµ±¸ÀÔ´Ï´Ù.\n" +
-                "DATA, EVENT, DEBUG, EXCEPTION 4°¡Áö ·Î±× Å¸ÀÔÀ» Áö¿øÇÏ¸ç,\n" +
-                "³¯Â¥/½Ã°£ ¹üÀ§ ÇÊÅÍ¸µ, °Ë»ö¾î ÇÊÅÍ¸µ, ½ÇÇà½Ã°£ ºÐ¼® µîÀÇ ±â´ÉÀ» Á¦°øÇÕ´Ï´Ù.");
+            // 1. í”„ë¡œê·¸ëž¨ ê°œìš”
+            AddSection(doc, "\U0001F4CC í”„ë¡œê·¸ëž¨ ê°œìš”", 
+                "FACTOVA Log AnalysisëŠ” SFC (Shop Floor Control) ì‹œìŠ¤í…œì˜ ë¡œê·¸ë¥¼ ë¶„ì„í•˜ëŠ” ë„êµ¬ìž…ë‹ˆë‹¤.\n" +
+                "DATA, EVENT, DEBUG, EXCEPTION 4ê°€ì§€ ë¡œê·¸ íƒ€ìž…ì„ ì§€ì›í•˜ë©°,\n" +
+                "ë‚ ì§œ/ì‹œê°„ ë²”ìœ„ í•„í„°ë§, ê²€ìƒ‰ì–´ í•„í„°ë§, ì‹¤í–‰ì‹œê°„ ë¶„ì„ ë“±ì˜ ê¸°ëŠ¥ì„ ì œê³µí•©ë‹ˆë‹¤.");
             
-            // 2. Æú´õ ¼³Á¤
-            AddSection(doc, "\U0001F4C1 Æú´õ ¼³Á¤", 
-                "- ·Î±× Æú´õ °æ·Î: SFC ·Î±× ÆÄÀÏÀÌ ÀÖ´Â Æú´õ¸¦ ÁöÁ¤ÇÕ´Ï´Ù\n" +
-                "- Æú´õ ¿­±â: ÇöÀç ¼³Á¤µÈ ·Î±× Æú´õ¸¦ Å½»ö±â·Î ¿±´Ï´Ù\n" +
-                "- Æú´õ º¯°æ: ´Ù¸¥ ·Î±× Æú´õ¸¦ ¼±ÅÃÇÕ´Ï´Ù\n" +
-                "- Æú´õ °æ·Î ¸®¼Â: ±âº» ·Î±× Æú´õ·Î µÇµ¹¸³´Ï´Ù\n" +
-                "- Notepad ¿­±â: ¸Þ¸ðÀåÀ¸·Î ·Î±× Æú´õÀÇ ÆÄÀÏÀ» ¿±´Ï´Ù\n" +
-                "- VS Code ¿­±â: VS Code·Î ·Î±× Æú´õ¸¦ ¿±´Ï´Ù");
+            // 2. í´ë” ì„¤ì •
+            AddSection(doc, "\U0001F4C1 í´ë” ì„¤ì •", 
+                "- ë¡œê·¸ í´ë” ê²½ë¡œ: SFC ë¡œê·¸ íŒŒì¼ì´ ìžˆëŠ” í´ë”ë¥¼ ì§€ì •í•©ë‹ˆë‹¤\n" +
+                "- í´ë” ì—´ê¸°: í˜„ìž¬ ì„¤ì •ëœ ë¡œê·¸ í´ë”ë¥¼ íƒìƒ‰ê¸°ë¡œ ì—½ë‹ˆë‹¤\n" +
+                "- í´ë” ë³€ê²½: ë‹¤ë¥¸ ë¡œê·¸ í´ë”ë¥¼ ì„ íƒí•©ë‹ˆë‹¤\n" +
+                "- í´ë” ê²½ë¡œ ë¦¬ì…‹: ê¸°ë³¸ ë¡œê·¸ í´ë”ë¡œ ë˜ëŒë¦½ë‹ˆë‹¤\n" +
+                "- Notepad ì—´ê¸°: ë©”ëª¨ìž¥ìœ¼ë¡œ ë¡œê·¸ í´ë”ì˜ íŒŒì¼ì„ ì—½ë‹ˆë‹¤\n" +
+                "- VS Code ì—´ê¸°: VS Codeë¡œ ë¡œê·¸ í´ë”ë¥¼ ì—½ë‹ˆë‹¤");
             
-            // 3. Á¶È¸ Á¶°Ç
-            AddSection(doc, "\U0001F50D Á¶È¸ Á¶°Ç", 
-                "- ³¯Â¥ ¼±ÅÃ: Á¶È¸ÇÒ ·Î±× ³¯Â¥¸¦ ¼±ÅÃÇÕ´Ï´Ù\n" +
-                "- ½Ã°£ ¹üÀ§: Á¶È¸ÇÒ ½Ã°£ ¹üÀ§¸¦ ¼³Á¤ÇÕ´Ï´Ù (¿¹: 09:00 ~ 18:00)\n" +
-                "  * ½Ã°£ ÇÁ¸®¼Â: Á¾ÀÏ, ¿ÀÀü, ¿ÀÈÄ µî ¹Ì¸® Á¤ÀÇµÈ ½Ã°£ ¹üÀ§\n" +
-                "  * Á÷Á¢ ÀÔ·Â: HH:MM Çü½ÄÀ¸·Î ½ÃÀÛ/Á¾·á ½Ã°£ ÀÔ·Â\n" +
-                "- °Ë»ö¾î: Æ¯Á¤ ¹®ÀÚ¿­ÀÌ Æ÷ÇÔµÈ ·Î±×¸¸ ÇÊÅÍ¸µ\n" +
-                "- °Ë»ö ¹üÀ§: ·Î±× ½ÃÀÛ/³¡/ÀüÃ¼ Áß °Ë»ö ¹üÀ§ ¼±ÅÃ\n" +
-                "- ·Îµå ¿É¼Ç:\n" +
-                "  * Text: ÅØ½ºÆ® Çü½ÄÀ¸·Î ·Î±× ·Îµå\n" +
-                "  * DataGrid: Ç¥ Çü½ÄÀ¸·Î ·Î±× ·Îµå");
+            // 3. ì¡°íšŒ ì¡°ê±´
+            AddSection(doc, "\U0001F50D ì¡°íšŒ ì¡°ê±´", 
+                "- ë‚ ì§œ ì„ íƒ: ì¡°íšŒí•  ë¡œê·¸ ë‚ ì§œë¥¼ ì„ íƒí•©ë‹ˆë‹¤\n" +
+                "- ì‹œê°„ ë²”ìœ„: ì¡°íšŒí•  ì‹œê°„ ë²”ìœ„ë¥¼ ì„¤ì •í•©ë‹ˆë‹¤ (ì˜ˆ: 09:00 ~ 18:00)\n" +
+                "  * ì‹œê°„ í”„ë¦¬ì…‹: ì¢…ì¼, ì˜¤ì „, ì˜¤í›„ ë“± ë¯¸ë¦¬ ì •ì˜ëœ ì‹œê°„ ë²”ìœ„\n" +
+                "  * ì§ì ‘ ìž…ë ¥: HH:MM í˜•ì‹ìœ¼ë¡œ ì‹œìž‘/ì¢…ë£Œ ì‹œê°„ ìž…ë ¥\n" +
+                "- ê²€ìƒ‰ì–´: íŠ¹ì • ë¬¸ìžì—´ì´ í¬í•¨ëœ ë¡œê·¸ë§Œ í•„í„°ë§\n" +
+                "- ê²€ìƒ‰ ë²”ìœ„: ë¡œê·¸ ì‹œìž‘/ë/ì „ì²´ ì¤‘ ê²€ìƒ‰ ë²”ìœ„ ì„ íƒ\n" +
+                "- ë¡œë“œ ì˜µì…˜:\n" +
+                "  * Text: í…ìŠ¤íŠ¸ í˜•ì‹ìœ¼ë¡œ ë¡œê·¸ ë¡œë“œ\n" +
+                "  * DataGrid: í‘œ í˜•ì‹ìœ¼ë¡œ ë¡œê·¸ ë¡œë“œ");
             
-            // 4. SFC Log (Text) ÅÇ
-            AddSection(doc, "\U0001F4C4 SFC Log (Text) ÅÇ", 
-                "ÅØ½ºÆ® Çü½ÄÀ¸·Î ·Î±×¸¦ Ç¥½ÃÇÕ´Ï´Ù.\n\n" +
-                "- 4ºÐÇÒ/ÅÇ ÀüÈ¯: DATA, EVENT, DEBUG, EXCEPTIONÀ» 4ºÐÇÒ ¶Ç´Â ÅÇÀ¸·Î Ç¥½Ã\n" +
-                "- ÆùÆ® Å©±â Á¶Àý: ÅØ½ºÆ® Å©±â¸¦ Áõ°¡/°¨¼Ò½ÃÅµ´Ï´Ù\n" +
-                "- Ã£±â (Ctrl+F): ÅØ½ºÆ® ³»¿¡¼­ °Ë»ö¾î¸¦ Ã£½À´Ï´Ù\n" +
-                "- ¼±ÅÃ º¹»ç (Ctrl+C): ¼±ÅÃÇÑ ÅØ½ºÆ®¸¦ º¹»çÇÕ´Ï´Ù");
+            // 4. SFC Log (Text) íƒ­
+            AddSection(doc, "\U0001F4C4 SFC Log (Text) íƒ­", 
+                "í…ìŠ¤íŠ¸ í˜•ì‹ìœ¼ë¡œ ë¡œê·¸ë¥¼ í‘œì‹œí•©ë‹ˆë‹¤.\n\n" +
+                "- 4ë¶„í• /íƒ­ ì „í™˜: DATA, EVENT, DEBUG, EXCEPTIONì„ 4ë¶„í•  ë˜ëŠ” íƒ­ìœ¼ë¡œ í‘œì‹œ\n" +
+                "- í°íŠ¸ í¬ê¸° ì¡°ì ˆ: í…ìŠ¤íŠ¸ í¬ê¸°ë¥¼ ì¦ê°€/ê°ì†Œì‹œí‚µë‹ˆë‹¤\n" +
+                "- ì°¾ê¸° (Ctrl+F): í…ìŠ¤íŠ¸ ë‚´ì—ì„œ ê²€ìƒ‰ì–´ë¥¼ ì°¾ìŠµë‹ˆë‹¤\n" +
+                "- ì„ íƒ ë³µì‚¬ (Ctrl+C): ì„ íƒí•œ í…ìŠ¤íŠ¸ë¥¼ ë³µì‚¬í•©ë‹ˆë‹¤");
             
-            // 5. SFC Log (DataGrid) ÅÇ
-            AddSection(doc, "\U0001F4CA SFC Log (DataGrid) ÅÇ", 
-                "Ç¥ Çü½ÄÀ¸·Î ·Î±×¸¦ Ç¥½ÃÇÕ´Ï´Ù.\n\n" +
-                "- 4ºÐÇÒ/ÅÇ ÀüÈ¯: DATA, EVENT, DEBUG, EXCEPTIONÀ» 4ºÐÇÒ ¶Ç´Â ÅÇÀ¸·Î Ç¥½Ã\n" +
-                "- DataGrid ÆùÆ® Á¶Àý: Ç¥ÀÇ ±ÛÀÚ Å©±â Á¶Á¤\n" +
-                "- µ¿ÀÏ ½Ã°£ ÀÌµ¿: ¼±ÅÃÇÑ Çà°ú °°Àº ½Ã°£´ëÀÇ ´Ù¸¥ ·Î±×·Î ÀÌµ¿\n" +
-                "- ÄÜÅÙÃ÷ ¿­±â/´Ý±â: Content ¿­À» ÆîÄ¡°Å³ª Á¢½À´Ï´Ù\n" +
-                "- ÇÊÅÍ:\n" +
-                "  * Business ÇÊÅÍ: ºñÁî´Ï½º¸íÀ¸·Î ÇÊÅÍ¸µ\n" +
-                "  * MsgId ÇÊÅÍ: ¸Þ½ÃÁö ID·Î ÇÊÅÍ¸µ\n" +
-                "- ³»º¸³»±â: ÇöÀç DataGrid¸¦ Excel(xlsx) ÆÄÀÏ·Î ÀúÀå");
+            // 5. SFC Log (DataGrid) íƒ­
+            AddSection(doc, "\U0001F4CA SFC Log (DataGrid) íƒ­", 
+                "í‘œ í˜•ì‹ìœ¼ë¡œ ë¡œê·¸ë¥¼ í‘œì‹œí•©ë‹ˆë‹¤.\n\n" +
+                "- 4ë¶„í• /íƒ­ ì „í™˜: DATA, EVENT, DEBUG, EXCEPTIONì„ 4ë¶„í•  ë˜ëŠ” íƒ­ìœ¼ë¡œ í‘œì‹œ\n" +
+                "- DataGrid í°íŠ¸ ì¡°ì ˆ: í‘œì˜ ê¸€ìž í¬ê¸° ì¡°ì •\n" +
+                "- ë™ì¼ ì‹œê°„ ì´ë™: ì„ íƒí•œ í–‰ê³¼ ê°™ì€ ì‹œê°„ëŒ€ì˜ ë‹¤ë¥¸ ë¡œê·¸ë¡œ ì´ë™\n" +
+                "- ì½˜í…ì¸  ì—´ê¸°/ë‹«ê¸°: Content ì—´ì„ íŽ¼ì¹˜ê±°ë‚˜ ì ‘ìŠµë‹ˆë‹¤\n" +
+                "- í•„í„°:\n" +
+                "  * Business í•„í„°: ë¹„ì¦ˆë‹ˆìŠ¤ëª…ìœ¼ë¡œ í•„í„°ë§\n" +
+                "  * MsgId í•„í„°: ë©”ì‹œì§€ IDë¡œ í•„í„°ë§\n" +
+                "- ë‚´ë³´ë‚´ê¸°: í˜„ìž¬ DataGridë¥¼ Excel(xlsx) íŒŒì¼ë¡œ ì €ìž¥");
             
-            // 6. exec.Time Analysis ÅÇ
-            AddSection(doc, "\U000023F1 exec.Time Analysis ÅÇ", 
-                "½ÇÇà ½Ã°£ ºÐ¼® ±â´ÉÀÔ´Ï´Ù.\n\n" +
-                "- ÀÓ°è°ª ¼³Á¤: Æ¯Á¤ ½Ã°£(ÃÊ) ÀÌ»ó °É¸° ÀÛ¾÷¸¸ Ç¥½Ã\n" +
-                "- ÇÊÅÍ Àû¿ë: ¼³Á¤ÇÑ ÀÓ°è°ªÀ¸·Î ÇÊÅÍ¸µ\n" +
-                "- ÇÊÅÍ ÃÊ±âÈ­: ÇÊÅÍ¸¦ Á¦°ÅÇÏ°í ÀüÃ¼ µ¥ÀÌÅÍ Ç¥½Ã");
+            // 6. exec.Time Analysis íƒ­
+            AddSection(doc, "\U000023F1 exec.Time Analysis íƒ­", 
+                "ì‹¤í–‰ ì‹œê°„ ë¶„ì„ ê¸°ëŠ¥ìž…ë‹ˆë‹¤.\n\n" +
+                "- ìž„ê³„ê°’ ì„¤ì •: íŠ¹ì • ì‹œê°„(ì´ˆ) ì´ìƒ ê±¸ë¦° ìž‘ì—…ë§Œ í‘œì‹œ\n" +
+                "- í•„í„° ì ìš©: ì„¤ì •í•œ ìž„ê³„ê°’ìœ¼ë¡œ í•„í„°ë§\n" +
+                "- í•„í„° ì´ˆê¸°í™”: í•„í„°ë¥¼ ì œê±°í•˜ê³  ì „ì²´ ë°ì´í„° í‘œì‹œ");
             
-            // 7. WorkLog ÅÇ
-            AddSection(doc, "\U0001F4DD WorkLog ÅÇ", 
-                "ÇÁ·Î±×·¥ÀÇ ÀÛ¾÷ ·Î±×¸¦ Ç¥½ÃÇÕ´Ï´Ù.\n\n" +
-                "- ÀÚµ¿ ½ºÅ©·Ñ: »õ ·Î±×°¡ Ãß°¡µÉ ¶§ ÀÚµ¿À¸·Î ½ºÅ©·Ñ\n" +
-                "- ·Î±× ÃÊ±âÈ­: WorkLog ³»¿ëÀ» ¸ðµÎ »èÁ¦\n" +
-                "- ·Î±× ÀúÀå: WorkLog¸¦ ÅØ½ºÆ® ÆÄÀÏ·Î ÀúÀå");
+            // 7. WorkLog íƒ­ (ì œê±°ë¨)
+            // WorkLog UIëŠ” ì œê±°ë˜ì—ˆìœ¼ë©°, ë¡œê·¸ëŠ” Visual Studio Output ì°½(Debug)ì—ì„œ í™•ì¸ ê°€ëŠ¥            
+            // 8. ë‹¨ì¶•í‚¤
+            AddSection(doc, "\U00002328 ë‹¨ì¶•í‚¤", 
+                "- Ctrl + F: í…ìŠ¤íŠ¸ ì°¾ê¸°\n" +
+                "- Ctrl + C: ì„ íƒ ë³µì‚¬\n" +
+                "- F3: ë‹¤ìŒ ì°¾ê¸°\n" +
+                "- Shift + F3: ì´ì „ ì°¾ê¸°");
             
-            // 8. ´ÜÃàÅ°
-            AddSection(doc, "\U00002328 ´ÜÃàÅ°", 
-                "- Ctrl + F: ÅØ½ºÆ® Ã£±â\n" +
-                "- Ctrl + C: ¼±ÅÃ º¹»ç\n" +
-                "- F3: ´ÙÀ½ Ã£±â\n" +
-                "- Shift + F3: ÀÌÀü Ã£±â");
+            // 9. ì£¼ì˜ì‚¬í•­
+            AddSection(doc, "\U000026A0 ì£¼ì˜ì‚¬í•­", 
+                "- ë¡œê·¸ íŒŒì¼ í˜•ì‹: 'LGE GMES_{íƒ€ìž…}_{ë‚ ì§œ}.log' í˜•ì‹ì´ì–´ì•¼ í•©ë‹ˆë‹¤\n" +
+                "- ì‹œê°„ í˜•ì‹: ë¡œê·¸ ë‚´ íƒ€ìž„ìŠ¤íƒ¬í”„ëŠ” [dd-MM-yyyy HH:mm:ss] í˜•ì‹ì´ì–´ì•¼ í•©ë‹ˆë‹¤\n" +
+                "- ëŒ€ìš©ëŸ‰ íŒŒì¼: ë§¤ìš° í° ë¡œê·¸ íŒŒì¼ì€ ë¡œë”© ì‹œê°„ì´ ì˜¤ëž˜ ê±¸ë¦´ ìˆ˜ ìžˆìŠµë‹ˆë‹¤\n" +
+                "- DataGrid ëª¨ë“œ: ëŒ€ìš©ëŸ‰ íŒŒì¼ì˜ ê²½ìš° Text ëª¨ë“œë³´ë‹¤ ë©”ëª¨ë¦¬ë¥¼ ë§Žì´ ì‚¬ìš©í•©ë‹ˆë‹¤\n" +
+                "- ë””ë²„ê·¸ ë¡œê·¸: í”„ë¡œê·¸ëž¨ ìž‘ì—… ë¡œê·¸ëŠ” Visual Studioì˜ Output ì°½ì—ì„œ í™•ì¸ ê°€ëŠ¥í•©ë‹ˆë‹¤");
             
-            // 9. ÁÖÀÇ»çÇ×
-            AddSection(doc, "\U000026A0 ÁÖÀÇ»çÇ×", 
-                "- ·Î±× ÆÄÀÏ Çü½Ä: 'LGE GMES_{Å¸ÀÔ}_{³¯Â¥}.log' Çü½ÄÀÌ¾î¾ß ÇÕ´Ï´Ù\n" +
-                "- ½Ã°£ Çü½Ä: ·Î±× ³» Å¸ÀÓ½ºÅÆÇÁ´Â [dd-MM-yyyy HH:mm:ss] Çü½ÄÀÌ¾î¾ß ÇÕ´Ï´Ù\n" +
-                "- ´ë¿ë·® ÆÄÀÏ: ¸Å¿ì Å« ·Î±× ÆÄÀÏÀº ·Îµù ½Ã°£ÀÌ ¿À·¡ °É¸± ¼ö ÀÖ½À´Ï´Ù\n" +
-                "- DataGrid ¸ðµå: ´ë¿ë·® ÆÄÀÏÀÇ °æ¿ì Text ¸ðµåº¸´Ù ¸Þ¸ð¸®¸¦ ¸¹ÀÌ »ç¿ëÇÕ´Ï´Ù");
-            
-            // ÇªÅÍ
+            // í‘¸í„°
             doc.Blocks.Add(new Paragraph(new Run("\n" + "===========================================================================")));
             var footerPara = new Paragraph(new Run("\U000000A9 2025 FACTOVA Log Analysis Tool"))
             {
@@ -148,7 +144,7 @@ namespace FACTOVA_LogAnalysis.Helpers
         
         private void AddSection(FlowDocument doc, string title, string content)
         {
-            // ¼½¼Ç Á¦¸ñ
+            // ì„¹ì…˜ ì œëª©
             var titlePara = new Paragraph(new Run(title))
             {
                 FontSize = 18,
@@ -158,7 +154,7 @@ namespace FACTOVA_LogAnalysis.Helpers
             };
             doc.Blocks.Add(titlePara);
             
-            // ¼½¼Ç ³»¿ë
+            // ì„¹ì…˜ ë‚´ìš©
             var contentPara = new Paragraph(new Run(content))
             {
                 FontSize = 14,

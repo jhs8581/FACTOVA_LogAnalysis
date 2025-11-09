@@ -118,7 +118,7 @@
                                     <!-- Load Options (moved here without SubmitButton) -->
                                     <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
                                         <Label Content="Load Options:" VerticalAlignment="Center" FontWeight="SemiBold"/>
-                                        <CheckBox Name="LoadTextCheckBox" Content="📝 Text" VerticalAlignment="Center" Margin="5,0" IsChecked="True" 
+                                        <CheckBox Name="LoadTextCheckBox" Content="📝 Text" VerticalAlignment="Center" Margin="5,0" IsChecked="False" 
                                               ToolTip="Load logs in text format" 
                                               Checked="LoadTextCheckBox_CheckedChanged" 
                                               Unchecked="LoadTextCheckBox_CheckedChanged"/>
