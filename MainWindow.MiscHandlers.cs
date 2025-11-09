@@ -878,22 +878,6 @@ namespace FACTOVA_LogAnalysis
                 if (loadProgressTextBlock != null)
                 {
                     loadProgressTextBlock.Text = $"? 완료 ({elapsed:mm\\:ss\\.f})";
-                    
-                    // 3초 후 숨기기 (백그라운드에서 실행)
-                    Task.Delay(3000).ContinueWith(_ =>
-                    {
-                        Dispatcher.BeginInvoke(new Action(() =>
-                        {
-                            try
-                            {
-                                if (loadProgressTextBlock != null)
-                                {
-                                    loadProgressTextBlock.Visibility = Visibility.Collapsed;
-                                }
-                            }
-                            catch { }
-                        }));
-                    });
                 }
 
                 _workLogService.AddLog($"?? 로딩 완료 (소요 시간: {elapsed:mm\\:ss\\.f})", WorkLogType.Success);

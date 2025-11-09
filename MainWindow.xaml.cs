@@ -101,6 +101,13 @@ namespace FACTOVA_LogAnalysis
         {
             InitializeComponent();
             
+            // ⚡ 성능 테스트 실행 (개발/디버깅용)
+            // 100만 줄 테스트 (시간 오래 걸림)
+            // PerformanceTest.RunLogParsingTest();
+            
+            // 빠른 테스트 (1만 줄)
+            PerformanceTest.RunQuickTest();
+            
             // 애플리케이션 설정 로드
             _appSettings = AppSettings.Load();
 
