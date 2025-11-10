@@ -49,9 +49,11 @@ namespace FACTOVA_LogAnalysis.Models
         public string LINEPASS { get; set; } = "";
         public string ERROR_CODE { get; set; } = "";
         public string ERROR_CODE_DESC { get; set; } = "";
+        // ✅ SPS_BOX_ID 추가
+        public string SPS_BOX_ID { get; set; } = "";
         
         /// <summary>
-        /// BARCODE_NO, BARCODE_VALUE, LOT_ID, LOTID 중 첫 번째 값
+        /// BARCODE_NO, BARCODE_VALUE, BCR_ID, SPS_BOX_ID, LOT_ID, LOTID 중 첫 번째 값
         /// </summary>
         public string BARCODE_LOT { get; set; } = "";
 
@@ -168,6 +170,7 @@ namespace FACTOVA_LogAnalysis.Models
                 ExtractLinePass(content);
                 ExtractErrorCode(content);
                 ExtractErrorCodeDesc(content);
+                ExtractSpsBoxId(content); // ✅ SPS_BOX_ID 추출 추가
                 ExtractBarcodeLot(content);
             }
             catch (Exception ex)
@@ -275,81 +278,128 @@ namespace FACTOVA_LogAnalysis.Models
         }
 
         /// <summary>
-        /// BARCODE_NO, BARCODE_VALUE, BCR_ID, SPS_BOX_ID, LOT_ID, LOTID 중 첫 번째 값 추출 - 최적화 버전
+        /// SPS_BOX_ID 추출 (EVENT 로그 전용)
+        /// </summary>
+        private void ExtractSpsBoxId(string content)
+        {
+            try
+            {
+                // 1. XML 태그에서 SPS_BOX_ID 추출: <SPS_BOX_ID>VALUE</SPS_BOX_ID>
+                var xmlMatch = Regex.Match(content, @"<SPS_BOX_ID[^>]*>([^<]+)</SPS_BOX_ID>", RegexOptions.IgnoreCase);
+                if (xmlMatch.Success)
+                {
+                    SPS_BOX_ID = xmlMatch.Groups[1].Value.Trim();
+                    return;
+                }
+
+                // 2. 키-값 쌍에서 SPS_BOX_ID 추출: SPS_BOX_ID: VALUE, SPS_BOX_ID=VALUE
+                var keyValueMatch = Regex.Match(content, @"SPS_?BOX_?ID\s*[:=]\s*([A-Z0-9\-_]+)", RegexOptions.IgnoreCase);
+                if (keyValueMatch.Success)
+                {
+                    SPS_BOX_ID = keyValueMatch.Groups[1].Value.Trim();
+                    return;
+                }
+
+                // 3. 단순 SPS_BOX_ID 뒤에 오는 값: SPS_BOX_ID VALUE
+                var simpleMatch = Regex.Match(content, @"SPS_?BOX_?ID\s+([A-Z0-9\-_]+)", RegexOptions.IgnoreCase);
+                if (simpleMatch.Success)
+                {
+                    SPS_BOX_ID = simpleMatch.Groups[1].Value.Trim();
+                    return;
+                }
+
+                SPS_BOX_ID = "";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"ExtractSpsBoxId error: {ex.Message}");
+                SPS_BOX_ID = "";
+            }
+        }
+
+        /// <summary>
+        /// BARCODE_NO, BARCODE_VALUE, BCR_ID, SPS_BOX_ID, LOT_ID, LOTID 중 모든 값을 추출 (줄바꿈으로 구분)
         /// </summary>
         private void ExtractBarcodeLot(string content)
         {
             try
             {
+                var extractedValues = new List<string>();
+
                 // 1. <BARCODE_NO>VALUE</BARCODE_NO> 형식 (개행 및 공백 포함)
-                var barcodeNoMatch = BarcodeNoRegex.Match(content);
-                if (barcodeNoMatch.Success)
+                var barcodeNoMatches = BarcodeNoRegex.Matches(content);
+                foreach (Match match in barcodeNoMatches)
                 {
-                    string value = barcodeNoMatch.Groups[1].Value.Trim();
-                    if (!string.IsNullOrWhiteSpace(value))
+                    string value = match.Groups[1].Value.Trim();
+                    if (!string.IsNullOrWhiteSpace(value) && !extractedValues.Contains(value))
                     {
-                        BARCODE_LOT = value;
-                        return;
+                        extractedValues.Add(value);
                     }
                 }
 
                 // 2. <BARCODE_VALUE>VALUE</BARCODE_VALUE> 형식 (개행 및 공백 포함)
-                var barcodeValueMatch = BarcodeValueRegex.Match(content);
-                if (barcodeValueMatch.Success)
+                var barcodeValueMatches = BarcodeValueRegex.Matches(content);
+                foreach (Match match in barcodeValueMatches)
                 {
-                    string value = barcodeValueMatch.Groups[1].Value.Trim();
-                    if (!string.IsNullOrWhiteSpace(value))
+                    string value = match.Groups[1].Value.Trim();
+                    if (!string.IsNullOrWhiteSpace(value) && !extractedValues.Contains(value))
                     {
-                        BARCODE_LOT = value;
-                        return;
+                        extractedValues.Add(value);
                     }
                 }
 
                 // 3. <BCR_ID>VALUE</BCR_ID> 형식 (개행 및 공백 포함)
-                var bcrIdMatch = BcrIdRegex.Match(content);
-                if (bcrIdMatch.Success)
+                var bcrIdMatches = BcrIdRegex.Matches(content);
+                foreach (Match match in bcrIdMatches)
                 {
-                    string value = bcrIdMatch.Groups[1].Value.Trim();
-                    if (!string.IsNullOrWhiteSpace(value))
+                    string value = match.Groups[1].Value.Trim();
+                    if (!string.IsNullOrWhiteSpace(value) && !extractedValues.Contains(value))
                     {
-                        BARCODE_LOT = value;
-                        return;
+                        extractedValues.Add(value);
                     }
                 }
 
-                // 4. <SPS_BOX_ID>VALUE</SPS_BOX_ID> 형식 (개행 및 공백 포함) - 추가
-                var spsBoxIdMatch = SpsBoxIdRegex.Match(content);
-                if (spsBoxIdMatch.Success)
+                // 4. <LOT_ID>VALUE</LOT_ID> 형식 (개행 및 공백 포함)
+                var lotIdMatches = LotIdRegex.Matches(content);
+                foreach (Match match in lotIdMatches)
                 {
-                    string value = spsBoxIdMatch.Groups[1].Value.Trim();
-                    if (!string.IsNullOrWhiteSpace(value))
+                    string value = match.Groups[1].Value.Trim();
+                    if (!string.IsNullOrWhiteSpace(value) && !extractedValues.Contains(value))
                     {
-                        BARCODE_LOT = value;
-                        return;
+                        extractedValues.Add(value);
                     }
                 }
 
-                // 5. <LOT_ID>VALUE</LOT_ID> 형식 (개행 및 공백 포함)
-                var lotIdMatch = LotIdRegex.Match(content);
-                if (lotIdMatch.Success && !string.IsNullOrWhiteSpace(lotIdMatch.Groups[1].Value))
+                // 5. <LOTID>VALUE</LOTID> 형식 (개행 및 공백 포함)
+                var lotIdMatches2 = LotId2Regex.Matches(content);
+                foreach (Match match in lotIdMatches2)
                 {
-                    BARCODE_LOT = lotIdMatch.Groups[1].Value.Trim();
-                    return;
+                    string value = match.Groups[1].Value.Trim();
+                    if (!string.IsNullOrWhiteSpace(value) && !extractedValues.Contains(value))
+                    {
+                        extractedValues.Add(value);
+                    }
                 }
 
-                // 6. <LOTID>VALUE</LOTID> 형식 (개행 및 공백 포함)
-                var lotIdMatch2 = LotId2Regex.Match(content);
-                if (lotIdMatch2.Success && !string.IsNullOrWhiteSpace(lotIdMatch2.Groups[1].Value))
+                // 6. <SPS_BOX_ID>VALUE</SPS_BOX_ID> 형식 (개행 및 공백 포함)
+                var spsBoxIdMatches = SpsBoxIdRegex.Matches(content);
+                foreach (Match match in spsBoxIdMatches)
                 {
-                    BARCODE_LOT = lotIdMatch2.Groups[1].Value.Trim();
-                    return;
+                    string value = match.Groups[1].Value.Trim();
+                    if (!string.IsNullOrWhiteSpace(value) && !extractedValues.Contains(value))
+                    {
+                        extractedValues.Add(value);
+                    }
                 }
 
-                BARCODE_LOT = "";
+                // ✅ 모든 값을 줄바꿈으로 연결
+                BARCODE_LOT = extractedValues.Count > 0 
+                    ? string.Join("\n", extractedValues) 
+                    : "";
             }
             catch (Exception)
             {
-                // ✅ 예외 발생 시 빈 문자열 반환 (디버그 출력 제거)
+                // ⚠️ 예외 발생 시 빈 문자열 반환 (디버그 출력 제거)
                 BARCODE_LOT = "";
             }
         }
