@@ -25,6 +25,9 @@ public class AppSettings
     public double DataGridFontSize { get; set; } = 11.0;
     public double UnifiedLogFontSize { get; set; } = 11.0; // 통합로그 폰트 사이즈
 
+    // ✨ Content Cell Height
+    public double ContentCellMaxHeight { get; set; } = 100.0; // Content 셀 최대 높이
+
     // Persist view mode: true = 4-panel, false = tab view
     public bool IsFourPanelMode { get; set; } = true;
     // Selected tab index for DataGrid tab control (0..3)

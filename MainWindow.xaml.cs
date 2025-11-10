@@ -196,6 +196,16 @@ namespace FACTOVA_LogAnalysis
                     FontSizeTextBox.Text = _appSettings.TextFontSize.ToString();
                 if (DataGridFontSizeTextBox != null)
                     DataGridFontSizeTextBox.Text = _appSettings.DataGridFontSize.ToString();
+                
+                // ✨ Content Cell Height TextBox 초기화
+                var contentHeightTextBox = FindName("ContentCellHeightTextBox") as System.Windows.Controls.TextBox;
+                if (contentHeightTextBox != null)
+                    contentHeightTextBox.Text = _appSettings.ContentCellMaxHeight.ToString();
+                
+                // ✨ 통합 로그 Content Cell Height TextBox 초기화
+                var unifiedContentHeightTextBox = FindName("UnifiedContentCellHeightTextBox") as System.Windows.Controls.TextBox;
+                if (unifiedContentHeightTextBox != null)
+                    unifiedContentHeightTextBox.Text = _appSettings.ContentCellMaxHeight.ToString();
 
                 // Apply text font size to text boxes and work log
                 var textNames = new[] { "dataLogTextBox", "eventLogTextBox", "debugLogTextBox", "exceptionLogTextBox", "execTimeTextBox" };
@@ -224,27 +234,27 @@ namespace FACTOVA_LogAnalysis
                     ApplyFontToDataGridInstance(dg, _appSettings.DataGridFontSize);
                 }
 
-                // ? 통합 로그 DataGrid 폰트 크기 적용
+                // 💡 통합 로그 DataGrid 폰트 크기 적용
                 var unifiedGrid = FindName("unifiedLogDataGrid") as DataGrid;
                 if (unifiedGrid != null)
                 {
                     ApplyFontToDataGridInstance(unifiedGrid, _appSettings.UnifiedLogFontSize);
                     
-                    // ? TextBox도 초기화
+                    // 💡 TextBox도 초기화
                     var unifiedFontSizeTextBox = FindName("UnifiedLogFontSizeTextBox") as System.Windows.Controls.TextBox;
                     if (unifiedFontSizeTextBox != null)
                     {
                         unifiedFontSizeTextBox.Text = _appSettings.UnifiedLogFontSize.ToString();
                     }
                     
-                    _workLogService.AddLog($"? 통합 로그 폰트 크기 적용: {_appSettings.UnifiedLogFontSize}", WorkLogType.Info);
+                    _workLogService.AddLog($"💡 통합 로그 폰트 크기 적용: {_appSettings.UnifiedLogFontSize}", WorkLogType.Info);
                 }
 
-                _workLogService.AddLog("? 저장된 폰트 크기 적용 완료", WorkLogType.Success);
+                _workLogService.AddLog("💾 저장된 폰트 크기 및 Content 높이 적용 완료", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? 저장된 폰트 적용 오류: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"❌ 저장된 폰트 적용 오류: {ex.Message}", WorkLogType.Error);
             }
 
             _workLogService.AddLog("? 6단계 모듈화 완료 - 모든 기능 초기화 완료", WorkLogType.Success);
@@ -1022,7 +1032,7 @@ namespace FACTOVA_LogAnalysis
                 var timeValue = timeProp.GetValue(selected)?.ToString();
                 if (string.IsNullOrEmpty(timeValue))
                 {
-                    _workLogService.AddLog("선택된 행의 Time 값이 비어있습니다.", WorkLogType.Warning);
+                    _workLogService.AddLog("선택된 행의 Time값이 비어있습니다.", WorkLogType.Warning);
                     return;
                 }
 
@@ -1635,7 +1645,7 @@ namespace FACTOVA_LogAnalysis
                 if (System.Windows.Clipboard.ContainsText())
                 {
                     tb.Text = System.Windows.Clipboard.GetText();
-                    _workLogService.AddLog("? 클립보드 내용을 선택된 슬롯에 붙여넣음", WorkLogType.Success);
+                    _workLogService.AddLog("📋 클립보드 내용을 선택된 슬롯에 붙여넣음", WorkLogType.Success);
                 }
                 else
                 {
@@ -1644,7 +1654,7 @@ namespace FACTOVA_LogAnalysis
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ClipboardPaste 오류: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"❌ ClipboardPaste 오류: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -1656,7 +1666,7 @@ namespace FACTOVA_LogAnalysis
                 if (tb != null)
                 {
                     System.Windows.Clipboard.SetText(tb.Text ?? string.Empty);
-                    _workLogService.AddLog("? 선택된 슬롯 텍스트를 클립보드에 복사함", WorkLogType.Success);
+                    _workLogService.AddLog("📋 선택된 슬롯 텍스트를 클립보드에 복사함", WorkLogType.Success);
                     return;
                 }
 
@@ -1667,7 +1677,7 @@ namespace FACTOVA_LogAnalysis
                     if (t != null && !string.IsNullOrEmpty(t.Text))
                     {
                         System.Windows.Clipboard.SetText(t.Text);
-                        _workLogService.AddLog($"? 슬롯{i} 텍스트를 클립보드에 복사함", WorkLogType.Success);
+                        _workLogService.AddLog($"📋 슬롯{i} 텍스트를 클립보드에 복사함", WorkLogType.Success);
                         return;
                     }
                 }
@@ -1676,7 +1686,7 @@ namespace FACTOVA_LogAnalysis
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ClipboardCopy 오류: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"❌ ClipboardCopy 오류: {ex.Message}", WorkLogType.Error);
             }
         }
 
@@ -1720,11 +1730,11 @@ namespace FACTOVA_LogAnalysis
                 int insertPos = target.CaretIndex;
                 target.Text = target.Text.Insert(insertPos, source);
                 target.CaretIndex = insertPos + source.Length;
-                _workLogService.AddLog("? 슬롯 텍스트를 활성 편집 영역에 삽입함", WorkLogType.Success);
+                _workLogService.AddLog("✂️ 슬롯 텍스트를 활성 편집 영역에 삽입함", WorkLogType.Success);
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? ClipboardInsert 오류: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"❌ ClipboardInsert 오류: {ex.Message}", WorkLogType.Error);
             }
         }
 

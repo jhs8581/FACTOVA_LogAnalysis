@@ -2,6 +2,7 @@
 using System.Data;
 using System.Text;
 using System.Windows;
+using System.Runtime.InteropServices;
 
 namespace FACTOVA_LogAnalysis
 {
@@ -10,6 +11,10 @@ namespace FACTOVA_LogAnalysis
     /// </summary>
     public partial class App : System.Windows.Application
     {
+        // ✅ 작업 표시줄 고정을 위한 AppUserModelID 설정
+        [DllImport("shell32.dll", SetLastError = true)]
+        static extern void SetCurrentProcessExplicitAppUserModelID([MarshalAs(UnmanagedType.LPWStr)] string AppID);
+
         protected override void OnStartup(StartupEventArgs e)
         {
             // ✅ 전역 인코딩 설정: UTF-8을 기본으로 설정
@@ -24,6 +29,16 @@ namespace FACTOVA_LogAnalysis
             catch
             {
                 // 콘솔이 없는 환경에서는 무시
+            }
+
+            // ✅ 작업 표시줄 고정을 위한 AppUserModelID 설정
+            try
+            {
+                SetCurrentProcessExplicitAppUserModelID("FACTOVA.LogAnalysis.1.0");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"AppUserModelID 설정 실패: {ex.Message}");
             }
 
             base.OnStartup(e);

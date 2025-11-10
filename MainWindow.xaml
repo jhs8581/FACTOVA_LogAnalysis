@@ -518,6 +518,14 @@
                                                 <Button Name="ToggleAllContentButton" Content="콘텐츠 닫기" Width="100" Height="30" Margin="0,0,8,0" 
                                             Click="ToggleAllContentButton_Click" ToolTip="Toggle Content column visibility"
                                             Background="LightSteelBlue" Foreground="DarkBlue"/>
+                                                
+                                                <!-- ✨ Content Cell 높이 조절 -->
+                                                <Label Content="Content 높이:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="8,0,6,0"/>
+                                                <TextBox Name="ContentCellHeightTextBox" Width="42" Height="26" Text="100" TextAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Margin="0,0,6,0"/>
+                                                <Button Name="ContentCellHeightDecreaseButton" Content="-" Width="30" Height="26" Margin="0,0,4,0" Click="ContentCellHeightDecrease_Click" ToolTip="Decrease Content Cell Height"/>
+                                                <Button Name="ContentCellHeightIncreaseButton" Content="+" Width="30" Height="26" Margin="0,0,8,0" Click="ContentCellHeightIncrease_Click" ToolTip="Increase Content Cell Height"/>
+                                                <Button Name="ApplyContentCellHeightButton" Content="적용" Width="50" Height="26" Margin="0,0,8,0" Click="ApplyContentCellHeight_Click" ToolTip="Apply Content Cell Height" Background="LightGreen"/>
+                                                
                                                 <Button Name="GoToSameTimeButton" Content="⏱ 동일 시간 이동" Width="110" Height="30" Margin="0,0,0,0"
                                             Click="GoToSameTimeButton_Click" ToolTip="Go to matching time in other DataGrids (use selected row's Time)"
                                             Background="LightYellow" Foreground="DarkBlue"/>
@@ -703,7 +711,6 @@
                                                 <DataGridTextColumn Header="Time" Binding="{Binding Timestamp}" Width="70" IsReadOnly="False"/>
                                                 <DataGridTextColumn Header="MsgId" Binding="{Binding MsgId}" Width="80" IsReadOnly="False"/>
                                                 <DataGridTextColumn Header="BARCODE/LOT" Binding="{Binding BARCODE_LOT}" Width="150" IsReadOnly="False"/>
-                                                <DataGridTextColumn Header="ProcId" Binding="{Binding ProcId}" Width="100" IsReadOnly="False" Visibility="Collapsed"/>
                                                 <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="500" IsReadOnly="False" CellStyle="{StaticResource ContentCellStyle}"/>
                                             </DataGrid.Columns>
                                         </DataGrid>
@@ -900,6 +907,15 @@
 
                                             <Separator Margin="10,0"/>
 
+                                            <!-- ✨ Content Cell 높이 조절 (통합 로그) -->
+                                            <Label Content="Content 높이:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,6,0"/>
+                                            <TextBox Name="UnifiedContentCellHeightTextBox" Width="42" Height="26" Text="100" TextAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Margin="0,0,6,0"/>
+                                            <Button Name="UnifiedContentCellHeightDecreaseButton" Content="-" Width="30" Height="26" Margin="0,0,4,0" Click="UnifiedContentCellHeightDecrease_Click" ToolTip="Decrease Content Cell Height"/>
+                                            <Button Name="UnifiedContentCellHeightIncreaseButton" Content="+" Width="30" Height="26" Margin="0,0,8,0" Click="UnifiedContentCellHeightIncrease_Click" ToolTip="Increase Content Cell Height"/>
+                                            <Button Name="ApplyUnifiedContentCellHeightButton" Content="적용" Width="50" Height="26" Margin="0,0,12,0" Click="ApplyUnifiedContentCellHeight_Click" ToolTip="Apply Content Cell Height" Background="LightGreen"/>
+
+                                            <Separator Margin="10,0"/>
+
                                             <!-- Export Button -->
                                             <Button Name="ExportUnifiedLogButton" Content="📥 엑셀 다운로드" Width="120" Height="26" 
                                         Click="ExportUnifiedLogButton_Click" ToolTip="Export unified log to Excel"
@@ -996,9 +1012,12 @@
                                         <DataGridTextColumn Header="LogType" Binding="{Binding LogLevel}" Width="90" IsReadOnly="False"/>
                                         <DataGridTextColumn Header="Business" Binding="{Binding BusinessName}" Width="250" IsReadOnly="False"/>
                                         <DataGridTextColumn Header="MsgId" Binding="{Binding MsgId}" Width="80" IsReadOnly="False"/>
+                                        <!-- ✨ BARCODE/LOT 컬럼 추가 -->
+                                        <DataGridTextColumn Header="BARCODE/LOT" Binding="{Binding BARCODE_LOT}" Width="150" IsReadOnly="False"/>
+                                        <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="500" IsReadOnly="False" CellStyle="{StaticResource ContentCellStyle}"/>
                                         <DataGridTextColumn Header="ExecTime" Binding="{Binding ExecTime}" Width="90" IsReadOnly="False"/>
                                         <DataGridTextColumn Header="TxnId" Binding="{Binding TxnId}" Width="200" IsReadOnly="False"/>
-                                        <DataGridTextColumn Header="Content" Binding="{Binding Content}" Width="500" IsReadOnly="False" CellStyle="{StaticResource ContentCellStyle}"/>
+                                        
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Grid>

@@ -637,5 +637,148 @@ namespace FACTOVA_LogAnalysis
                 System.Diagnostics.Debug.WriteLine($"ApplyTextColorStyleToUnifiedGrid 오류: {ex.StackTrace}");
             }
         }
+
+        #region Unified Content Cell Height Management
+
+        /// <summary>
+        /// 통합 로그 Content Cell 높이 감소
+        /// </summary>
+        private void UnifiedContentCellHeightDecrease_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var textBox = FindName("UnifiedContentCellHeightTextBox") as System.Windows.Controls.TextBox;
+                if (textBox == null || !double.TryParse(textBox.Text, out double height))
+                {
+                    _workLogService.AddLog("유효한 Content 높이 값을 입력하세요", WorkLogType.Warning);
+                    return;
+                }
+                height = Math.Max(50, height - 10); // 최소 50
+                textBox.Text = ((int)height).ToString();
+            }
+            catch (Exception ex)
+            {
+                _workLogService.AddLog($"통합 로그 Content 높이 감소 오류: {ex.Message}", WorkLogType.Error);
+            }
+        }
+
+        /// <summary>
+        /// 통합 로그 Content Cell 높이 증가
+        /// </summary>
+        private void UnifiedContentCellHeightIncrease_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var textBox = FindName("UnifiedContentCellHeightTextBox") as System.Windows.Controls.TextBox;
+                if (textBox == null || !double.TryParse(textBox.Text, out double height))
+                {
+                    _workLogService.AddLog("유효한 Content 높이 값을 입력하세요", WorkLogType.Warning);
+                    return;
+                }
+                height = Math.Min(500, height + 10); // 최대 500
+                textBox.Text = ((int)height).ToString();
+            }
+            catch (Exception ex)
+            {
+                _workLogService.AddLog($"통합 로그 Content 높이 증가 오류: {ex.Message}", WorkLogType.Error);
+            }
+        }
+
+        /// <summary>
+        /// 통합 로그 Content Cell 높이 적용
+        /// </summary>
+        private void ApplyUnifiedContentCellHeight_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var textBox = FindName("UnifiedContentCellHeightTextBox") as System.Windows.Controls.TextBox;
+                if (textBox == null || !double.TryParse(textBox.Text, out double height))
+                {
+                    _workLogService.AddLog("유효한 Content 높이 값을 입력하세요", WorkLogType.Warning);
+                    return;
+                }
+
+                // 통합 로그 DataGrid 찾기
+                var unifiedGrid = FindName("unifiedLogDataGrid") as DataGrid;
+                if (unifiedGrid == null)
+                {
+                    _workLogService.AddLog("통합 로그 DataGrid를 찾을 수 없습니다", WorkLogType.Warning);
+                    return;
+                }
+
+                // ContentCellStyle을 동적으로 생성
+                var contentStyle = new System.Windows.Style(typeof(DataGridCell));
+                contentStyle.Setters.Add(new System.Windows.Setter(DataGridCell.BorderBrushProperty, System.Windows.Media.Brushes.LightGray));
+                contentStyle.Setters.Add(new System.Windows.Setter(DataGridCell.BorderThicknessProperty, new Thickness(0.5)));
+                contentStyle.Setters.Add(new System.Windows.Setter(DataGridCell.PaddingProperty, new Thickness(0)));
+                contentStyle.Setters.Add(new System.Windows.Setter(FrameworkElement.FocusVisualStyleProperty, null));
+
+                var template = new ControlTemplate(typeof(DataGridCell));
+                var factory = new FrameworkElementFactory(typeof(System.Windows.Controls.Border));
+                factory.SetValue(System.Windows.Controls.Border.BorderBrushProperty, new TemplateBindingExtension(DataGridCell.BorderBrushProperty));
+                factory.SetValue(System.Windows.Controls.Border.BorderThicknessProperty, new TemplateBindingExtension(DataGridCell.BorderThicknessProperty));
+                factory.SetValue(System.Windows.Controls.Border.BackgroundProperty, System.Windows.Media.Brushes.White);
+
+                var scrollViewerFactory = new FrameworkElementFactory(typeof(ScrollViewer));
+                scrollViewerFactory.SetValue(ScrollViewer.VerticalScrollBarVisibilityProperty, ScrollBarVisibility.Auto);
+                scrollViewerFactory.SetValue(ScrollViewer.HorizontalScrollBarVisibilityProperty, ScrollBarVisibility.Auto);
+                scrollViewerFactory.SetValue(FrameworkElement.MaxHeightProperty, height); // ✨ 사용자 지정 높이
+                scrollViewerFactory.SetValue(UIElement.FocusableProperty, false);
+
+                var textBoxFactory = new FrameworkElementFactory(typeof(System.Windows.Controls.TextBox));
+                textBoxFactory.SetBinding(System.Windows.Controls.TextBox.TextProperty, new System.Windows.Data.Binding("Content") { Mode = System.Windows.Data.BindingMode.OneWay });
+                textBoxFactory.SetValue(System.Windows.Controls.TextBox.IsReadOnlyProperty, true);
+                textBoxFactory.SetValue(System.Windows.Controls.Control.BorderThicknessProperty, new Thickness(0));
+                textBoxFactory.SetValue(System.Windows.Controls.Control.BackgroundProperty, System.Windows.Media.Brushes.Transparent);
+                textBoxFactory.SetValue(System.Windows.Controls.Control.ForegroundProperty, System.Windows.Media.Brushes.Black);
+                textBoxFactory.SetValue(System.Windows.Controls.TextBox.TextWrappingProperty, TextWrapping.Wrap);
+                textBoxFactory.SetValue(FrameworkElement.MarginProperty, new Thickness(4, 2, 4, 2));
+                textBoxFactory.SetValue(System.Windows.Controls.Control.PaddingProperty, new Thickness(0));
+                textBoxFactory.SetValue(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Top);
+                textBoxFactory.SetValue(System.Windows.Controls.Control.FontFamilyProperty, new System.Windows.Media.FontFamily("Consolas"));
+                textBoxFactory.SetValue(System.Windows.Controls.TextBox.AcceptsReturnProperty, true);
+                textBoxFactory.SetValue(FrameworkElement.CursorProperty, System.Windows.Input.Cursors.Arrow);
+                textBoxFactory.SetValue(UIElement.FocusableProperty, true);
+                textBoxFactory.SetValue(System.Windows.Controls.Control.IsTabStopProperty, false);
+                textBoxFactory.SetValue(System.Windows.Controls.Primitives.TextBoxBase.SelectionBrushProperty, new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(0x33, 0x99, 0xFF)));
+                textBoxFactory.SetValue(System.Windows.Controls.Primitives.TextBoxBase.SelectionTextBrushProperty, System.Windows.Media.Brushes.White);
+                textBoxFactory.SetValue(System.Windows.Controls.Primitives.TextBoxBase.SelectionOpacityProperty, 0.4);
+
+                scrollViewerFactory.AppendChild(textBoxFactory);
+                factory.AppendChild(scrollViewerFactory);
+                template.VisualTree = factory;
+
+                contentStyle.Setters.Add(new System.Windows.Setter(System.Windows.Controls.Control.TemplateProperty, template));
+
+                // Content 컬럼 찾기 및 적용
+                var contentColumn = unifiedGrid.Columns.FirstOrDefault(c => c.Header?.ToString() == "Content");
+                if (contentColumn is DataGridTextColumn textCol)
+                {
+                    textCol.CellStyle = contentStyle;
+                }
+                
+                unifiedGrid.Items.Refresh();
+                unifiedGrid.UpdateLayout();
+
+                // 설정 저장 (통합 로그 전용)
+                try
+                {
+                    _appSettings.ContentCellMaxHeight = height;
+                    _appSettings.Save();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to save UnifiedContentCellMaxHeight: {ex.Message}");
+                }
+
+                _workLogService.AddLog($"통합 로그 Content 셀 높이 적용 완료: {height}px", WorkLogType.Success);
+            }
+            catch (Exception ex)
+            {
+                _workLogService.AddLog($"통합 로그 Content 높이 적용 오류: {ex.Message}", WorkLogType.Error);
+            }
+        }
+
+        #endregion
     }
 }
