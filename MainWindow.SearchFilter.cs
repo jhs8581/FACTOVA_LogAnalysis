@@ -805,11 +805,11 @@ namespace FACTOVA_LogAnalysis
                         conditions.Add(item => (item.Timestamp ?? "").IndexOf(dataTimeFilter, StringComparison.OrdinalIgnoreCase) >= 0);
                     }
 
-                    // Content 필터
+                    // Content 필터 - 다중 키워드 지원 ($로 구분)
                     var dataContentFilter = (FindName("DataContentFilterTextBox") as System.Windows.Controls.TextBox)?.Text?.Trim();
                     if (!string.IsNullOrEmpty(dataContentFilter))
                     {
-                        conditions.Add(item => (item.Content ?? "").IndexOf(dataContentFilter, StringComparison.OrdinalIgnoreCase) >= 0);
+                        conditions.Add(CreateMultiKeywordFilter(dataContentFilter));
                     }
                     break;
 
@@ -828,11 +828,11 @@ namespace FACTOVA_LogAnalysis
                         conditions.Add(item => (item.Timestamp ?? "").IndexOf(eventTimeFilter, StringComparison.OrdinalIgnoreCase) >= 0);
                     }
 
-                    // Content 필터
+                    // Content 필터 - 다중 키워드 지원 ($로 구분)
                     var eventContentFilter = (FindName("EventContentFilterTextBox") as System.Windows.Controls.TextBox)?.Text?.Trim();
                     if (!string.IsNullOrEmpty(eventContentFilter))
                     {
-                        conditions.Add(item => (item.Content ?? "").IndexOf(eventContentFilter, StringComparison.OrdinalIgnoreCase) >= 0);
+                        conditions.Add(CreateMultiKeywordFilter(eventContentFilter));
                     }
                     break;
 
@@ -849,7 +849,7 @@ namespace FACTOVA_LogAnalysis
                         conditions.Add(item => (item.Timestamp ?? "").IndexOf(debugTimeFilter, StringComparison.OrdinalIgnoreCase) >= 0);
                     }
 
-                    // Content 필터
+                    // Content 필터 - 다중 키워드 지원 ($로 구분)
                     var debugContentFilter = (FindName("DebugContentFilterTextBox") as System.Windows.Controls.TextBox)?.Text?.Trim();
                     // Tab 모드에서도 확인
                     if (string.IsNullOrEmpty(debugContentFilter))
@@ -858,7 +858,7 @@ namespace FACTOVA_LogAnalysis
                     }
                     if (!string.IsNullOrEmpty(debugContentFilter))
                     {
-                        conditions.Add(item => (item.Content ?? "").IndexOf(debugContentFilter, StringComparison.OrdinalIgnoreCase) >= 0);
+                        conditions.Add(CreateMultiKeywordFilter(debugContentFilter));
                     }
                     break;
 
@@ -877,16 +877,52 @@ namespace FACTOVA_LogAnalysis
                         conditions.Add(item => (item.Timestamp ?? "").IndexOf(exceptionTimeFilter, StringComparison.OrdinalIgnoreCase) >= 0);
                     }
 
-                    // Content 필터
+                    // Content 필터 - 다중 키워드 지원 ($로 구분)
                     var exceptionContentFilter = (FindName("ExceptionContentFilterTextBox") as System.Windows.Controls.TextBox)?.Text?.Trim();
                     if (!string.IsNullOrEmpty(exceptionContentFilter))
                     {
-                        conditions.Add(item => (item.Content ?? "").IndexOf(exceptionContentFilter, StringComparison.OrdinalIgnoreCase) >= 0);
+                        conditions.Add(CreateMultiKeywordFilter(exceptionContentFilter));
                     }
                     break;
             }
 
             return conditions;
+        }
+
+        /// <summary>
+        /// $ 또는 & 구분자로 분리된 다중 키워드를 OR 조건으로 검색하는 필터 생성
+        /// 예: "lot_id$SPS_BOX_ID$sensor1" → lot_id OR SPS_BOX_ID OR sensor1 포함 여부 확인
+        /// 예: "MIX Group : A&MIX Group : B" → "MIX Group : A" OR "MIX Group : B" 포함 여부 확인
+        /// </summary>
+        private Func<LogLineItem, bool> CreateMultiKeywordFilter(string filterText)
+        {
+            // $ 또는 & 구분자로 키워드 분리
+            var keywords = filterText.Split(new[] { '$', '&' }, StringSplitOptions.RemoveEmptyEntries)
+                                     .Select(k => k.Trim())
+                                     .Where(k => !string.IsNullOrEmpty(k))
+                                     .ToList();
+
+            if (keywords.Count == 0)
+                return item => true; // 키워드 없으면 모두 통과
+
+            // 🔍 디버깅 로그: 분리된 키워드 확인
+            _workLogService.AddLog($"🔍 다중 키워드 필터 생성: [{string.Join(", ", keywords)}] (총 {keywords.Count}개)", WorkLogType.Info);
+
+            // OR 조건: 하나라도 포함되면 true
+            return item =>
+            {
+                var content = item.Content ?? "";
+                bool matched = keywords.Any(keyword =>
+                    content.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0);
+                
+                // 🔍 매칭 결과 샘플 로그 (첫 10개만)
+                if (item.LineNumber <= 10 && keywords.Count > 1)
+                {
+                    _workLogService.AddLog($"  Line {item.LineNumber}: {(matched ? "✅ 매칭" : "❌ 불일치")} - Content 미리보기: {content.Substring(0, Math.Min(50, content.Length))}...", WorkLogType.Info);
+                }
+                
+                return matched;
+            };
         }
 
         #endregion
