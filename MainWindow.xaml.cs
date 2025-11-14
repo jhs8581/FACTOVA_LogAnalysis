@@ -106,7 +106,7 @@ namespace FACTOVA_LogAnalysis
             // PerformanceTest.RunLogParsingTest();
             
             // 빠른 테스트 (1만 줄)
-            PerformanceTest.RunQuickTest();
+            //PerformanceTest.RunQuickTest();
             
             // 애플리케이션 설정 로드
             _appSettings = AppSettings.Load();

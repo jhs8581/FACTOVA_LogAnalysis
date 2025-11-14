@@ -45,19 +45,21 @@ namespace FACTOVA_LogAnalysis.Services
 
             // ✅ 바이트 수준에서 인코딩 감지
             var bytes = await File.ReadAllBytesAsync(filePath);
-            var encoding = DetectEncodingFromBytes(bytes);
+            
+            // ⚡ 강제 EUC-KR 사용 (한국 Windows 로그 파일 기본 인코딩)
+            var encoding = Encoding.GetEncoding("UTF-8");
 
             var fileName = Path.GetFileName(filePath);
             var encodingInfo = $"{encoding.EncodingName} (CodePage: {encoding.CodePage})";
             
             System.Diagnostics.Debug.WriteLine($"📄 파일: {fileName}");
-            System.Diagnostics.Debug.WriteLine($"🔍 감지된 인코딩: {encodingInfo}");
+            System.Diagnostics.Debug.WriteLine($"🔍 사용 인코딩: {encodingInfo} (강제)");
             
             // ✅ 인코딩 정보를 콘솔에도 출력 (릴리즈 빌드에서 확인용)
             Console.WriteLine($"📄 로그 파일 읽기: {fileName}");
-            Console.WriteLine($"🔍 감지된 인코딩: {encodingInfo}");
+            Console.WriteLine($"🔍 사용 인코딩: {encodingInfo} (강제)");
 
-            // 감지된 인코딩으로 읽기
+            // EUC-KR로 읽기
             return encoding.GetString(bytes);
         }
 
@@ -98,17 +100,17 @@ namespace FACTOVA_LogAnalysis.Services
             System.Diagnostics.Debug.WriteLine($"   UTF-8 유효: {isValidUtf8}");
             System.Diagnostics.Debug.WriteLine($"   EUC-KR 패턴: {hasEucKrPattern}");
 
-            // 판단 로직
-            if (isValidUtf8 && !hasEucKrPattern)
+            // 판단 로직 - ⚡ EUC-KR 우선 (한국 Windows 기본)
+            if (hasEucKrPattern)
+            {
+                System.Diagnostics.Debug.WriteLine("✅ EUC-KR 선택 (한글 패턴 발견)");
+                return Encoding.GetEncoding("EUC-KR");
+            }
+
+            if (isValidUtf8)
             {
                 System.Diagnostics.Debug.WriteLine("✅ UTF-8 (BOM 없음) 선택");
                 return new UTF8Encoding(false);
-            }
-
-            if (hasEucKrPattern)
-            {
-                System.Diagnostics.Debug.WriteLine("✅ EUC-KR 선택");
-                return Encoding.GetEncoding("EUC-KR");
             }
 
             // 3. 기본값: EUC-KR (한국 Windows 기본)

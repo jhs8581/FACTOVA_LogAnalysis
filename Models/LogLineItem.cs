@@ -51,6 +51,8 @@ namespace FACTOVA_LogAnalysis.Models
         public string ERROR_CODE_DESC { get; set; } = "";
         // ✅ SPS_BOX_ID 추가
         public string SPS_BOX_ID { get; set; } = "";
+        // ⚡ SENSOR1 추가 (1 = IN, 0 = OUT)
+        public string SENSOR1 { get; set; } = "";
         
         /// <summary>
         /// BARCODE_NO, BARCODE_VALUE, BCR_ID, SPS_BOX_ID, LOT_ID, LOTID 중 첫 번째 값
@@ -159,19 +161,9 @@ namespace FACTOVA_LogAnalysis.Models
         {
             try
             {
-                // MSG_NO 추출 - 우선적으로 처리 진행
-                ExtractMsgNo(content);
-                
-                // 다른 필드들도 나중에 추가 예정
+                // ⚡ BCR_ID, SPS_BOX_ID만 추출 (빠른 IndexOf 사용)
                 ExtractBcrId(content);
-                ExtractReturnCode(content);
-                ExtractWorkType(content);
-                ExtractLineStop(content);
-                ExtractLinePass(content);
-                ExtractErrorCode(content);
-                ExtractErrorCodeDesc(content);
-                ExtractSpsBoxId(content); // ✅ SPS_BOX_ID 추출 추가
-                ExtractBarcodeLot(content);
+                ExtractSpsBoxId(content);
             }
             catch (Exception ex)
             {
@@ -180,7 +172,119 @@ namespace FACTOVA_LogAnalysis.Models
         }
 
         /// <summary>
-        /// MSG_NO 추출 - Content에서 MSG_NO 패턴을 찾아서 추출
+        /// ⚡ 바인딩 후 호출용 - BCR_ID, SPS_BOX_ID, SENSOR1 일괄 추출
+        /// Content 형식: [4] BCR_ID : 1337851150880B185301
+        /// </summary>
+        /// <param name="originalContent">파싱된 Content (ITEM 형식)</param>
+        public void ExtractBarcodeFieldsFromOriginalContent(string originalContent)
+        {
+            if (string.IsNullOrWhiteSpace(originalContent))
+                return;
+
+            try
+            {
+                // ⚡ Content 형식:
+                // [RECV]
+                // [1] MSG_NO : 03
+                // [4] BCR_ID : 1337851150880B185301
+                // [5] SPS_BOX_ID : CNZKRCW1REFS0168
+                // [3] SENSOR1 : 1
+                
+                var lines = originalContent.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                
+                var barcodeValues = new List<string>(); // ⚡ BARCODE_LOT에 합칠 값들
+                
+                foreach (var line in lines)
+                {
+                    // BCR_ID 찾기
+                    if (line.Contains("BCR_ID", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // "[4] BCR_ID : 1337851150880B185301" 형태
+                        int colonIndex = line.IndexOf(':');
+                        if (colonIndex >= 0 && colonIndex < line.Length - 1)
+                        {
+                            BCR_ID = line.Substring(colonIndex + 1).Trim();
+                            if (BCR_ID == "(empty)") BCR_ID = "";
+                            
+                            // ⚡ BARCODE_LOT에 추가
+                            if (!string.IsNullOrWhiteSpace(BCR_ID))
+                            {
+                                barcodeValues.Add(BCR_ID);
+                            }
+                        }
+                    }
+                    
+                    // SPS_BOX_ID 찾기
+                    else if (line.Contains("SPS_BOX_ID", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // "[5] SPS_BOX_ID : CNZKRCW1REFS0168" 형태
+                        int colonIndex = line.IndexOf(':');
+                        if (colonIndex >= 0 && colonIndex < line.Length - 1)
+                        {
+                            SPS_BOX_ID = line.Substring(colonIndex + 1).Trim();
+                            if (SPS_BOX_ID == "(empty)") SPS_BOX_ID = "";
+                            
+                            // ⚡ BARCODE_LOT에 추가
+                            if (!string.IsNullOrWhiteSpace(SPS_BOX_ID))
+                            {
+                                barcodeValues.Add(SPS_BOX_ID);
+                            }
+                        }
+                    }
+                    
+                    // MSG_NO 찾기
+                    else if (line.Contains("MSG_NO", StringComparison.OrdinalIgnoreCase))
+                    {
+                        int colonIndex = line.IndexOf(':');
+                        if (colonIndex >= 0 && colonIndex < line.Length - 1)
+                        {
+                            MSG_NO = line.Substring(colonIndex + 1).Trim();
+                            if (MSG_NO == "(empty)") MSG_NO = "";
+                        }
+                    }
+                    
+                    // ⚡ SENSOR1 찾기 (1 → IN, 0 → OUT) - BARCODE_LOT에 추가
+                    else if (line.Contains("SENSOR1", StringComparison.OrdinalIgnoreCase))
+                    {
+                        int colonIndex = line.IndexOf(':');
+                        if (colonIndex >= 0 && colonIndex < line.Length - 1)
+                        {
+                            string rawValue = line.Substring(colonIndex + 1).Trim();
+                            
+                            // 1 → IN, 0 → OUT 변환
+                            if (rawValue == "1")
+                            {
+                                SENSOR1 = "IN";
+                                barcodeValues.Add("SENSOR1: IN");
+                            }
+                            else if (rawValue == "0")
+                            {
+                                SENSOR1 = "OUT";
+                                barcodeValues.Add("SENSOR1: OUT");
+                            }
+                            else if (!string.IsNullOrWhiteSpace(rawValue))
+                            {
+                                SENSOR1 = rawValue;
+                                barcodeValues.Add($"SENSOR1: {rawValue}");
+                            }
+                        }
+                    }
+                }
+                
+                // ⚡ BARCODE_LOT 컬럼에 값 설정 (줄바꿈으로 구분)
+                if (barcodeValues.Count > 0)
+                {
+                    BARCODE_LOT = string.Join("\n", barcodeValues);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"ExtractBarcodeFieldsFromOriginalContent error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// MSG_NO 주 extract 저의 Content에서 MSG_NO 패턴을 찾아서 추출
         /// </summary>
         private void ExtractMsgNo(string content)
         {
@@ -603,7 +707,7 @@ namespace FACTOVA_LogAnalysis.Models
                 var exceptionPatterns = new[]
                 {
                     @"Business[:\s]+([A-Za-z0-9_]+)", // Business: XXX
-                    @"비즈니스[:\s]+([A-Za-z0-9_]+)", // 비즈니스: XXX
+                    @"비즈니스[:\s]+([A-Zazl0-9_]+)", // 비즈니스: XXX
                     @"Service[:\s]+([A-Za-z0-9_]+)", // Service: XXX
                     @"Method[:\s]+([A-Za-z0-9_]+)", // Method: XXX
                     @"Function[:\s]+([A-Za-z0-9_]+)", // Function: XXX

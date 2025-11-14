@@ -18,6 +18,7 @@ namespace FACTOVA_LogAnalysis
 {
     public partial class MainWindow
     {
+
         // Red business management handlers
         private void LoadRedBusinessList()
         {
@@ -918,6 +919,9 @@ namespace FACTOVA_LogAnalysis
                             item.LogLevel = logType;
                             _dataGridManager.EventLogLines.Add(item);
                         }
+                        
+                        // ⚡ 바인딩 완료 후 BCR_ID, SPS_BOX_ID 추출 (별도 작업)
+                        ExtractBarcodeFieldsAfterBinding(items);
                     }
                     else if (logType == "DEBUG")
                     {
@@ -938,15 +942,130 @@ namespace FACTOVA_LogAnalysis
                         }
                     }
                     
-                    _workLogService.AddLog($"?? {logType}: {items.Count}개 바인딩 완료", WorkLogType.Info);
+                    _workLogService.AddLog($"✅ {logType}: {items.Count}개 바인딩 완료", WorkLogType.Info);
                 }
                 
-                // 콤보박스 필터 업데이트
+                // ⚡ 콤보박스 필터 업데이트 (필터 목록 갱신)
                 _dataGridManager.UpdateComboBoxFilters();
+                
+                // ⚡ 모든 필터를 "ALL"로 초기화 (간헐적 필터 문제 방지)
+                ClearAllFiltersAfterBinding();
             }
             catch (Exception ex)
             {
-                _workLogService.AddLog($"? 데이터 바인딩 오류: {ex.Message}", WorkLogType.Error);
+                _workLogService.AddLog($"❌ 데이터 바인딩 오류: {ex.Message}", WorkLogType.Error);
+            }
+        }
+
+        /// <summary>
+        /// ⚡ 바인딩 후 모든 필터를 "ALL"로 초기화 (간헐적 필터 문제 방지)
+        /// </summary>
+        private void ClearAllFiltersAfterBinding()
+        {
+            try
+            {
+                // ⚡ 모든 필터 아이템 선택 해제
+                foreach (var item in _dataBusinessFilterItems) item.IsSelected = false;
+                foreach (var item in _eventMsgIdFilterItems) item.IsSelected = false;
+                foreach (var item in _exceptionBusinessFilterItems) item.IsSelected = false;
+                
+                // DATA 비즈니스 필터
+                var dataBusinessFilterComboBox = FindName("DataBusinessFilterComboBox") as WpfComboBox;
+                if (dataBusinessFilterComboBox != null && dataBusinessFilterComboBox.Items.Count > 0)
+                {
+                    dataBusinessFilterComboBox.SelectedIndex = -1; // ⚡ 선택 해제 (선택하세요)
+                    dataBusinessFilterComboBox.Text = "선택하세요";
+                }
+                
+                // EVENT MsgId 필터
+                var eventMsgIdFilterComboBox = FindName("EventMsgIdFilterComboBox") as WpfComboBox;
+                if (eventMsgIdFilterComboBox != null && eventMsgIdFilterComboBox.Items.Count > 0)
+                {
+                    eventMsgIdFilterComboBox.SelectedIndex = -1; // ⚡ 선택 해제 (선택하세요)
+                    eventMsgIdFilterComboBox.Text = "선택하세요";
+                }
+                
+                // EXCEPTION 비즈니스 필터
+                var exceptionBusinessFilterComboBox = FindName("ExceptionBusinessFilterComboBox") as WpfComboBox;
+                if (exceptionBusinessFilterComboBox != null && exceptionBusinessFilterComboBox.Items.Count > 0)
+                {
+                    exceptionBusinessFilterComboBox.SelectedIndex = -1; // ⚡ 선택 해제 (선택하세요)
+                    exceptionBusinessFilterComboBox.Text = "선택하세요";
+                }
+                
+                // ⚡ CollectionView 필터 초기화 (모두 보이도록)
+                var dataView = System.Windows.Data.CollectionViewSource.GetDefaultView(_dataGridManager.DataLogLines);
+                if (dataView != null)
+                {
+                    dataView.Filter = null;
+                    dataView.Refresh();
+                }
+                
+                var eventView = System.Windows.Data.CollectionViewSource.GetDefaultView(_dataGridManager.EventLogLines);
+                if (eventView != null)
+                {
+                    eventView.Filter = null;
+                    eventView.Refresh();
+                }
+                
+                var debugView = System.Windows.Data.CollectionViewSource.GetDefaultView(_dataGridManager.DebugLogLines);
+                if (debugView != null)
+                {
+                    debugView.Filter = null;
+                    debugView.Refresh();
+                }
+                
+                var exceptionView = System.Windows.Data.CollectionViewSource.GetDefaultView(_dataGridManager.ExceptionLogLines);
+                if (exceptionView != null)
+                {
+                    exceptionView.Filter = null;
+                    exceptionView.Refresh();
+                }
+                
+                _workLogService.AddLog("🔄 모든 필터 초기화 완료 (선택 해제)", WorkLogType.Info);
+            }
+            catch (Exception ex)
+            {
+                _workLogService.AddLog($"❌ 필터 초기화 오류: {ex.Message}", WorkLogType.Error);
+                System.Diagnostics.Debug.WriteLine($"ClearAllFiltersAfterBinding error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// ⚡ 바인딩 후 BCR_ID, SPS_BOX_ID, SENSOR1 추출
+        /// </summary>
+        private void ExtractBarcodeFieldsAfterBinding(List<LogLineItem> eventItems)
+        {
+            try
+            {
+                int extractedCount = 0;
+
+                foreach (var item in eventItems)
+                {
+                    if (string.IsNullOrWhiteSpace(item.Content))
+                        continue;
+
+                    // Content에서 BCR_ID, SPS_BOX_ID, SENSOR1 추출
+                    item.ExtractBarcodeFieldsFromOriginalContent(item.Content);
+
+                    if (!string.IsNullOrWhiteSpace(item.BCR_ID) || 
+                        !string.IsNullOrWhiteSpace(item.SPS_BOX_ID) || 
+                        !string.IsNullOrWhiteSpace(item.BARCODE_LOT) ||
+                        !string.IsNullOrWhiteSpace(item.SENSOR1))
+                    {
+                        extractedCount++;
+                    }
+                }
+                
+                _workLogService.AddLog(
+                    $"⚡ BCR_ID/SPS_BOX_ID/SENSOR1 추출 완료: {extractedCount}/{eventItems.Count}개", 
+                    WorkLogType.Success
+                );
+            }
+            catch (Exception ex)
+            {
+                _workLogService.AddLog($"❌ 바코드 필드 추출 오류: {ex.Message}", WorkLogType.Error);
+                System.Diagnostics.Debug.WriteLine($"ExtractBarcodeFieldsAfterBinding error: {ex.Message}\n{ex.StackTrace}");
             }
         }
     }

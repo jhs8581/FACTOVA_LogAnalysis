@@ -213,11 +213,16 @@ namespace FACTOVA_LogAnalysis
 
                 _workLogService.AddLog($"DATA 비즈니스명 필터: {dataBusinessNames.Count}개 항목 로드", WorkLogType.Info);
 
-                // EVENT MsgId 필터 업데이트
+                // EVENT MsgId 필터 업데이트 - ⚡ 숫자 정렬 적용!
                 var eventMsgIds = _dataGridManager.GetMsgIdsForLogType("EVENT");
                 _eventMsgIdFilterItems.Clear();
 
-                foreach (var msgId in eventMsgIds.OrderBy(m => m))
+                // ⚡ 숫자 정렬: "1100" → "2000" → "5001"
+                var sortedMsgIds = eventMsgIds
+                    .OrderBy(m => int.TryParse(m, out int num) ? num : int.MaxValue) // 숫자 우선
+                    .ThenBy(m => m); // 숫자가 아닌 경우 문자열 정렬
+
+                foreach (var msgId in sortedMsgIds)
                 {
                     _eventMsgIdFilterItems.Add(new FilterItem(msgId));
                 }
