@@ -593,8 +593,8 @@
                                                 <Button Name="ClearDataTimeFilterButton" Content="🔄" Width="28" Height="30" FontSize="13"
                                             Click="ClearDataTimeFilterButton_Click" ToolTip="Clear DATA Time filter" Margin="3,0"/>
                                                 <TextBlock Text="Content:" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Margin="5,0,3,0"/>
-                                                <TextBox Name="DataContentFilterTextBox" Width="150" Height="32" FontSize="14" 
-                                             ToolTip="Filter DATA logs by content keywords" 
+                                                <TextBox Name="DataContentFilterTextBox" Width="300" Height="32" FontSize="14" 
+                                             ToolTip="고급 필터: (키워드1,키워드2) + (키워드3,키워드4) 형식 지원&#x0a;, = AND / + = OR / () = 그룹" 
                                              TextChanged="DataContentFilterTextBox_TextChanged" Padding="8,5" VerticalContentAlignment="Center"
                                              Margin="0,0,5,0"/>
                                                 <Button Name="ClearDataContentFilterButton" Content="🔄" Width="28" Height="30" FontSize="13"
@@ -677,8 +677,8 @@
                                                 <Button Name="ClearEventTimeFilterButton" Content="🔄" Width="28" Height="30" FontSize="13"
                                             Click="ClearEventTimeFilterButton_Click" ToolTip="Clear EVENT Time filter" Margin="3,0"/>
                                                 <TextBlock Text="Content:" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Margin="5,0,3,0"/>
-                                                <TextBox Name="EventContentFilterTextBox" Width="150" Height="32" FontSize="14" 
-                                             ToolTip="Filter EVENT logs by content keywords" 
+                                                <TextBox Name="EventContentFilterTextBox" Width="300" Height="32" FontSize="14" 
+                                             ToolTip="고급 필터: (키워드1,키워드2) + (키워드3,키워드4) 형식 지원&#x0a;, = AND / + = OR / () = 그룹" 
                                              TextChanged="EventContentFilterTextBox_TextChanged" Padding="8,5" VerticalContentAlignment="Center"
                                              Margin="0,0,5,0"/>
                                                 <Button Name="ClearEventContentFilterButton" Content="🔄" Width="28" Height="30" FontSize="13"
@@ -740,8 +740,8 @@
                                                 <Button Name="ClearDebugTimeFilterButton" Content="🔄" Width="28" Height="30" FontSize="13"
                                             Click="ClearDebugTimeFilterButton_Click" ToolTip="Clear DEBUG Time filter" Margin="3,0"/>
                                                 <TextBlock Text="Content:" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Margin="0,0,3,0"/>
-                                                <TextBox Name="DebugContentFilterTextBox" Width="200" Height="32" FontSize="14" 
-                                             ToolTip="Filter DEBUG logs by content keywords" 
+                                                <TextBox Name="DebugContentFilterTextBox" Width="300" Height="32" FontSize="14" 
+                                             ToolTip="고급 필터: (키워드1,키워드2) + (키워드3,키워드4) 형식 지원&#x0a;, = AND / + = OR / () = 그룹" 
                                              TextChanged="DebugContentFilterTextBox_TextChanged" Padding="8,5" VerticalContentAlignment="Center"
                                              Margin="0,0,5,0"/>
                                                 <Button Name="ClearDebugFilterButton" Content="🔄" Width="28" Height="30" FontSize="13"
@@ -819,8 +819,8 @@
                                                 <Button Name="ClearExceptionTimeFilterButton" Content="🔄" Width="28" Height="30" FontSize="13"
                                             Click="ClearExceptionTimeFilterButton_Click" ToolTip="Clear EXCEPTION Time filter" Margin="3,0"/>
                                                 <TextBlock Text="Content:" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Margin="5,0,3,0"/>
-                                                <TextBox Name="ExceptionContentFilterTextBox" Width="150" Height="32" FontSize="14" 
-                                             ToolTip="Filter EXCEPTION logs by content keywords" 
+                                                <TextBox Name="ExceptionContentFilterTextBox" Width="300" Height="32" FontSize="14" 
+                                             ToolTip="고급 필터: (키워드1,키워드2) + (키워드3,키워드4) 형식 지원&#x0a;, = AND / + = OR / () = 그룹" 
                                              TextChanged="ExceptionContentFilterTextBox_TextChanged" Padding="8,5" VerticalContentAlignment="Center"
                                              Margin="0,0,5,0"/>
                                                 <Button Name="ClearExceptionContentFilterButton" Content="🔄" Width="28" Height="30" FontSize="13"
@@ -968,8 +968,8 @@
 
                                             <!-- Content Filter -->
                                             <TextBlock Text="Content:" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold" Margin="5,0,5,0"/>
-                                            <TextBox Name="UnifiedContentFilterTextBox" Width="200" Height="30" FontSize="14" 
-                                         ToolTip="Filter by content keywords" 
+                                            <TextBox Name="UnifiedContentFilterTextBox" Width="300" Height="30" FontSize="14" 
+                                         ToolTip="고급 필터: (키워드1,키워드2) + (키워드3,키워드4) 형식 지원&#x0a;, = AND / + = OR / () = 그룹" 
                                          TextChanged="UnifiedContentFilterTextBox_TextChanged"
                                          Padding="5" VerticalContentAlignment="Center"
                                          Margin="0,0,5,0"/>

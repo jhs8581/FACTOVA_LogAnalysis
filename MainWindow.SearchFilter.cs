@@ -890,39 +890,96 @@ namespace FACTOVA_LogAnalysis
         }
 
         /// <summary>
-        /// $ 또는 & 구분자로 분리된 다중 키워드를 OR 조건으로 검색하는 필터 생성
-        /// 예: "lot_id$SPS_BOX_ID$sensor1" → lot_id OR SPS_BOX_ID OR sensor1 포함 여부 확인
-        /// 예: "MIX Group : A&MIX Group : B" → "MIX Group : A" OR "MIX Group : B" 포함 여부 확인
+        /// 고급 필터 문법을 지원하는 다중 키워드 필터 생성
+        /// 문법:
+        ///   - `,` = AND (모두 포함)
+        ///   - `+` = OR (하나라도 포함)
+        ///   - `()` = 그룹
+        /// 예: "(a,1) + (b,2)" → (a AND 1) OR (b AND 2)
+        /// 예: "MIX Group : A" → 단순 검색
+        /// 예: "(MIX Group : A, INPUT) + (MIX Group : B, SELECT)" → (A AND INPUT) OR (B AND SELECT)
         /// </summary>
         private Func<LogLineItem, bool> CreateMultiKeywordFilter(string filterText)
         {
-            // $ 또는 & 구분자로 키워드 분리
-            var keywords = filterText.Split(new[] { '$', '&' }, StringSplitOptions.RemoveEmptyEntries)
-                                     .Select(k => k.Trim())
-                                     .Where(k => !string.IsNullOrEmpty(k))
-                                     .ToList();
+            if (string.IsNullOrWhiteSpace(filterText))
+                return item => true;
 
-            if (keywords.Count == 0)
-                return item => true; // 키워드 없으면 모두 통과
+            // 괄호가 없으면 단순 검색 (기존 방식)
+            if (!filterText.Contains('(') && !filterText.Contains('+') && !filterText.Contains(','))
+            {
+                var keyword = filterText.Trim();
+                _workLogService.AddLog($"🔍 단순 필터: [{keyword}]", WorkLogType.Info);
+                return item => (item.Content ?? "").IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0;
+            }
 
-            // 🔍 디버깅 로그: 분리된 키워드 확인
-            _workLogService.AddLog($"🔍 다중 키워드 필터 생성: [{string.Join(", ", keywords)}] (총 {keywords.Count}개)", WorkLogType.Info);
+            // OR 그룹들을 파싱 (+ 로 분리)
+            var orGroups = ParseOrGroups(filterText);
+            
+            if (orGroups.Count == 0)
+                return item => true;
 
-            // OR 조건: 하나라도 포함되면 true
+            // 디버깅 로그
+            var groupDescriptions = orGroups.Select((g, i) => $"그룹{i + 1}:[{string.Join(" AND ", g)}]");
+            _workLogService.AddLog($"🔍 고급 필터: {string.Join(" OR ", groupDescriptions)}", WorkLogType.Info);
+
+            // OR 조건: 하나의 그룹이라도 만족하면 true
             return item =>
             {
                 var content = item.Content ?? "";
-                bool matched = keywords.Any(keyword =>
-                    content.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0);
                 
-                // 🔍 매칭 결과 샘플 로그 (첫 10개만)
-                if (item.LineNumber <= 10 && keywords.Count > 1)
+                // 각 OR 그룹에 대해 검사
+                foreach (var andKeywords in orGroups)
                 {
-                    _workLogService.AddLog($"  Line {item.LineNumber}: {(matched ? "✅ 매칭" : "❌ 불일치")} - Content 미리보기: {content.Substring(0, Math.Min(50, content.Length))}...", WorkLogType.Info);
+                    // AND 조건: 그룹 내 모든 키워드가 포함되어야 함
+                    bool allMatch = andKeywords.All(keyword =>
+                        content.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0);
+                    
+                    if (allMatch)
+                        return true; // 하나의 그룹이라도 만족하면 통과
                 }
                 
-                return matched;
+                return false;
             };
+        }
+
+        /// <summary>
+        /// 필터 문자열을 OR 그룹들로 파싱
+        /// 예: "(a,1) + (b,2)" → [["a", "1"], ["b", "2"]]
+        /// 예: "a,1" → [["a", "1"]]
+        /// 예: "a + b" → [["a"], ["b"]]
+        /// </summary>
+        private List<List<string>> ParseOrGroups(string filterText)
+        {
+            var result = new List<List<string>>();
+            
+            // + 로 OR 그룹 분리
+            var orParts = filterText.Split('+');
+            
+            foreach (var orPart in orParts)
+            {
+                var part = orPart.Trim();
+                if (string.IsNullOrEmpty(part))
+                    continue;
+
+                // 괄호 제거
+                if (part.StartsWith("(") && part.EndsWith(")"))
+                {
+                    part = part.Substring(1, part.Length - 2);
+                }
+
+                // , 로 AND 키워드 분리
+                var andKeywords = part.Split(',')
+                                      .Select(k => k.Trim())
+                                      .Where(k => !string.IsNullOrEmpty(k))
+                                      .ToList();
+
+                if (andKeywords.Count > 0)
+                {
+                    result.Add(andKeywords);
+                }
+            }
+
+            return result;
         }
 
         #endregion
