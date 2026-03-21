@@ -29,7 +29,7 @@ jobs:
       run: dotnet build --configuration Release --no-restore
       
     - name: Publish
-      run: dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -p:IncludeNativeLibrariesForSelfContained=true -o ./publish
+      run: dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o ./publish
       
     - name: Create ZIP archive
       run: |
@@ -42,25 +42,24 @@ jobs:
       with:
         files: |
           FACTOVA_LogAnalysis-${{ github.ref_name }}.zip
-          publish/FACTOVA_LogAnalysis.exe
         body: |
           ## FACTOVA Log Analysis ${{ github.ref_name }}
-          
+
           ### 주요 기능
-          - ?? 로그 분석 (Text, DataGrid)
-          - ?? 통합 로그 뷰
-          - ?? Red Business 하이라이트
-          - ?? exec.Time 분석
-          - ?? 자동 업데이트 확인
-          
+          - 📊 로그 분석 (Text, DataGrid)
+          - 📁 통합 로그 뷰
+          - 🔴 Red Business 하이라이트
+          - ⏱️ exec.Time 분석
+          - 🔄 자동 업데이트 확인
+
           ### 설치 방법
-          1. `FACTOVA_LogAnalysis.exe` 다운로드
-          2. 실행
-          
-          또는
-          
+          **⚠️ 반드시 ZIP 파일을 다운로드하세요!**
+
           1. `FACTOVA_LogAnalysis-${{ github.ref_name }}.zip` 다운로드
-          2. 압축 해제 후 실행
+          2. 압축 해제
+          3. `FACTOVA_LogAnalysis.exe` 실행
+
+          > ✅ .NET Runtime 설치 불필요 (모두 포함됨)
         draft: false
         prerelease: false
       env:
