@@ -3,9 +3,9 @@ name: Create Release
 on:
   push:
     tags:
-      - 'v*.*.*'  # v1.0.0, v1.0.1 µîÀÇ ÅÂ±×°¡ Çª½ÃµÇ¸é ½ÇÇà
+      - 'v*.*.*'  # v1.0.0, v1.0.1 ë“±ì˜ íƒœê·¸ê°€ í‘¸ì‹œë˜ë©´ ì‹¤í–‰
 
-# ? ±ÇÇÑ Ãß°¡ (403 ¿¡·¯ ÇØ°á)
+# ? ê¶Œí•œ ì¶”ê°€ (403 ì—ëŸ¬ í•´ê²°)
 permissions:
   contents: write
 
@@ -29,7 +29,7 @@ jobs:
       run: dotnet build --configuration Release --no-restore
       
     - name: Publish
-      run: dotnet publish -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o ./publish
+      run: dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfContained=true -o ./publish
       
     - name: Create ZIP archive
       run: |
@@ -46,21 +46,21 @@ jobs:
         body: |
           ## FACTOVA Log Analysis ${{ github.ref_name }}
           
-          ### ÁÖ¿ä ±â´É
-          - ?? ·Î±× ºĞ¼® (Text, DataGrid)
-          - ?? ÅëÇÕ ·Î±× ºä
-          - ?? Red Business ÇÏÀÌ¶óÀÌÆ®
-          - ?? exec.Time ºĞ¼®
-          - ?? ÀÚµ¿ ¾÷µ¥ÀÌÆ® È®ÀÎ
+          ### ì£¼ìš” ê¸°ëŠ¥
+          - ?? ë¡œê·¸ ë¶„ì„ (Text, DataGrid)
+          - ?? í†µí•© ë¡œê·¸ ë·°
+          - ?? Red Business í•˜ì´ë¼ì´íŠ¸
+          - ?? exec.Time ë¶„ì„
+          - ?? ìë™ ì—…ë°ì´íŠ¸ í™•ì¸
           
-          ### ¼³Ä¡ ¹æ¹ı
-          1. `FACTOVA_LogAnalysis.exe` ´Ù¿î·Îµå
-          2. ½ÇÇà
+          ### ì„¤ì¹˜ ë°©ë²•
+          1. `FACTOVA_LogAnalysis.exe` ë‹¤ìš´ë¡œë“œ
+          2. ì‹¤í–‰
           
-          ¶Ç´Â
+          ë˜ëŠ”
           
-          1. `FACTOVA_LogAnalysis-${{ github.ref_name }}.zip` ´Ù¿î·Îµå
-          2. ¾ĞÃà ÇØÁ¦ ÈÄ ½ÇÇà
+          1. `FACTOVA_LogAnalysis-${{ github.ref_name }}.zip` ë‹¤ìš´ë¡œë“œ
+          2. ì••ì¶• í•´ì œ í›„ ì‹¤í–‰
         draft: false
         prerelease: false
       env:
